@@ -30,9 +30,20 @@ export default function Signup() {
     }
 
     try {
-        await signUp(email, password)
-        router.replace("/")
-    } catch (error: any) {
+    const user = await signUp(email, password)
+    const uid = user.uid
+
+    const userData = {
+        uid: uid,
+        name: name,
+        gender: gender,
+        birthDate: birthDate,
+    }
+    // futuramente: await userService.createUser(userData)
+
+    router.replace("/")
+} 
+    catch (error: any) {
         console.log("erro:", error)
         Alert.alert("Erro ao cadastrar", error.message)
     }
