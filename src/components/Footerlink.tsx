@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
         color: "#500903",
         fontFamily: "RedHatDisplay_400Regular",
         fontSize: 18,
-        marginTop: 5,
     },
     footerLink: {
-        color: "#500903",
-        fontFamily: "RedHatDisplay_700Bold",
+        color: "#6F1D1B",
+        fontFamily: "RedHatDisplay_600SemiBold",
+        fontSize: 18,
     },
 })

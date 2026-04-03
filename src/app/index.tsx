@@ -31,7 +31,7 @@ export default function Index(){
                     </View>
                     <Divider />
                     <FooterLink linkLabel="Esqueci minha senha" href="/" />
-                    <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/" />
+                    <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/cadastro" />
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>

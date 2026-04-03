@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         backgroundColor: "#6F1D1B",
         color: "#FFFFFF",
-        fontSize: 22,
+        fontSize: 18,
         fontFamily: "RedHatDisplay_600SemiBold",
         borderRadius: 10,
         marginTop: 10,
