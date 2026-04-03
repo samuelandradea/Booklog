@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
     label: {
         color: "#FFFFFF",
         fontSize: 26,
-        fontFamily: "RedHatDisplay_500Medium",
+        fontFamily: "RedHatDisplay_700Bold",
     },
 })
