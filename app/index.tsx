@@ -1,7 +1,8 @@
 import { Button } from "@/components/Button"
-import { Input } from "@/components/Input"
-import { FooterLink } from "@/components/Footerlink"
 import { Divider } from "@/components/Divider"
+import { FooterLink } from "@/components/Footerlink"
+import { Input } from "@/components/Input"
+import { signIn } from "@/services/authService"
 import { useState } from "react"
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native"
 
@@ -9,12 +10,19 @@ export default function Index(){
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    function handleSignIn() {
+    async function handleSignIn() {
         if(!email.trim() || !password.trim()) {
             return Alert.alert("Preencha os campos", "Preencha os campos corretamente para entrar.")
         }
-
-        Alert.alert("Bem-vinda(o)", `Seja bem-vinda(o) ${email}`)
+        try {
+            await signIn(email, password)
+            console.log("Login realizado com sucesso")
+            Alert.alert("Bem-vinda(o)", `Seja bem-vinda(o) ${email}`)
+           // router.replace("/home") COLOCAR ISSO QUANDO A HOME TIVER FEITA
+        } catch (error: any) {
+            console.log("erro:", error)
+            Alert.alert("Erro ao cadastrar", error.message)
+        }
     }
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height"})}>
@@ -31,7 +39,7 @@ export default function Index(){
                     </View>
                     <Divider />
                     <FooterLink linkLabel="Esqueci minha senha" href="/" />
-                    <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/" />
+                    <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/cadastro" />
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
