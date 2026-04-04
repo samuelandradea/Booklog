@@ -2,6 +2,8 @@ import { Button } from "@/components/Button"
 import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
+import { signUp } from "@/services/authService"
+import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { TextInputMask } from 'react-native-masked-text'
@@ -16,17 +18,36 @@ export default function Signup() {
 
     const genders = ["Mulher", "Homem", "Outros"];
 
-    function handleSignUp() {
-        if (!name || !email || !password || !confirmPassword || !birthDate || !gender) {
-            return Alert.alert("Atenção", "Por favor, preencha todos os campos.");
-        }
-
-        if (password !== confirmPassword) {
-            return Alert.alert("Erro", "As senhas não coincidem.");
-        }
-
-        Alert.alert("Sucesso!", "Conta criada com sucesso.");
+    async function handleSignUp() {
+    console.log("handleSignUp chamado")
+    
+    if (!name || !email || !password || !confirmPassword || !birthDate || !gender) {
+        return Alert.alert("Atenção", "Por favor, preencha todos os campos.");
     }
+
+    if (password !== confirmPassword) {
+        return Alert.alert("Erro", "As senhas não coincidem.");
+    }
+
+    try {
+    const user = await signUp(email, password)
+    const uid = user.uid
+
+    const userData = {
+        uid: uid,
+        name: name,
+        gender: gender,
+        birthDate: birthDate,
+    }
+    // futuramente: await userService.createUser(userData)
+
+    router.replace("/")
+} 
+    catch (error: any) {
+        console.log("erro:", error)
+        Alert.alert("Erro ao cadastrar", error.message)
+    }
+}
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height" })}>
