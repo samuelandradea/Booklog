@@ -3,7 +3,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 
 export async function signUp(email: string, senha: string){
     try{
-        await createUserWithEmailAndPassword(auth, email, senha);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha)
+        return userCredential.user
     }
     catch{
         throw new Error('Email ou senha inválidos');
