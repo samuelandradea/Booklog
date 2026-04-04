@@ -3,6 +3,7 @@ import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
 import { signIn } from "@/services/authService"
+import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native"
 
@@ -18,7 +19,7 @@ export default function Index(){
             await signIn(email, password)
             console.log("Login realizado com sucesso")
             Alert.alert("Bem-vinda(o)", `Seja bem-vinda(o) ${email}`)
-           // router.replace("/home") COLOCAR ISSO QUANDO A HOME TIVER FEITA
+            router.replace("/gostos")
         } catch (error: any) {
             console.log("erro:", error)
             Alert.alert("Erro ao cadastrar", error.message)
