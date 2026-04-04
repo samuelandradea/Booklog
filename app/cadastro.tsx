@@ -3,6 +3,7 @@ import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
 import { signUp } from "@/services/authService"
+import { createUser } from "@/services/userService"
 import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -33,15 +34,9 @@ export default function Signup() {
     const user = await signUp(email, password)
     const uid = user.uid
 
-    const userData = {
-        uid: uid,
-        name: name,
-        gender: gender,
-        birthDate: birthDate,
-    }
-    // futuramente: await userService.createUser(userData)
+    await createUser(uid, { name, email, gender, birthDate })
 
-    router.replace("/")
+    router.replace("/gostos")
 } 
     catch (error: any) {
         console.log("erro:", error)
