@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
   ActivityIndicator,
   Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { SearchBar } from "../src/components/SearchBar";
-import { CardPesquisaUsuario } from "../src/components/CardPesquisaUsuario";
-import { CardPesquisaAutor } from "../src/components/CardPesquisaAutor";
-import { CardPesquisaLivro } from "../src/components/CardPesquisaLivro";
+import { CardPesquisaAutor } from "../../src/components/CardPesquisaAutor";
+import { CardPesquisaLivro } from "../../src/components/CardPesquisaLivro";
+import { CardPesquisaUsuario } from "../../src/components/CardPesquisaUsuario";
+import { Header } from "../../src/components/Header"; // IMPORTANDO O NOVO COMPONENTE
+import { SearchBar } from "../../src/components/SearchBar";
 
 export default function TelaPesquisa() {
   const router = useRouter();
@@ -61,7 +62,8 @@ export default function TelaPesquisa() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>booklog</Text>
+      {/* USANDO O COMPONENTE AQUI */}
+      <Header />
 
       <View style={styles.searchContainer}>
         <SearchBar
@@ -81,9 +83,8 @@ export default function TelaPesquisa() {
         />
       ) : pesquisaFeita && nenhumResultado ? (
         <View style={styles.emptyContainer}>
-          {/* Aqui está a imagem do livrinho em vez do quadrado marrom! */}
           <Image
-            source={require("../src/assets/booklog-logo.png")}
+            source={require("../../src/assets/booklog-logo.png")}
             style={styles.imagemVazia}
             resizeMode="contain"
           />
@@ -97,8 +98,6 @@ export default function TelaPesquisa() {
           style={styles.resultsContainer}
           showsVerticalScrollIndicator={false}
         >
-          {/* Teste para ver o card usário */}
-          <CardPesquisaUsuario nome="Gabryel (Teste Visual)" />
           {resultados.usuarios.map((user: any) => (
             <CardPesquisaUsuario key={user.id} nome={user.name} />
           ))}
@@ -128,12 +127,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9B39A",
     paddingHorizontal: 20,
     paddingTop: 50,
-  },
-  logo: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 20,
-    color: "#500903",
-    marginBottom: 20,
   },
   searchContainer: { marginBottom: 30 },
   resultsContainer: { flex: 1 },

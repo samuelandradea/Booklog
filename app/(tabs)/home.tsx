@@ -1,16 +1,11 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { SearchBar } from "@/components/SearchBar";
-import { Feather } from "@expo/vector-icons";
+import { Header } from "@/components/Header"; // IMPORTANDO O NOVO COMPONENTE
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 
+// Teste para a visualização dos cards
 const livrosPadrao = [
   { id: "1", nome: "O Hobbit", nota: "4.5/5" },
   { id: "2", nome: "1984", nota: "5/5" },
@@ -43,7 +38,8 @@ export default function Home() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mainContent}>
         <View>
-          <Text style={styles.logo}>booklog</Text>
+          {/* USANDO O COMPONENTE AQUI */}
+          <Header />
           <View style={styles.searchSection}>
             <SearchBar
               mostrarBotaoLocalizacao={true}
@@ -72,24 +68,6 @@ export default function Home() {
           mostrarBolinhas={false}
         />
       </View>
-
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
-          <Feather name="list" size={24} color="#6F1D1B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
-          <Feather name="users" size={24} color="#6F1D1B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
-          <Feather name="plus" size={24} color="#6F1D1B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
-          <Feather name="award" size={24} color="#6F1D1B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
-          <Feather name="user" size={24} color="#6F1D1B" />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -106,27 +84,8 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     justifyContent: "space-between",
   },
-  logo: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 20,
-    color: "#500903",
-  },
   searchSection: {
     marginTop: 8,
     marginBottom: 0,
-  },
-  bottomBar: {
-    height: 40,
-    backgroundColor: "#FFFFFF",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    width: "100%",
-  },
-  navButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
