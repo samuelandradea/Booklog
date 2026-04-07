@@ -1,5 +1,7 @@
 import { Button } from "@/components/Button";
 import { Divider } from "@/components/Divider";
+import { auth } from "@/lib/firebase";
+import { updateUser } from '@/services/userService';
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
@@ -24,7 +26,7 @@ export default function Gostos() {
 
     const [selectedGenres, setSelectedGenres] = useState<string[]>([])
 
-    function handleConfirm(){
+    async function handleConfirm(){
         if(selectedGenres.length == 0){
             Alert.alert("Você não selecionou nenhum genêro")
             return
@@ -33,9 +35,19 @@ export default function Gostos() {
         const userGenres = {
             genres : selectedGenres
         }
-        //futuramente: await userService.updateUser(userGenres)
 
-        router.replace("/") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
+        const uid = auth.currentUser?.uid
+        if (!uid) {
+        alert("Usuário não encontrado.")
+        return
+    }
+    
+        try {
+            await updateUser(uid, userGenres)
+            router.replace("/home") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
+        } catch (error) {
+            
+        }
     }
 
     function handleSelectGenre(genre: string){
