@@ -60,6 +60,10 @@ export default function TabLayout() {
         name="home"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="amizades"
+        options={{ href: null }}
+      />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}
 
     </Tabs>
