@@ -1,6 +1,8 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { SearchBar } from "@/components/SearchBar";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -34,6 +36,9 @@ const livrosFeed = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const [textoHome, setTextoHome] = useState("");
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mainContent}>
@@ -43,6 +48,9 @@ export default function Home() {
             <SearchBar
               mostrarBotaoLocalizacao={true}
               placeholderText="booklog"
+              value={textoHome}
+              onChangeText={setTextoHome}
+              onSubmitEditing={() => router.push(`/pesquisa?q=${textoHome}`)}
             />
           </View>
         </View>
