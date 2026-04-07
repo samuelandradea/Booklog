@@ -44,7 +44,7 @@ export default function Gostos() {
     
         try {
             await updateUser(uid, userGenres)
-            router.replace("/") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
+            router.replace("/home") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
         } catch (error) {
             
         }

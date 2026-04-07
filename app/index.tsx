@@ -19,7 +19,7 @@ export default function Index(){
             await signIn(email, password)
             console.log("Login realizado com sucesso")
             Alert.alert("Bem-vinda(o)", `Seja bem-vinda(o) ${email}`)
-            router.replace("/gostos")
+            router.replace("/home")
         } catch (error: any) {
             console.log("erro:", error)
             Alert.alert("Erro ao cadastrar", error.message)
