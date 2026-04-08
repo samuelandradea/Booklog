@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   label: {
-    fontFamily: "RedHatDisplay_700Bold",
+    fontFamily: "Poppins_700Bold",
     fontSize: 18,
     color: "#500903",
   },

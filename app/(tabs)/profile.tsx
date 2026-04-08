@@ -26,21 +26,22 @@ export default function profile(){
                 </View>
             </View>
 
+            <MenuOpcao label="Leituras recentes" onPress={() => router.push("/lidos_recente")} />
+            
             <Divider style={styles.dividerCompacto} />
 
             <CarrosselLivros
-                titulo="Leituras recentes"
+                titulo=""
                 dados={leituras}
                 mostrarBolinhas={false}
             />
 
-            <Divider />
-
             <MenuOpcao label="Configurações" onPress={() => router.push("/configuracoes")} />
-            <Divider />
+            <Divider style={styles.dividerCompacto}/>
             <MenuOpcao label="Amizades" onPress={() => router.push("/amizades")} />
-            <Divider />
+            <Divider style={styles.dividerCompacto}/>
             <MenuOpcao label="Minhas listas" onPress={() => router.push("/minhas_listas")} />
+            <Divider style={styles.dividerCompacto}/>
 
         </ScrollView>
     </KeyboardAvoidingView>
@@ -84,6 +85,6 @@ const styles = StyleSheet.create({
         color: "#500903",
     },
     dividerCompacto: {
-        marginVertical: 16,
+        marginVertical: 4,
     },
 })
