@@ -27,7 +27,7 @@ export default function profile(){
             </View>
 
             <MenuOpcao label="Leituras recentes" onPress={() => router.push("/lidos_recente")} />
-            
+
             <Divider style={styles.dividerCompacto} />
 
             <CarrosselLivros
