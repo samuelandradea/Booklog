@@ -1,4 +1,5 @@
 import {
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,6 +12,8 @@ type CardLivroProps = TouchableOpacityProps & {
   nota: string;
   usuario?: string;
   variante?: "padrao" | "feed";
+  thumbnail?: string;
+  ocultarTextos?: boolean;
 };
 
 export function CardLivro({
@@ -18,27 +21,39 @@ export function CardLivro({
   nota,
   usuario,
   variante = "padrao",
+  thumbnail,
+  ocultarTextos = false, // Por padrão, os textos SEMPRE aparecem
   ...rest
 }: CardLivroProps) {
   const isFeed = variante === "feed";
 
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} {...rest}>
-      <View style={styles.capaPlaceholder} />
-
-      <Text style={styles.nomeLivro} numberOfLines={1}>
-        {nome}
-      </Text>
-
-      {isFeed ? (
-        <>
-          <Text style={styles.usuarioFeed} numberOfLines={1}>
-            {usuario}
-          </Text>
-          <Text style={styles.notaFeed}>{nota}</Text>
-        </>
+      {/* Se tiver a URL da imagem, mostra ela. Se não, mostra o fundo vermelho */}
+      {thumbnail ? (
+        <Image source={{ uri: thumbnail }} style={styles.capaImagem} />
       ) : (
-        <Text style={styles.notaLivro}>nota {nota}</Text>
+        <View style={styles.capaPlaceholder} />
+      )}
+
+      {/* Se ocultarTextos for FALSO (!), ele desenha os textos. Se for verdadeiro, ele ignora tudo isso aqui embaixo! */}
+      {!ocultarTextos && (
+        <>
+          <Text style={styles.nomeLivro} numberOfLines={1}>
+            {nome}
+          </Text>
+
+          {isFeed ? (
+            <>
+              <Text style={styles.usuarioFeed} numberOfLines={1}>
+                {usuario}
+              </Text>
+              <Text style={styles.notaFeed}>{nota}</Text>
+            </>
+          ) : (
+            <Text style={styles.notaLivro}>nota {nota}/5</Text>
+          )}
+        </>
       )}
     </TouchableOpacity>
   );
@@ -56,6 +71,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#6F1D1B",
     borderRadius: 12,
     marginBottom: 4,
+  },
+  capaImagem: {
+    width: 64,
+    height: 96,
+    borderRadius: 12,
+    marginBottom: 4,
+    resizeMode: "cover",
   },
   nomeLivro: {
     fontFamily: "Poppins_700Bold",

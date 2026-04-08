@@ -1,44 +1,42 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
+import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
-import { Header } from "@/components/Header"; // IMPORTANDO O NOVO COMPONENTE
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
-
-// Teste para a visualização dos cards
-const livrosPadrao = [
-  { id: "1", nome: "O Hobbit", nota: "4.5/5" },
-  { id: "2", nome: "1984", nota: "5/5" },
-  { id: "3", nome: "Duna", nota: "4.8/5" },
-  { id: "4", nome: "A Fundação", nota: "4/5" },
-  { id: "5", nome: "O Hobbit", nota: "4.5/5" },
-  { id: "6", nome: "1984", nota: "5/5" },
-  { id: "7", nome: "Duna", nota: "4.8/5" },
-  { id: "8", nome: "A Fundação", nota: "4/5" },
-  { id: "9", nome: "A Fundação", nota: "4/5" },
-];
-
-const livrosFeed = [
-  { id: "1", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "2", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "3", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-  { id: "4", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "5", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "6", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-  { id: "7", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "8", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "9", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-];
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 export default function Home() {
   const router = useRouter();
   const [textoHome, setTextoHome] = useState("");
 
+  const [livrosBanco, setLivrosBanco] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    const buscarLivros = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/books");
+        const data = await response.json();
+        setLivrosBanco(data);
+      } catch (error) {
+        console.error("Erro ao buscar livros para a Home:", error);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscarLivros();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mainContent}>
         <View>
-          {/* USANDO O COMPONENTE AQUI */}
           <Header />
           <View style={styles.searchSection}>
             <SearchBar
@@ -51,22 +49,28 @@ export default function Home() {
           </View>
         </View>
 
-        <CarrosselLivros
-          titulo="Recomendações"
-          dados={livrosPadrao}
-          mostrarBolinhas={true}
-        />
-        <CarrosselLivros
-          titulo="Melhores do mês"
-          dados={livrosPadrao}
-          mostrarBolinhas={true}
-        />
-        <CarrosselLivros
-          titulo="Feed amigos"
-          dados={livrosFeed}
-          variante="feed"
-          mostrarBolinhas={false}
-        />
+        {carregando ? (
+          <ActivityIndicator size="large" color="#500903" style={{ flex: 1 }} />
+        ) : (
+          <>
+            <CarrosselLivros
+              titulo="Recomendações"
+              dados={livrosBanco.slice(0, 9)}
+              mostrarBolinhas={true}
+            />
+            <CarrosselLivros
+              titulo="Melhores do mês"
+              dados={livrosBanco.slice(0, 9)}
+              mostrarBolinhas={true}
+            />
+            <CarrosselLivros
+              titulo="Feed amigos"
+              dados={livrosBanco.slice(0, 9)}
+              variante="feed"
+              mostrarBolinhas={false}
+            />
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
