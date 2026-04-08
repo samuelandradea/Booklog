@@ -11,7 +11,7 @@ import {
 import { CardPesquisaAutor } from "../../src/components/CardPesquisaAutor";
 import { CardPesquisaLivro } from "../../src/components/CardPesquisaLivro";
 import { CardPesquisaUsuario } from "../../src/components/CardPesquisaUsuario";
-import { Header } from "../../src/components/Header"; // IMPORTANDO O NOVO COMPONENTE
+import { Header } from "../../src/components/Header";
 import { SearchBar } from "../../src/components/SearchBar";
 
 export default function TelaPesquisa() {
@@ -40,6 +40,7 @@ export default function TelaPesquisa() {
     setPesquisaFeita(true);
 
     try {
+      // LEMBRETE: Se usar emulador Android, troque 127.0.0.1 por 10.0.2.2
       const response = await fetch(`http://127.0.0.1:8000/search?q=${termo}`);
       const data = await response.json();
       setResultados(data);
@@ -62,7 +63,6 @@ export default function TelaPesquisa() {
 
   return (
     <View style={styles.container}>
-      {/* USANDO O COMPONENTE AQUI */}
       <Header />
 
       <View style={styles.searchContainer}>
@@ -106,13 +106,15 @@ export default function TelaPesquisa() {
             <CardPesquisaAutor key={autor.id} nome={autor.authors} />
           ))}
 
+          {/* A Mágica acontece aqui! Passando os dados reais pro Card */}
           {resultados.livros.map((livro: any) => (
             <CardPesquisaLivro
               key={livro.id}
               titulo={livro.title}
               autor={livro.authors}
               categoria={livro.categories || "Sem categoria"}
-              nota="3/5"
+              nota={livro.average_rating ? `${livro.average_rating}/5` : "-/5"} // Pega a nota real e bota o /5
+              thumbnail={livro.thumbnail} // Passa a imagem!
             />
           ))}
         </ScrollView>
@@ -131,10 +133,7 @@ const styles = StyleSheet.create({
   searchContainer: { marginBottom: 30 },
   resultsContainer: { flex: 1 },
   emptyContainer: { flex: 1, alignItems: "center", marginTop: 50 },
-
-  // Novo estilo da imagem
   imagemVazia: { width: 150, height: 150, marginBottom: 20 },
-
   emptyTitle: { fontFamily: "Poppins_700Bold", fontSize: 22, color: "#500903" },
   emptySubtitle: {
     fontFamily: "RedHatDisplay_500Medium",
