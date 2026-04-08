@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { auth } from '@/lib/firebase';
 import { createBook } from '@/services/bookService';
+import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RegistroLeitura() {
   const [nota, setNota] = useState(0);
