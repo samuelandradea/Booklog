@@ -19,10 +19,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 4,
+    paddingTop: 16,
   },
   label: {
-    fontFamily: "RedHatDisplay_700Bold",
+    fontFamily: "Poppins_700Bold",
     fontSize: 18,
     color: "#500903",
   },
