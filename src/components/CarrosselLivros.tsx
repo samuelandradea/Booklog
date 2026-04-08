@@ -7,6 +7,7 @@ type CarrosselProps = {
   dados: any[];
   variante?: "padrao" | "feed";
   mostrarBolinhas?: boolean;
+  ocultarTextos?: boolean;
 };
 
 export function CarrosselLivros({
@@ -14,9 +15,11 @@ export function CarrosselLivros({
   dados,
   variante = "padrao",
   mostrarBolinhas = true,
+  ocultarTextos = false,
 }: CarrosselProps) {
   const [paginaAtual, setPaginaAtual] = useState(0);
-  const qtdBolinhas = Math.ceil(dados.length / 3);
+
+  const qtdBolinhas = dados ? Math.ceil(dados.length / 3) : 0;
   const bolinhasArray = Array.from({ length: qtdBolinhas });
 
   const handleScroll = (event: any) => {
@@ -25,27 +28,39 @@ export function CarrosselLivros({
     setPaginaAtual(indice);
   };
 
+  if (!dados || dados.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>{titulo}</Text>
 
       <FlatList
         data={dados}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.id || index.toString()}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         snapToInterval={228}
         decelerationRate="fast"
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        renderItem={({ item }) => (
-          <CardLivro
-            variante={variante}
-            nome={item.nome}
-            nota={item.nota}
-            usuario={item.usuario}
-          />
-        )}
+        renderItem={({ item }) => {
+          const imagemSegura = item.thumbnail
+            ? item.thumbnail.replace("http:", "https:")
+            : undefined;
+
+          return (
+            <CardLivro
+              variante={variante}
+              nome={item.title || item.nome || "Sem título"}
+              nota={item.average_rating || item.nota || "-"}
+              usuario={item.usuario || "Usuário"} // Como ainda não temos amigos, deixamos um texto padrão
+              thumbnail={imagemSegura}
+              ocultarTextos={ocultarTextos}
+            />
+          );
+        }}
       />
 
       {mostrarBolinhas && (
