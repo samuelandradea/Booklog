@@ -42,9 +42,6 @@ export default function Home() {
             <SearchBar
               mostrarBotaoLocalizacao={true}
               placeholderText="booklog"
-              value={textoHome}
-              onChangeText={setTextoHome}
-              onSubmitEditing={() => router.push(`/pesquisa?q=${textoHome}`)}
             />
           </View>
         </View>
@@ -72,6 +69,24 @@ export default function Home() {
           </>
         )}
       </View>
+
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+          <Feather name="list" size={24} color="#6F1D1B" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+          <Feather name="users" size={24} color="#6F1D1B" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+          <Feather name="plus" size={24} color="#6F1D1B" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+          <Feather name="award" size={24} color="#6F1D1B" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} activeOpacity={0.7}>
+          <Feather name="user" size={24} color="#6F1D1B" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -88,8 +103,27 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     justifyContent: "space-between",
   },
+  logo: {
+    fontFamily: "Poppins_700Bold",
+    fontSize: 20,
+    color: "#500903",
+  },
   searchSection: {
     marginTop: 8,
     marginBottom: 0,
+  },
+  bottomBar: {
+    height: 40,
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    width: "100%",
+  },
+  navButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
