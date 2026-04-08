@@ -33,7 +33,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="registrar_leitura"
+        name="registro"
         options={{
           tabBarIcon: ({ color }) => <AntDesign name="plus-circle" size={36} color={color} />,
         }}
@@ -62,6 +62,14 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="amizades"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="infolivro"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="pesquisa"
         options={{ href: null }}
       />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}

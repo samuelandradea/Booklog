@@ -10,7 +10,7 @@ type CardLivroProps = TouchableOpacityProps & {
   nome: string;
   nota: string;
   usuario?: string;
-  variante?: "padrao" | "feed";
+  variante?: "padrao" | "feed" | "grid";
 };
 
 export function CardLivro({
@@ -21,9 +21,17 @@ export function CardLivro({
   ...rest
 }: CardLivroProps) {
   const isFeed = variante === "feed";
+  const isGrid = variante === "grid";
 
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.7} {...rest}>
+    <TouchableOpacity
+      style={[
+        styles.container,
+        isGrid && styles.containerGrid,
+      ]}
+      activeOpacity={0.7}
+      {...rest}
+    >
       <View style={styles.capaPlaceholder} />
 
       <Text style={styles.nomeLivro} numberOfLines={1}>
@@ -45,11 +53,19 @@ export function CardLivro({
 }
 
 const styles = StyleSheet.create({
+
   container: {
     width: 64,
     alignItems: "center",
     marginRight: 12,
   },
+
+  containerGrid: {
+    width: "25%",
+    marginBottom: 16,
+    marginRight: 0,
+  },
+
   capaPlaceholder: {
     width: 64,
     height: 96,
@@ -57,12 +73,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 4,
   },
+
   nomeLivro: {
     fontFamily: "Poppins_700Bold",
     fontSize: 10,
     color: "#500903",
     textAlign: "center",
   },
+
   notaLivro: {
     fontFamily: "RedHatDisplay_500Medium",
     fontStyle: "italic",
@@ -70,6 +88,7 @@ const styles = StyleSheet.create({
     color: "#500903",
     textAlign: "center",
   },
+
   usuarioFeed: {
     fontFamily: "RedHatDisplay_700Bold",
     fontSize: 9,
@@ -77,6 +96,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 2,
   },
+
   notaFeed: {
     fontFamily: "RedHatDisplay_500Medium",
     fontSize: 9,
