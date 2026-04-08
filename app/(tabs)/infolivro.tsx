@@ -1,24 +1,54 @@
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ScrollView,
-  View,
-  Text,
+  ActivityIndicator,
   Image,
+  ScrollView,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
-const livro = {
-  title: 'Nome do Livro',
-  authors: 'Nome do autor',
-  average_rating: 0,
-  published_year: '13/06/2013',
-  categories: ['Terror', 'Ação', 'Comédia'],
-  thumbnail: null,
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ac ante turpis. Vestibulum sodales ante nisl, et dictum ante tincidunt ac.',
-};
-
 export default function LivroInfo() {
+  const { isbn } = useLocalSearchParams();
+  const [livro, setLivro] = useState<any>(null);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (isbn) {
+      fetch(`http://127.0.0.1:8000/books/${isbn}`)
+        .then(res => res.json())
+        .then(data => setLivro(data))
+        .catch(err => console.error(err))
+        .finally(() => setCarregando(false));
+    }
+  }, [isbn]);
+
+  if (carregando) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ActivityIndicator size="large" color="#500903" style={{ flex: 1 }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!livro) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Text style={styles.header}>Livro não encontrado</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const thumbnail = livro.thumbnail
+    ? livro.thumbnail.replace('http:', 'https:')
+    : null;
+
+  const categorias = livro.categories
+    ? livro.categories.split(',').map((c: string) => c.trim())
+    : [];
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -26,20 +56,18 @@ export default function LivroInfo() {
         <Text style={styles.header}>booklog</Text>
 
         <View style={styles.topoContainer}>
-          {/* Capa */}
           <View style={styles.capa}>
-            {livro.thumbnail ? (
-              <Image source={{ uri: livro.thumbnail }} style={styles.capaImagem} />
+            {thumbnail ? (
+              <Image source={{ uri: thumbnail }} style={styles.capaImagem} />
             ) : (
               <Text style={styles.capaTexto}>Livro</Text>
             )}
           </View>
 
-          {/* Infos à direita */}
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Nota do livro:</Text>
             <View style={styles.badge}>
-              <Text style={styles.badgeTexto}>{livro.average_rating}/10</Text>
+              <Text style={styles.badgeTexto}>{livro.average_rating}/5</Text>
             </View>
 
             <Text style={styles.infoLabel}>Lançamento:</Text>
@@ -49,18 +77,16 @@ export default function LivroInfo() {
 
             <Text style={styles.infoLabel}>Gênero:</Text>
             <View style={styles.badgeLargo}>
-              {livro.categories.map((cat, index) => (
+              {categorias.map((cat: string, index: number) => (
                 <Text key={index} style={styles.badgeTexto}>{cat}</Text>
               ))}
             </View>
           </View>
         </View>
 
-        {/* Nome e autor */}
         <Text style={styles.nomeLivro}>{livro.title}</Text>
         <Text style={styles.nomeAutor}>{livro.authors}</Text>
 
-        {/* Sinopse */}
         <Text style={styles.sinopseLabel}>Sinopse:</Text>
         <View style={styles.sinopseContainer}>
           <Text style={styles.sinopseTexto}>{livro.description}</Text>
