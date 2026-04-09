@@ -13,6 +13,7 @@ import { Input } from '@/components/Input';
 import { auth } from '@/lib/firebase';
 import { createBook } from '@/services/bookService';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RegistroLeitura() {
   const [nota, setNota] = useState(0);
@@ -98,8 +99,18 @@ export default function RegistroLeitura() {
           <Text style={styles.label}>Nota do livro:</Text>
 
           <View style={styles.notaBadge}>
-            <Text style={styles.notaTexto}>⭐ {nota.toFixed(1)}</Text>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              {[1, 2, 3, 4, 5].map((estrela) => (
+                <Ionicons
+                  key={estrela}
+                 name={nota >= estrela ? "star" : "star-outline"}
+                 size={16}
+                 color="#FFD700"
+                />
+              ))}
+              <Text style={styles.notaTexto}> {nota.toFixed(1)}</Text>
+            </View>
+          </View>         
 
           <Slider
             minimumValue={0}
