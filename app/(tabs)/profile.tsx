@@ -1,9 +1,10 @@
-import { Ionicons } from "@expo/vector-icons"
 import { CarrosselLivros } from "@/components/CarrosselLivros"
 import { Divider } from "@/components/Divider"
 import { MenuOpcao } from "@/components/MenuOpcao"
+import { useProtectedRoute } from "@/hook/useProtectedRoute"
+import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, Text} from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native"
 
 const leituras = [
   { id: "1", nome: "Dom Quixote", nota: "9/10" },
@@ -13,6 +14,9 @@ const leituras = [
 ]
 
 export default function profile(){  
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
     return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height"})}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

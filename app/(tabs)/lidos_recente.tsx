@@ -14,6 +14,7 @@ import {
 import { CardLivro } from "@/components/CardLivro";
 import { Divider } from "@/components/Divider";
 import { Header } from "@/components/Header";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 
 export default function Gostos() {
   const livros = Array.from({ length: 10 }).map((_, i) => ({
@@ -21,6 +22,9 @@ export default function Gostos() {
     nome: "nomeLivro",
     nota: "0/10",
   }));
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
 
   return (
     <KeyboardAvoidingView 
