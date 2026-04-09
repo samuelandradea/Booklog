@@ -9,6 +9,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { api } from "@/lib/api";
 
 export default function Home() {
   const router = useRouter();
@@ -20,8 +21,7 @@ export default function Home() {
   useEffect(() => {
     const buscarLivros = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/books");
-        const data = await response.json();
+        const data = await api("/books");
         setLivrosBanco(data);
       } catch (error) {
         console.error("Erro ao buscar livros para a Home:", error);
