@@ -1,6 +1,7 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +13,9 @@ import {
 import { api } from "@/lib/api";
 
 export default function Home() {
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
   const router = useRouter();
   const [textoHome, setTextoHome] = useState("");
 

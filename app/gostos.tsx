@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button";
 import { Divider } from "@/components/Divider";
-import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/authContext";
 import { updateUser } from '@/services/userService';
 import { router } from "expo-router";
 import { useState } from "react";
@@ -36,7 +36,8 @@ export default function Gostos() {
             genres : selectedGenres
         }
 
-        const uid = auth.currentUser?.uid
+        const { user } = useAuth()
+        const uid = user?.uid
         if (!uid) {
         alert("Usuário não encontrado.")
         return
@@ -44,7 +45,7 @@ export default function Gostos() {
     
         try {
             await updateUser(uid, userGenres)
-            router.replace("/home") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
+            router.replace("/(tabs)/home") 
         } catch (error) {
             
         }
