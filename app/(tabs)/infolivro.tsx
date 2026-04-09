@@ -14,8 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LivroInfo() {
   const { user, loading } = useProtectedRoute()
-
-  if (loading) return null
   const { isbn } = useLocalSearchParams();
   const [livro, setLivro] = useState<any>(null);
   const [carregando, setCarregando] = useState(true);
@@ -28,6 +26,8 @@ export default function LivroInfo() {
         .finally(() => setCarregando(false));
     }
   }, [isbn]);
+
+  if (loading) return null
 
   if (carregando) {
     return (

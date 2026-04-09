@@ -18,12 +18,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RegistroLeitura() {
   const { user, loading } = useProtectedRoute()
-
-  if (loading) return null
   const [nota, setNota] = useState(0);
   const [resenha, setResenha] = useState('');
   const [nomeLivro, setNomeLivro] = useState('');
   const [nomeAutor, setNomeAutor] = useState('');
+
+  if (loading) return null
 
   const handleSalvar = async () => {
     if (!nomeLivro.trim() || !nomeAutor.trim()) {
