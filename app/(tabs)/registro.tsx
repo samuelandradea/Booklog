@@ -5,6 +5,7 @@ import { auth } from '@/lib/firebase';
 import { createBook } from '@/services/bookService';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   Alert,
@@ -102,8 +103,18 @@ export default function RegistroLeitura() {
           <Text style={styles.label}>Nota do livro:</Text>
 
           <View style={styles.notaBadge}>
-            <Text style={styles.notaTexto}>⭐ {nota.toFixed(1)}</Text>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              {[1, 2, 3, 4, 5].map((estrela) => (
+                <Ionicons
+                  key={estrela}
+                 name={nota >= estrela ? "star" : "star-outline"}
+                 size={16}
+                 color="#FFD700"
+                />
+              ))}
+              <Text style={styles.notaTexto}> {nota.toFixed(1)}</Text>
+            </View>
+          </View>         
 
           <Slider
             minimumValue={0}

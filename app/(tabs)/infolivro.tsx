@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { api } from "@/lib/api";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LivroInfo() {
@@ -21,8 +22,7 @@ export default function LivroInfo() {
 
   useEffect(() => {
     if (isbn) {
-      fetch(`http://127.0.0.1:8000/books/${isbn}`)
-        .then(res => res.json())
+      api(`/books/${isbn}`)
         .then(data => setLivro(data))
         .catch(err => console.error(err))
         .finally(() => setCarregando(false));

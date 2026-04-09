@@ -41,3 +41,6 @@ yarn-error.*
 /android
 
 serviceAccountKey.json
+
+.env
+.env.local
