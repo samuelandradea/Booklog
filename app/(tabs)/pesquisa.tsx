@@ -1,3 +1,4 @@
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,6 +16,9 @@ import { Header } from "../../src/components/Header";
 import { SearchBar } from "../../src/components/SearchBar";
 
 export default function TelaPesquisa() {
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
   const router = useRouter();
   const params = useLocalSearchParams();
   const queryInicial = (params.q as string) || "";

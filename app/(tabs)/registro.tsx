@@ -1,5 +1,6 @@
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { auth } from '@/lib/firebase';
 import { createBook } from '@/services/bookService';
 import Slider from '@react-native-community/slider';
@@ -15,6 +16,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RegistroLeitura() {
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
   const [nota, setNota] = useState(0);
   const [resenha, setResenha] = useState('');
   const [nomeLivro, setNomeLivro] = useState('');
