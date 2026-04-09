@@ -1,6 +1,6 @@
+import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Image,
@@ -10,8 +10,12 @@ import {
   View,
 } from 'react-native';
 import { api } from "@/lib/api";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LivroInfo() {
+  const { user, loading } = useProtectedRoute()
+
+  if (loading) return null
   const { isbn } = useLocalSearchParams();
   const [livro, setLivro] = useState<any>(null);
   const [carregando, setCarregando] = useState(true);
