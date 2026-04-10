@@ -6,7 +6,7 @@ type Props = {
   autor: string;
   categoria: string;
   nota: string;
-  thumbnail?: string; // Adicionamos a propriedade da imagem aqui!
+  thumbnail?: string;
 };
 
 export function CardPesquisaLivro({
@@ -16,7 +16,6 @@ export function CardPesquisaLivro({
   nota,
   thumbnail,
 }: Props) {
-  // O mesmo truque mágico da Home para a imagem carregar no celular
   const imagemSegura = thumbnail
     ? thumbnail.replace("http:", "https:")
     : undefined;
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: "row",
     marginBottom: 15,
-    alignItems: "center", // Centraliza tudo verticalmente
+    alignItems: "center",
   },
   bookLeft: {
     alignItems: "center",
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bookCoverImage: {
-    // Novo estilo para a imagem real
     width: 60,
     height: 90,
     borderRadius: 8,

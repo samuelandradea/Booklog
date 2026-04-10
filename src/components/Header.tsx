@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 type HeaderProps = {
   // Propriedade opcional. Se ninguém avisar nada, ela começa como "falsa"
@@ -8,9 +9,17 @@ type HeaderProps = {
 };
 
 export function Header({ mostrarEngrenagem = false }: HeaderProps) {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>booklog</Text>
+      {/*A logo é um botão clicável que leva para a rota /home */}
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => router.push("/home")}
+      >
+        <Text style={styles.logo}>booklog</Text>
+      </TouchableOpacity>
 
       {/* A engrenagem só é renderizada na tela se a propriedade for verdadeira */}
       {mostrarEngrenagem && (

@@ -16,9 +16,9 @@ import { Header } from "../../src/components/Header";
 import { SearchBar } from "../../src/components/SearchBar";
 
 export default function TelaPesquisa() {
-  const { user, loading } = useProtectedRoute()
+  const { user, loading } = useProtectedRoute();
 
-  if (loading) return null
+  if (loading) return null;
   const router = useRouter();
   const params = useLocalSearchParams();
   const queryInicial = (params.q as string) || "";
@@ -44,7 +44,6 @@ export default function TelaPesquisa() {
     setPesquisaFeita(true);
 
     try {
-      // LEMBRETE: Se usar emulador Android, troque 127.0.0.1 por 10.0.2.2
       const response = await fetch(`http://127.0.0.1:8000/search?q=${termo}`);
       const data = await response.json();
       setResultados(data);
@@ -109,16 +108,14 @@ export default function TelaPesquisa() {
           {resultados.autores.map((autor: any) => (
             <CardPesquisaAutor key={autor.id} nome={autor.authors} />
           ))}
-
-          {/* A Mágica acontece aqui! Passando os dados reais pro Card */}
           {resultados.livros.map((livro: any) => (
             <CardPesquisaLivro
               key={livro.id}
               titulo={livro.title}
               autor={livro.authors}
               categoria={livro.categories || "Sem categoria"}
-              nota={livro.average_rating ? `${livro.average_rating}/5` : "-/5"} // Pega a nota real e bota o /5
-              thumbnail={livro.thumbnail} // Passa a imagem!
+              nota={livro.average_rating ? `${livro.average_rating}/5` : "-/5"}
+              thumbnail={livro.thumbnail} // Passa a imagem
             />
           ))}
         </ScrollView>
