@@ -1,7 +1,7 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type HeaderProps = {
   // Propriedade opcional. Se ninguém avisar nada, ela começa como "falsa"
@@ -13,10 +13,10 @@ export function Header({ mostrarEngrenagem = false }: HeaderProps) {
 
   return (
     <View style={styles.container}>
-      {/*A logo é um botão clicável que leva para a rota /home */}
+      {/* Agora a logo usa o endereço absoluto e navega de forma limpa */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.push("/home")}
+        onPress={() => router.navigate("/(tabs)/home")}
       >
         <Text style={styles.logo}>booklog</Text>
       </TouchableOpacity>
