@@ -2,12 +2,11 @@ import { Button } from "@/components/Button"
 import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
-import { signUp } from "@/services/authService"
-import { createUser } from "@/services/userService"
 import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { TextInputMask } from 'react-native-masked-text'
+import { CadastroController } from "@/controllers/cadastroController"
 
 export default function Signup() {
     const [name, setName] = useState("");
@@ -16,33 +15,27 @@ export default function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [gender, setGender] = useState("");
-
     const genders = ["Mulher", "Homem", "Outros"];
 
+    const controller = new CadastroController();
     async function handleSignUp() {
-    console.log("handleSignUp chamado")
-    
-    if (!name || !email || !password || !confirmPassword || !birthDate || !gender) {
-        return Alert.alert("Atenção", "Por favor, preencha todos os campos.");
-    }
+        console.log("handleSignUp chamado")
+        
+        const sucesso = await controller.registrar(
+            name,
+            email,
+            password,
+            confirmPassword,
+            birthDate,
+            gender
+        );
 
-    if (password !== confirmPassword) {
-        return Alert.alert("Erro", "As senhas não coincidem.");
-    }
-
-    try {
-    const user = await signUp(email, password)
-    const uid = user.uid
-
-    await createUser(uid, { name, email, gender, birthDate })
-
-    router.replace("/gostos")
+        if (sucesso) {
+            router.replace("/gostos")
+        }
 } 
-    catch (error: any) {
-        console.log("erro:", error)
-        Alert.alert("Erro ao cadastrar", error.message)
-    }
-}
+
+
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height" })}>
