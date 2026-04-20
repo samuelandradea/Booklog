@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { api } from "@/lib/api";
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 export default function LivroInfo() {
   const { user, loading } = useProtectedRoute()
   const { isbn } = useLocalSearchParams();
@@ -54,7 +53,7 @@ export default function LivroInfo() {
     : [];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
 
         <Text style={styles.header}>booklog</Text>
