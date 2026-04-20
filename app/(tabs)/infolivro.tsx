@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { api } from "@/lib/api";
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 export default function LivroInfo() {
   const { user, loading } = useProtectedRoute()
   const { isbn } = useLocalSearchParams();

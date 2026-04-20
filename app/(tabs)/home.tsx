@@ -14,10 +14,10 @@ import { api } from "@/lib/api";
 
 export default function Home() {
   const { user, loading } = useProtectedRoute()
-
-  if (loading) return null
   const router = useRouter();
   const [textoHome, setTextoHome] = useState("");
+ 
+  if (loading) return null
 
   const [livrosBanco, setLivrosBanco] = useState([]);
   const [carregando, setCarregando] = useState(true);
