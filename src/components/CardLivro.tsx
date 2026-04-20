@@ -45,7 +45,6 @@ export function CardLivro({
         {nome}
       </Text> 
 
-      {/* Se ocultarTextos for FALSO (!), ele desenha os textos. Se for verdadeiro, ele ignora tudo isso aqui embaixo! */}
       {!ocultarTextos && (
         <>
           <Text style={styles.nomeLivro} numberOfLines={1}>
