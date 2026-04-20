@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { auth } from '@/lib/firebase';
 import { api } from '@/lib/api';
@@ -105,7 +106,7 @@ export default function RegistroLeitura() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.header}>booklog</Text>
+        <Header />
 
         <View style={styles.capaContainer}>
           <TouchableOpacity style={styles.capa} onPress={() => setModalVisivel(true)}>
