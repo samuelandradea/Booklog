@@ -41,10 +41,6 @@ export function CardLivro({
         <View style={styles.capaPlaceholder} />
       )}
 
-      <Text style={styles.nomeLivro} numberOfLines={1}>
-        {nome}
-      </Text> 
-
       {!ocultarTextos && (
         <>
           <Text style={styles.nomeLivro} numberOfLines={1}>
@@ -79,6 +75,7 @@ const styles = StyleSheet.create({
     width: "25%",
     marginBottom: 16,
     marginRight: 0,
+    alignItems: "center",
   },
 
   capaPlaceholder: {
@@ -87,6 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6F1D1B",
     borderRadius: 12,
     marginBottom: 4,
+    alignSelf: "center",
   },
   capaImagem: {
     width: 64,
@@ -94,6 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 4,
     resizeMode: "cover",
+    alignSelf: "center",
   },
   nomeLivro: {
     fontFamily: "Poppins_700Bold",
