@@ -28,6 +28,7 @@ type Livro = {
   authors: string;
   thumbnail?: string;
   average_rating?: number;
+  isbn13?: string;
 }
 
 export default function RegistroLeitura() {
@@ -76,6 +77,7 @@ export default function RegistroLeitura() {
       return;
     }
     const novoLivro = {
+      bookIsbn: livroSelecionado.isbn13 || '',
       nomeLivro: livroSelecionado.title,
       nomeAutor: livroSelecionado.authors,
       nota,

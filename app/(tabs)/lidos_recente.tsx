@@ -1,3 +1,9 @@
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { ActivityIndicator } from "react-native";
+import { api } from "@/lib/api";
+import { auth } from "@/lib/firebase";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -7,7 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 // Importando seus componentes (ajuste os caminhos conforme sua pasta)
@@ -17,47 +23,86 @@ import { Header } from "@/components/Header";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 
 export default function Gostos() {
-  const livros = Array.from({ length: 10 }).map((_, i) => ({
-    id: String(i),
-    nome: "nomeLivro",
-    nota: "0/10",
-  }));
-  const { user, loading } = useProtectedRoute()
+  const { user, loading } = useProtectedRoute();
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
 
-  if (loading) return null
+  useFocusEffect(
+    useCallback(() => {
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        api(`/users/${uid}/reviews`)
+          .then(async (data) => {
+            const reviewsComCapa = await Promise.all(
+              data.map(async (review: any) => {
+                try {
+                  const livro = await api(`/books/${review.bookIsbn}`);
+                  return { ...review, thumbnail: livro.thumbnail };
+                } catch {
+                  return review;
+                }
+              }),
+            );
+            setReviews(reviewsComCapa);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setCarregando(false));
+      } else {
+        setCarregando(false);
+      }
+    }, []),
+  );
+
+  if (loading) return null;
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.select({ ios: "padding", android: "height"})}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({ ios: "padding", android: "height" })}
     >
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }} 
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
         style={{ backgroundColor: "#D4AA94" }} // Cor de fundo da foto
       >
         <View style={styles.container}>
           <Header />
           <View style={styles.subHeaderContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
               <Ionicons name="chevron-back" size={30} color="#500903" />
             </TouchableOpacity>
-            
+
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>Leituras recentes</Text>
               <Divider />
             </View>
           </View>
 
-          <View style={styles.grid}>
-            {livros.map((item) => (
-              <CardLivro 
-                key={item.id}
-                nome={item.nome}
-                nota={item.nota}
-                variante="grid" 
-              />
-            ))}
-          </View>
+          {carregando ? (
+            <ActivityIndicator size="large" color="#500903" />
+          ) : reviews.length === 0 ? (
+            <Text
+              style={{
+                color: "#500903",
+                fontFamily: "Poppins_700Bold",
+                textAlign: "center",
+                marginTop: 40,
+              }}
+            >
+              Nenhum livro lido ainda
+            </Text>
+          ) : (
+            <View style={styles.grid}>
+              {reviews.map((item) => (
+                <CardLivro
+                  key={item.id}
+                  nome={item.nomeLivro}
+                  nota={item.nota}
+                  thumbnail={item.thumbnail}
+                  variante="grid"
+                />
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -81,7 +126,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_700Bold",
     fontSize: 20,
     color: "#500903",
-    textAlign: "right", 
+    textAlign: "right",
   },
   grid: {
     flexDirection: "row",
@@ -89,8 +134,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   cardAjustado: {
-    width: '23%', 
+    width: "23%",
     marginBottom: 20,
     alignItems: "center",
-  }
+  },
 });
