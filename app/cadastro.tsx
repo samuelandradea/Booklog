@@ -2,52 +2,45 @@ import { Button } from "@/components/Button"
 import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
-import { signUp } from "@/services/authService"
 import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { TextInputMask } from 'react-native-masked-text'
+import { CadastroController } from "@/controllers/cadastroController"
 
+// tela responsavel por capturar as entradas do usuario e repassar pro controller
 export default function Signup() {
+    // gerenciamento do estado local apenas pra capturar os dados
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [gender, setGender] = useState("");
+    const genders = ["Mulher", "Homem", "Outros"]; // opcoes que vão ser renderizadas na tela
 
-    const genders = ["Mulher", "Homem", "Outros"];
-
+    // instancia do controller para realizar a logica de cadastro
+    // funcao acionada pelo evento de submissao do formulario, envia os dados para o controller
+    const controller = new CadastroController();
     async function handleSignUp() {
-    console.log("handleSignUp chamado")
-    
-    if (!name || !email || !password || !confirmPassword || !birthDate || !gender) {
-        return Alert.alert("Atenção", "Por favor, preencha todos os campos.");
-    }
+        console.log("handleSignUp chamado")
+        
+        const sucesso = await controller.registrar(
+            name,
+            email,
+            password,
+            confirmPassword,
+            birthDate,
+            gender
+        );
 
-    if (password !== confirmPassword) {
-        return Alert.alert("Erro", "As senhas não coincidem.");
-    }
-
-    try {
-    const user = await signUp(email, password)
-    const uid = user.uid
-
-    const userData = {
-        uid: uid,
-        name: name,
-        gender: gender,
-        birthDate: birthDate,
-    }
-    // futuramente: await userService.createUser(userData)
-
-    router.replace("/")
+        // caso ocorra tudo bem, navega para a tela de gostos.
+        if (sucesso) {
+            router.replace("/gostos")
+        }
 } 
-    catch (error: any) {
-        console.log("erro:", error)
-        Alert.alert("Erro ao cadastrar", error.message)
-    }
-}
+
+
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height" })}>
@@ -124,7 +117,7 @@ export default function Signup() {
                     <FooterLink linkLabel="Possue conta? Faça seu login!" href="/" 
                     />
                 </View>
-            </ScrollView>
+            </ScrollView> 
         </KeyboardAvoidingView>
     );
 }
