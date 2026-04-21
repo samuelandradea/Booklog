@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { CardLivro } from "./CardLivro";
+import { useRouter } from "expo-router";
 
 type CarrosselProps = {
   titulo: string;
@@ -17,6 +18,7 @@ export function CarrosselLivros({
   mostrarBolinhas = true,
   ocultarTextos = false,
 }: CarrosselProps) {
+  const router = useRouter();
   const [paginaAtual, setPaginaAtual] = useState(0);
 
   const qtdBolinhas = dados ? Math.ceil(dados.length / 3) : 0;
@@ -38,7 +40,7 @@ export function CarrosselLivros({
 
       <FlatList
         data={dados}
-        keyExtractor={(item, index) => item.id || index.toString()}
+        keyExtractor={(item, index) => item.isbn13 || index.toString()}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         snapToInterval={228}
@@ -58,6 +60,7 @@ export function CarrosselLivros({
               usuario={item.usuario || "Usuário"} // Como ainda não temos amigos, deixamos um texto padrão
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
+              onPress={() => router.push(`/infolivro?isbn=${item.isbn13}`)}
             />
           );
         }}
