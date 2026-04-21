@@ -2,29 +2,26 @@ import { Button } from "@/components/Button"
 import { Divider } from "@/components/Divider"
 import { FooterLink } from "@/components/Footerlink"
 import { Input } from "@/components/Input"
-import { signIn } from "@/services/authService"
 import { router } from "expo-router"
 import { useState } from "react"
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native"
 
+import { LoginController } from "@/controllers/loginController"
 export default function Index(){
+    // gerenciamento do estado local apenas pra capturar os dados da interface
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    // instancia do controller pra fazer a logica de autenticacao
+    const controller = new LoginController()
 
+    // funcao que coleta os dados informados e passa para o controller. caso esteja tudo certo, navega ate a home
     async function handleSignIn() {
-        if(!email.trim() || !password.trim()) {
-            return Alert.alert("Preencha os campos", "Preencha os campos corretamente para entrar.")
-        }
-        try {
-            await signIn(email, password)
-            console.log("Login realizado com sucesso")
-            Alert.alert("Bem-vinda(o)", `Seja bem-vinda(o) ${email}`)
-            router.replace("/gostos")
-        } catch (error: any) {
-            console.log("erro:", error)
-            Alert.alert("Erro ao cadastrar", error.message)
+        const sucesso = await controller.fazerLogin(email, password)
+        if (sucesso) {
+            router.replace("/(tabs)/home")
         }
     }
+
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height"})}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
