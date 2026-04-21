@@ -1,15 +1,28 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-type Props = { nome: string };
+/**
+ * Tipagem das propriedades aceitas pelo componente CardPesquisaUsuario.
+ */
+type Props = {
+  /** Nome ou Apelido (Nickname) do usuário retornado na busca. */
+  nome: string;
+};
 
+/**
+ * Componente visual (Dumb Component) que representa um Usuário/Amigo na lista de resultados.
+ * * Inclui um ícone circular à esquerda do nome para ajudar a diferenciar visualmente
+ * os usuários dos autores na tela mista de resultados.
+ */
 export function CardPesquisaUsuario({ nome }: Props) {
   return (
-    <TouchableOpacity style={styles.userButton}>
+    <TouchableOpacity style={styles.userButton} activeOpacity={0.7}>
+      {/* Círculo decorativo que engloba o ícone do usuário */}
       <View style={styles.userIconCircle}>
         <Feather name="user" size={16} color="#FFF" />
       </View>
+
       <Text style={styles.userText}>{nome}</Text>
     </TouchableOpacity>
   );
@@ -33,5 +46,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  userText: { fontFamily: "Poppins_700Bold", color: "#500903" },
+  userText: {
+    fontFamily: "Poppins_700Bold",
+    color: "#500903",
+  },
 });

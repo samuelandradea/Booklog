@@ -1,6 +1,10 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+/**
+ * Tipagem das propriedades do CardPesquisaLivro.
+ * Os dados repassados para cá já devem ter sido limpos e validados pelo `livroBuilder`.
+ */
 type Props = {
   titulo: string;
   autor: string;
@@ -9,6 +13,11 @@ type Props = {
   thumbnail?: string;
 };
 
+/**
+ * Componente visual detalhado para exibir um Livro na lista de resultados da Pesquisa.
+ * * Diferente do `CardLivro` da Home (que é compacto), este card é retangular, ocupa
+ * toda a largura da tela e exibe informações detalhadas como Autor e Categoria literária.
+ */
 export function CardPesquisaLivro({
   titulo,
   autor,
@@ -16,14 +25,20 @@ export function CardPesquisaLivro({
   nota,
   thumbnail,
 }: Props) {
+  // Tratamento de segurança: O React Native exige HTTPS para carregar imagens remotas em alguns dispositivos.
+  // Isso substitui o 'http' legado por 'https', caso exista uma URL.
   const imagemSegura = thumbnail
     ? thumbnail.replace("http:", "https:")
     : undefined;
 
+  // ==========================================
+  // RENDERIZAÇÃO VISUAL (JSX)
+  // ==========================================
   return (
     <TouchableOpacity style={styles.bookCard} activeOpacity={0.7}>
+      {/* Coluna Esquerda: Exibe a Capa e a Nota */}
       <View style={styles.bookLeft}>
-        {/* Lógica para mostrar a capa real ou o fundo vermelho */}
+        {/* Lógica para mostrar a capa real ou o fundo vinho com texto de fallback */}
         {imagemSegura ? (
           <Image source={{ uri: imagemSegura }} style={styles.bookCoverImage} />
         ) : (
@@ -35,7 +50,9 @@ export function CardPesquisaLivro({
         <Text style={styles.bookRating}>{nota}</Text>
       </View>
 
+      {/* Coluna Direita: Exibe as informações textuais da obra */}
       <View style={styles.bookRight}>
+        {/* numberOfLines previne que textos gigantes quebrem a interface empurrando os outros elementos */}
         <Text style={styles.bookTitle} numberOfLines={2}>
           {titulo}
         </Text>
@@ -97,5 +114,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 5,
   },
-  bookGenre: { fontFamily: "Poppins_700Bold", color: "#500903", fontSize: 14 },
+  bookGenre: {
+    fontFamily: "Poppins_700Bold",
+    color: "#500903",
+    fontSize: 14,
+  },
 });
