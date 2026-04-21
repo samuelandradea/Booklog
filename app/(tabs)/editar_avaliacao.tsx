@@ -1,8 +1,6 @@
 import { Header } from "@/components/Header";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useLocalSearchParams, router } from "expo-router";
-import { api } from "@/lib/api";
-import { auth } from "@/lib/firebase";
 import { LeituraController } from "@/controllers/leituraController";
 import { useState } from "react";
 import Slider from "@react-native-community/slider";
@@ -20,7 +18,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function EditarAvaliacao() {
-  const { loading } = useProtectedRoute();
+  const { user, loading } = useProtectedRoute();
+
+  const controller = new LeituraController();
+
   const { id, nomeLivro, nomeAutor, nota, resenha, thumbnail } =
     useLocalSearchParams();
 
@@ -34,13 +35,18 @@ export default function EditarAvaliacao() {
     : null;
 
   const salvarEdicao = async () => {
-    const sucesso = await LeituraController.editarReview(id as string, {
-      nota: notaEdit,
-      resenha: resenhaEdit,
-    });
-    if (sucesso) {
-      Alert.alert("Sucesso", "Avaliação atualizada!");
-      router.push("/(tabs)/lidos_recente");
+    try {
+      const sucesso = await controller.editarReview(id as string, {
+        nota: notaEdit,
+        resenha: resenhaEdit,
+      });
+
+      if (sucesso) {
+        Alert.alert("Sucesso", "Avaliação atualizada!");
+        router.push("/(tabs)/lidos_recente");
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
     }
   };
 
@@ -56,20 +62,25 @@ export default function EditarAvaliacao() {
   };
 
   const deletarReview = async () => {
-    const uid = auth.currentUser?.uid;
+    const uid = user?.uid;
+
+    if (!uid) return;
+
     Alert.alert("Deletar", "Tem certeza que deseja deletar esta avaliação?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Deletar",
         style: "destructive",
         onPress: async () => {
-          const sucesso = await LeituraController.deletarReview(
-            uid!,
-            id as string,
-          );
-          if (sucesso) {
-            Alert.alert("Sucesso", "Avaliação deletada!");
-            router.push("/(tabs)/lidos_recente");
+          try {
+            const sucesso = await controller.deletarReview(uid, id as string);
+
+            if (sucesso) {
+              Alert.alert("Sucesso", "Avaliação deletada!");
+              router.push("/(tabs)/lidos_recente");
+            }
+          } catch (error: any) {
+            Alert.alert(error.message);
           }
         },
       },
@@ -92,6 +103,7 @@ export default function EditarAvaliacao() {
               <Text style={styles.capaTexto}>Livro</Text>
             )}
           </View>
+
           <View style={styles.infoContainer}>
             <Text style={styles.nomeLivro}>{nomeLivro}</Text>
             <Text style={styles.nomeAutor}>{nomeAutor}</Text>
@@ -99,6 +111,7 @@ export default function EditarAvaliacao() {
         </View>
 
         <Text style={styles.label}>Nota: {notaEdit.toFixed(1)}/5</Text>
+
         <Slider
           minimumValue={0}
           maximumValue={5}
@@ -112,6 +125,7 @@ export default function EditarAvaliacao() {
         />
 
         <Text style={styles.label}>Resenha:</Text>
+
         <TextInput
           style={styles.resenhaInput}
           multiline

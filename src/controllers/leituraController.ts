@@ -1,41 +1,39 @@
-import { api } from "../lib/api";
-import { IReview } from "../models/ReviewModel";
-import { reviewBuilder } from "../builders/reviewBuilder";
-import { Alert } from "react-native";
+import { reviewBuilder } from "@/builders/reviewBuilder";
+import { api } from "@/lib/api";
+import { IReview } from "@/models/ReviewModel";
 
-// Controller responsável pelas operações de leitura, edição e deleção de avaliações
 export class LeituraController {
-  
-  // Busca todas as avaliações do usuário e enriquece cada uma com a capa do livro
-  // Para cada review, faz uma chamada adicional à API para buscar a thumbnail pelo isbn
-  // Retorna lista de IReview ou lista vazia em caso de erro
-  static async buscarReviews(uid: string): Promise<IReview[]> {
+
+  // Busca todas as reviews do usuário e enriquece cada uma com a capa do livro
+  async buscarReviews(uid: string): Promise<IReview[]> {
     try {
+      // Busca todas as reviews do usuário pelo UID
       const data = await api(`/users/${uid}/reviews`);
-      
+
+      // Para cada review, busca o livro correspondente pelo ISBN para obter a capa
       const reviewsComCapa = await Promise.all(
         data.map(async (review: any) => {
           try {
-            // busca a capa do livro pelo isbn para enriquecer a review
+            // Busca os dados do livro para pegar o thumbnail
             const livro = await api(`/books/${review.bookIsbn}`);
+            // Constrói o objeto review com o thumbnail do livro
             return reviewBuilder({ ...review, thumbnail: livro.thumbnail });
           } catch {
-            // se não encontrar a capa, retorna a review sem thumbnail
+            // Se não encontrar o livro, constrói a review sem thumbnail
             return reviewBuilder(review);
           }
         })
       );
-      
+
       return reviewsComCapa;
     } catch (error) {
       console.error("Erro ao buscar reviews:", error);
-      return []; // retorna lista vazia para não quebrar a tela
+      return [];
     }
   }
 
-  // Atualiza a nota e/ou resenha de uma avaliação existente
-  // Retorna true se atualizado com sucesso, false em caso de erro
-  static async editarReview(
+  // Atualiza a nota e resenha de uma review existente
+  async editarReview(
     reviewId: string,
     dados: { nota: number; resenha: string }
   ): Promise<boolean> {
@@ -47,14 +45,12 @@ export class LeituraController {
       return true;
     } catch (error) {
       console.error("Erro ao editar review:", error);
-      Alert.alert("Erro", "Não foi possível atualizar a avaliação.");
-      return false;
+      throw new Error("Não foi possível atualizar a avaliação.");
     }
   }
 
-  // Remove permanentemente uma avaliação do usuário
-  // Retorna true se deletado com sucesso, false em caso de erro
-  static async deletarReview(uid: string, reviewId: string): Promise<boolean> {
+  // Remove uma review do usuário pelo ID da review
+  async deletarReview(uid: string, reviewId: string): Promise<boolean> {
     try {
       await api(`/users/${uid}/reviews/${reviewId}`, {
         method: "DELETE",
@@ -62,8 +58,7 @@ export class LeituraController {
       return true;
     } catch (error) {
       console.error("Erro ao deletar review:", error);
-      Alert.alert("Erro", "Não foi possível deletar a avaliação.");
-      return false;
+      throw new Error("Não foi possível deletar a avaliação.");
     }
   }
 }
