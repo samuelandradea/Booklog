@@ -1,5 +1,14 @@
+export interface Usuario { // criacao do molde do que um usuario deve ter
+    name: string;
+    email: string;
+    birthDate: string;
+    gender: string;
+}
+
+// class responsavel pela criacao dos usuarios
+// contendo os metodos de adicao das informacoes
 export class UsuarioBuilder {
-    private usuario: any;
+    private usuario: Partial<Usuario>;
 
     constructor() {
         // inicializacao do objeto vazio
@@ -26,11 +35,13 @@ export class UsuarioBuilder {
         return this;
     }
 
-    // metodo que devolve o objeto pronto
-    public construir() {
-        if (!this.usuario.name || !this.usuario.email) {
-            throw new Error("Nome e E-mail são obrigatórios para criar o usuário.");
+    // o metodo construir, faz a validacao e devolve o objeto pronto
+    public construir(): Usuario {
+        if (!this.usuario.name || !this.usuario.email || !this.usuario.birthDate || !this.usuario.gender) {
+            throw new Error("Todos os campos são obrigatórios para a criação do usuário.");
         }
-        return this.usuario;
+
+        const usuarioPronto = { ...this.usuario } as Usuario; // o "{ ...this.usuario }" é pra criar uma copia do objeto, evitando que ele altere o usuario antigo por engano
+        return usuarioPronto; // caso o builder seja usado novamente
     }
 }

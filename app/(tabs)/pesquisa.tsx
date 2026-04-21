@@ -44,7 +44,7 @@ export default function TelaPesquisa() {
     setPesquisaFeita(true);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/search?q=${termo}`);
+      const response = await fetch(`http://10.0.2.2:8000/search?q=${termo}`);
       const data = await response.json();
       setResultados(data);
     } catch (error) {
