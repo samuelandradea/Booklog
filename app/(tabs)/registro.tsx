@@ -4,6 +4,7 @@ import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { auth } from '@/lib/firebase';
 import { api } from '@/lib/api';
 import { createBook } from '@/services/bookService';
+import { RegistroController } from '@/controllers/registroController';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -49,14 +50,9 @@ export default function RegistroLeitura() {
       return;
     }
     setBuscando(true);
-    try {
-      const data = await api(`/search?q=${termo}`);
-      setResultados(data.livros || []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setBuscando(false);
-    }
+   const livros = await RegistroController.buscarLivros(termo);
+   setResultados(livros);
+   setBuscando(false);
   };
 
   const selecionarLivro = (livro: Livro) => {
@@ -76,22 +72,19 @@ export default function RegistroLeitura() {
       Alert.alert('Erro', 'Usuário não autenticado');
       return;
     }
-    const novoLivro = {
+    const sucesso = await RegistroController.salvarAvaliacao(uid, {
       bookIsbn: livroSelecionado.isbn13 || '',
       nomeLivro: livroSelecionado.title,
       nomeAutor: livroSelecionado.authors,
       nota,
       resenha,
-    };
-    try {
-      await createBook(uid, novoLivro);
+    });
+    if (sucesso) {
       Alert.alert('Sucesso', 'Livro registrado com sucesso!');
       setLivroSelecionado(null);
       setNota(0);
       setResenha('');
-      router.replace('/home');
-    } catch (error: any) {
-      Alert.alert('Erro', error.message);
+      router.replace('/home')
     }
   };
 

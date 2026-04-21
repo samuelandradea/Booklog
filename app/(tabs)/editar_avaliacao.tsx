@@ -3,6 +3,7 @@ import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useLocalSearchParams, router } from "expo-router";
 import { api } from "@/lib/api";
 import { auth } from "@/lib/firebase";
+import { LeituraController } from "@/controllers/leituraController";
 import { useState } from "react";
 import Slider from "@react-native-community/slider";
 import {
@@ -33,15 +34,13 @@ export default function EditarAvaliacao() {
     : null;
 
   const salvarEdicao = async () => {
-    try {
-      await api(`/reviews/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ nota: notaEdit, resenha: resenhaEdit }),
-      });
+    const sucesso = await LeituraController.editarReview(id as string, {
+      nota: notaEdit,
+      resenha: resenhaEdit,
+    });
+    if (sucesso) {
       Alert.alert("Sucesso", "Avaliação atualizada!");
       router.push("/(tabs)/lidos_recente");
-    } catch (err) {
-      Alert.alert("Erro", "Não foi possível atualizar.");
     }
   };
 
@@ -64,12 +63,13 @@ export default function EditarAvaliacao() {
         text: "Deletar",
         style: "destructive",
         onPress: async () => {
-          try {
-            await api(`/users/${uid}/reviews/${id}`, { method: "DELETE" });
+          const sucesso = await LeituraController.deletarReview(
+            uid!,
+            id as string,
+          );
+          if (sucesso) {
             Alert.alert("Sucesso", "Avaliação deletada!");
             router.push("/(tabs)/lidos_recente");
-          } catch (err) {
-            Alert.alert("Erro", "Não foi possível deletar.");
           }
         },
       },
