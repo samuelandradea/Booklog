@@ -1,4 +1,3 @@
-import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Divider } from "@/components/Divider";
 import { MenuOpcao } from "@/components/MenuOpcao";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
@@ -16,13 +15,12 @@ import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
 import { auth } from "@/lib/firebase";
+import { CardLivro } from "@/components/CardLivro";
 
 export default function profile() {
   const { user, loading } = useProtectedRoute();
-
-  if (loading) return null;
-
   const [reviews, setReviews] = useState<any[]>([]);
+
   useFocusEffect(
     useCallback(() => {
       const uid = auth.currentUser?.uid;
@@ -45,6 +43,8 @@ export default function profile() {
       }
     }, []),
   );
+  
+  if (loading) return null;
 
   const emailCompleto = auth.currentUser?.email || "";
   const nomeUsuario =
@@ -93,15 +93,36 @@ export default function profile() {
             Nenhum livro lido ainda
           </Text>
         ) : (
-          <CarrosselLivros
-            titulo=""
-            dados={reviews.map((r) => ({
-              ...r,
-              title: r.nomeLivro,
-              average_rating: r.nota,
-            }))}
-            mostrarBolinhas={false}
-          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 12 }}
+          >
+            {reviews.map((r) => (
+              <CardLivro
+                key={r.id}
+                nome={r.nomeLivro}
+                nota={r.nota}
+                thumbnail={
+                  r.thumbnail
+                    ? r.thumbnail.replace("http:", "https:")
+                    : undefined
+                }
+                onPress={() =>
+                  router.push({
+                    pathname: "/avaliacao",
+                    params: {
+                      nomeLivro: r.nomeLivro,
+                      nomeAutor: r.nomeAutor,
+                      nota: r.nota,
+                      resenha: r.resenha,
+                      thumbnail: r.thumbnail || "",
+                    },
+                  })
+                }
+              />
+            ))}
+          </ScrollView>
         )}
 
         <MenuOpcao

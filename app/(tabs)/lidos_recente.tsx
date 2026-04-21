@@ -1,12 +1,11 @@
 import { useCallback, useState } from "react";
-import { useFocusEffect } from "expo-router";
-import { ActivityIndicator } from "react-native";
+import { useFocusEffect, router } from "expo-router";
 import { api } from "@/lib/api";
 import { auth } from "@/lib/firebase";
-import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -99,6 +98,16 @@ export default function Gostos() {
                   nota={item.nota}
                   thumbnail={item.thumbnail}
                   variante="grid"
+                  onPress={() => router.push({
+                    pathname: '/editar_avaliacao',
+                    params: {
+                      id: item.id,
+                      nomeLivro: item.nomeLivro,
+                      nota: item.nota,
+                      resenha: item.resenha,
+                      thumbnail: item.thumbnail || '',
+                    }
+                  })}
                 />
               ))}
             </View>
