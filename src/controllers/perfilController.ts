@@ -1,4 +1,4 @@
-import { getUser } from "@/services/userService"
+import { getUser, updateUser } from "@/services/userService"
 import { Alert } from "react-native"
 
 export class PerfilController {
@@ -18,6 +18,23 @@ export class PerfilController {
             console.log("Erro ao carregar perfil:", error)
             Alert.alert("Erro", "Não foi possível carregar os dados do perfil.")
             return null
+        }
+    }
+
+    public async salvarGeneros(uid: string | undefined, generos: string[]) {
+        if (!uid) {
+            throw new Error("Usuário não encontrado")
+        }
+
+        if (generos.length === 0) {
+            throw new Error("Selecione pelo menos um gênero")
+        }
+
+        try {
+            await updateUser(uid, { genres: generos })
+        } catch (error) {
+            console.log("Erro ao salvar gêneros:", error)
+            throw new Error("Erro ao salvar os gêneros")
         }
     }
 }
