@@ -15,55 +15,103 @@ import { CardPesquisaUsuario } from "../../src/components/CardPesquisaUsuario";
 import { Header } from "../../src/components/Header";
 import { SearchBar } from "../../src/components/SearchBar";
 
+// IMPORTANDO A NOSSA ARQUITETURA POO
+import {
+  IPesquisaResultado,
+  PesquisaController,
+} from "@/controllers/pesquisaController";
+
+/**
+ * Componente principal da Tela de Pesquisa.
+ * Responsável por receber o *input* do usuário, acionar o Controller para buscar os dados
+ * e exibir os resultados (Livros, Autores e Usuários) de forma categorizada e rolável.
+ */
 export default function TelaPesquisa() {
+  // Proteção de rota: garante que apenas usuários logados acessem a pesquisa
   const { user, loading } = useProtectedRoute();
 
-  if (loading) return null;
   const router = useRouter();
+
+  // Capta os parâmetros da URL
   const params = useLocalSearchParams();
   const queryInicial = (params.q as string) || "";
 
+  // ==========================================
+  // ESTADOS (STATES) DA TELA
+  // ==========================================
+
+  // Controle do texto que está digitado no campo de busca
   const [textoBusca, setTextoBusca] = useState(queryInicial);
+
+  // Controle de interface: exibe ou esconde o "spinner" de carregamento
   const [carregando, setCarregando] = useState(false);
+
+  // Controle lógico: sabe dizer se o usuário já tentou pesquisar algo ou se a tela acabou de abrir
   const [pesquisaFeita, setPesquisaFeita] = useState(false);
-  const [resultados, setResultados] = useState({
+
+  // Estado que armazena os dados que voltam do back-end, já tipados com a nossa Interface POO
+  const [resultados, setResultados] = useState<IPesquisaResultado>({
     usuarios: [],
     livros: [],
     autores: [],
   });
 
+  // Se a autenticação ainda estiver carregando, não renderiza nada (evita falhas visuais)
+  if (loading) return null;
+
+  // ==========================================
+  // EFEITOS (USE EFFECT)
+  // ==========================================
+
+  /**
+   * Gatilho automático: Toda vez que a `queryInicial` mudar (ex: usuário veio da Home
+   * com um termo já preenchido), este efeito dispara a busca automaticamente.
+   */
   useEffect(() => {
     if (queryInicial) {
       buscarDados(queryInicial);
     }
   }, [queryInicial]);
 
+  // ==========================================
+  // MÉTODOS DE AÇÃO
+  // ==========================================
+
+  /**
+   * Função central de busca. Delega o trabalho pesado para a Controller.
+   * @param termo A string de pesquisa digitada pelo usuário.
+   */
   const buscarDados = async (termo: string) => {
-    if (!termo) return;
+    if (!termo) return; // Trava de segurança: não pesquisa vazio
+
     setCarregando(true);
     setPesquisaFeita(true);
 
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/search?q=${termo}`);
-      const data = await response.json();
-      setResultados(data);
-    } catch (error) {
-      console.error("Erro de conexão:", error);
-      setResultados({ usuarios: [], livros: [], autores: [] });
-    } finally {
-      setCarregando(false);
-    }
+    // DELEGANDO PARA A CONTROLLER: A tela não sabe como a API funciona,
+    // ela só pede os dados para o "Gerente" (Controller) e aguarda a resposta.
+    const data = await PesquisaController.buscar(termo);
+    setResultados(data);
+
+    setCarregando(false);
   };
 
+  /**
+   * Atualiza os parâmetros da URL com o novo texto digitado.
+   * Ao fazer isso, o `useEffect` lá de cima "percebe" a mudança e dispara o `buscarDados`.
+   */
   const fazerNovaBusca = () => {
     router.setParams({ q: textoBusca });
   };
 
+  // Variável auxiliar para descobrir se todas as listas de resultado voltaram vazias
   const nenhumResultado =
     resultados.usuarios.length === 0 &&
     resultados.livros.length === 0 &&
     resultados.autores.length === 0;
 
+  // ==========================================
+  // RENDERIZAÇÃO VISUAL (JSX)
+  // ==========================================
   return (
     <View style={styles.container}>
       <Header />
@@ -78,6 +126,10 @@ export default function TelaPesquisa() {
         />
       </View>
 
+      {/* Renderização Condicional (If/Else Visual):
+          1. Se estiver 'carregando', mostra o Spinner.
+          2. Senão, se a pesquisa foi feita e 'nenhumResultado' é verdadeiro, mostra a imagem de vazio.
+          3. Senão (tem dados), mostra a lista rolável com os componentes. */}
       {carregando ? (
         <ActivityIndicator
           size="large"
@@ -100,6 +152,7 @@ export default function TelaPesquisa() {
         <ScrollView
           style={styles.resultsContainer}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 }} // Margem de respiro no fim da lista
         >
           {resultados.usuarios.map((user: any) => (
             <CardPesquisaUsuario key={user.id} nome={user.name} />
@@ -108,14 +161,16 @@ export default function TelaPesquisa() {
           {resultados.autores.map((autor: any) => (
             <CardPesquisaAutor key={autor.id} nome={autor.authors} />
           ))}
-          {resultados.livros.map((livro: any) => (
+
+          {resultados.livros.map((livro) => (
             <CardPesquisaLivro
               key={livro.id}
-              titulo={livro.title}
-              autor={livro.authors}
-              categoria={livro.categories || "Sem categoria"}
-              nota={livro.average_rating ? `${livro.average_rating}/5` : "-/5"}
-              thumbnail={livro.thumbnail} // Passa a imagem
+              // O nosso Builder já limpou e traduziu tudo! O Card recebe dados perfeitamente seguros.
+              titulo={livro.titulo}
+              autor={livro.autores}
+              categoria={livro.categoria}
+              nota={livro.notaMedia > 0 ? `${livro.notaMedia}/5` : "-/5"}
+              thumbnail={livro.capa}
             />
           ))}
         </ScrollView>
