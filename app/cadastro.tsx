@@ -112,7 +112,7 @@ export default function Signup() {
                     <FooterLink linkLabel="Possue conta? Faça seu login!" href="/" 
                     />
                 </View>
-            </ScrollView>
+            </ScrollView> 
         </KeyboardAvoidingView>
     );
 }
