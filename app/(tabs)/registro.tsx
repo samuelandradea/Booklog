@@ -106,7 +106,7 @@ export default function RegistroLeitura() {
     : null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Header />
 
@@ -223,14 +223,13 @@ export default function RegistroLeitura() {
 const styles = StyleSheet.create({
   safeArea: { 
     flex: 1, 
-    backgroundColor: '#D4AA94' 
+    backgroundColor: '#D4AA94', 
   },
   container: { 
     flex: 1 
   },
   content: { 
     padding: 20, 
-    paddingBottom: 40 
   },
   header: { 
     fontSize: 24, 
@@ -304,7 +303,11 @@ const styles = StyleSheet.create({
   },
   resenhaInput: { 
     height: 150, 
-    textAlignVertical: 'top' 
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    color: '#500903',
   },
   botoesContainer: { 
     flexDirection: 'row', 
@@ -313,10 +316,13 @@ const styles = StyleSheet.create({
   },
   botaoDescartar: { 
     flex: 1, 
-    backgroundColor: '#500903' 
+    backgroundColor: '#D4AA94',
+    borderRadius: 24,
   },
   botaoSalvar: { 
-    flex: 1 
+    flex: 1,
+    backgroundColor: '#500903',
+    borderRadius: 24,
   },
   modalContainer: { 
     flex: 1, 
