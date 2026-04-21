@@ -52,7 +52,7 @@ export function CardLivro({
               <Text style={styles.usuarioFeed} numberOfLines={1}>
                 {usuario}
               </Text>
-              <Text style={styles.notaFeed}>{nota}</Text>
+              <Text style={styles.notaFeed}>{nota}/5</Text>
             </>
           ) : (
             <Text style={styles.notaLivro}>nota {nota}/5</Text>
@@ -64,7 +64,6 @@ export function CardLivro({
 }
 
 const styles = StyleSheet.create({
-
   container: {
     width: 64,
     alignItems: "center",

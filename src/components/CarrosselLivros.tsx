@@ -1,11 +1,13 @@
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { CardLivro } from "./CardLivro";
-import { useRouter } from "expo-router";
+// IMPORTANDO O MODELO
+import { ILivro } from "@/models/LivroModel";
 
 type CarrosselProps = {
   titulo: string;
-  dados: any[];
+  dados: ILivro[]; // Sai o "any[]", entra a tipagem forte!
   variante?: "padrao" | "feed";
   mostrarBolinhas?: boolean;
   ocultarTextos?: boolean;
@@ -40,7 +42,8 @@ export function CarrosselLivros({
 
       <FlatList
         data={dados}
-        keyExtractor={(item, index) => item.isbn13 || index.toString()}
+        // Usando o ID limpo que veio do nosso Builder
+        keyExtractor={(item) => item.id}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         snapToInterval={228}
@@ -48,16 +51,16 @@ export function CarrosselLivros({
         onScroll={handleScroll}
         scrollEventThrottle={16}
         renderItem={({ item }) => {
-          const imagemSegura = item.thumbnail
-            ? item.thumbnail.replace("http:", "https:")
-            : undefined;
+          // O Builder já tratou a imagem, mas mantemos o replace de segurança para HTTPS
+          const imagemSegura = item.capa.replace("http:", "https:");
 
           return (
             <CardLivro
               variante={variante}
-              nome={item.title || item.nome || "Sem título"}
-              nota={item.average_rating || item.nota || "-"}
-              usuario={item.usuario || "Usuário"} // Como ainda não temos amigos, deixamos um texto padrão
+              // Usando as propriedades oficiais do ILivro!
+              nome={item.titulo}
+              nota={item.notaMedia.toString()}
+              usuario={"Usuário"} // Ajustaremos quando tivermos a POO de amigos
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
               onPress={() => router.push(`/infolivro?isbn=${item.isbn13}`)}
@@ -81,9 +84,7 @@ export function CarrosselLivros({
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    justifyContent: "center",
-  },
+  sectionContainer: { justifyContent: "center" },
   sectionTitle: {
     fontFamily: "RedHatDisplay_700Bold",
     fontSize: 18,
