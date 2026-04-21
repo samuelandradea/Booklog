@@ -23,3 +23,9 @@ export async function updateUser(uid: string, data: Partial<{
         body: JSON.stringify(data),
     })
 }
+export async function getUser(uid: string) {
+    // busca os dados do usuario no banco de dados a partir do uid do firebase
+    return await api(`/users/${uid}`, {
+        method: 'GET',
+    })
+}
