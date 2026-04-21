@@ -4,7 +4,9 @@ import { ILivro } from "../models/LivroModel";
 export const livroBuilder = (livroBruto: any): ILivro => {
   return {
     // Se vier sem id, usa uma string vazia (ou gera um fallback)
-    id: livroBruto.id || livroBruto.isbn13 || Math.random().toString(),
+    id: livroBruto.id || Math.random().toString(),
+    // ISBN13 do livro — identificador universal usado para buscar detalhes na API
+    isbn13: livroBruto.isbn13 || "",
     // Garante que se vier nulo, mostra "Título Desconhecido"
     titulo: livroBruto.title || "Título Desconhecido",
     // Trata os autores

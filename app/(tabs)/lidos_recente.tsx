@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 import { api } from "@/lib/api";
 import { auth } from "@/lib/firebase";
+import { LeituraController } from '@/controllers/leituraController';
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -30,20 +31,8 @@ export default function Gostos() {
     useCallback(() => {
       const uid = auth.currentUser?.uid;
       if (uid) {
-        api(`/users/${uid}/reviews`)
-          .then(async (data) => {
-            const reviewsComCapa = await Promise.all(
-              data.map(async (review: any) => {
-                try {
-                  const livro = await api(`/books/${review.bookIsbn}`);
-                  return { ...review, thumbnail: livro.thumbnail };
-                } catch {
-                  return review;
-                }
-              }),
-            );
-            setReviews(reviewsComCapa);
-          })
+        LeituraController.buscarReviews(uid)
+        .then(data => setReviews(data))
           .catch((err) => console.error(err))
           .finally(() => setCarregando(false));
       } else {

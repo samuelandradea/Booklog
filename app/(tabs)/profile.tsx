@@ -3,6 +3,7 @@ import { MenuOpcao } from "@/components/MenuOpcao";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { LeituraController } from "@/controllers/leituraController";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,26 +25,14 @@ export default function profile() {
   useFocusEffect(
     useCallback(() => {
       const uid = auth.currentUser?.uid;
-      if (uid) {
-        api(`/users/${uid}/reviews`)
-          .then(async (data) => {
-            const reviewsComCapa = await Promise.all(
-              data.slice(0, 4).map(async (review: any) => {
-                try {
-                  const livro = await api(`/books/${review.bookIsbn}`);
-                  return { ...review, thumbnail: livro.thumbnail };
-                } catch {
-                  return review;
-                }
-              }),
-            );
-            setReviews(reviewsComCapa);
-          })
-          .catch((err) => console.error(err));
-      }
+      if (!uid) return;
+     LeituraController.buscarReviews(uid)
+      .then(data => setReviews(data.slice(0, 4)))
+      .catch(err => console.error("Erro ao buscar reviews:", err));
     }, []),
-  );
-  
+);
+
+
   if (loading) return null;
 
   const emailCompleto = auth.currentUser?.email || "";

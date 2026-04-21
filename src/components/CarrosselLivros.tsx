@@ -63,7 +63,7 @@ export function CarrosselLivros({
               usuario={"Usuário"} // Ajustaremos quando tivermos a POO de amigos
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
-              onPress={() => router.push(`/infolivro?isbn=${item.id}`)}
+              onPress={() => router.push(`/infolivro?isbn=${item.isbn13}`)}
             />
           );
         }}
