@@ -1,6 +1,7 @@
 import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Header } from '@/components/Header';
 import {
   ActivityIndicator,
   Image,
@@ -56,7 +57,7 @@ export default function LivroInfo() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
 
-        <Text style={styles.header}>booklog</Text>
+        <Header />
 
         <View style={styles.topoContainer}>
           <View style={styles.capa}>
