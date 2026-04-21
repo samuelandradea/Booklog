@@ -10,20 +10,21 @@ import {
   View
 } from "react-native";
 
-// Importando seus componentes (ajuste os caminhos conforme sua pasta)
 import { CardLivro } from "@/components/CardLivro";
 import { Divider } from "@/components/Divider";
 import { Header } from "@/components/Header";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 
-export default function Gostos() {
+export default function LidosRecente() {
+  // Dados mockados temporariamente até integrar com o backend
   const livros = Array.from({ length: 10 }).map((_, i) => ({
     id: String(i),
     nome: "nomeLivro",
     nota: "0/10",
   }));
-  const { user, loading } = useProtectedRoute()
 
+  // Verifica se o usuário está logado e redireciona para login se não estiver
+  const { user, loading } = useProtectedRoute()
   if (loading) return null
 
   return (
@@ -33,10 +34,14 @@ export default function Gostos() {
     >
       <ScrollView 
         contentContainerStyle={{ flexGrow: 1 }} 
-        style={{ backgroundColor: "#D4AA94" }} // Cor de fundo da foto
+        style={{ backgroundColor: "#D4AA94" }}
       >
         <View style={styles.container}>
+
+          {/* Cabeçalho global do app (componente reutilizável) */}
           <Header />
+
+          {/* Subheader da tela: botão de voltar + título + divider */}
           <View style={styles.subHeaderContainer}>
             <TouchableOpacity>
               <Ionicons name="chevron-back" size={30} color="#500903" />
@@ -48,6 +53,7 @@ export default function Gostos() {
             </View>
           </View>
 
+          {/* Grade de livros lidos — futuramente virá do backend */}
           <View style={styles.grid}>
             {livros.map((item) => (
               <CardLivro 
@@ -58,6 +64,7 @@ export default function Gostos() {
               />
             ))}
           </View>
+
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -70,6 +77,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 60,
   },
+  // Linha horizontal com botão de voltar e título alinhados
   subHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -83,11 +91,13 @@ const styles = StyleSheet.create({
     color: "#500903",
     textAlign: "right", 
   },
+  // Grade responsiva de cards de livros
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
   },
+  // Estilo reservado para ajuste individual dos cards na grade
   cardAjustado: {
     width: '23%', 
     marginBottom: 20,
