@@ -4,26 +4,33 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 
+// Lista de gêneros literários disponíveis para seleção
+const genres = [
+    "Ficção",
+    "Crítica Literária", 
+    "Comics & HQs",
+    "Biografia e autobiografia",
+    "Filosofia",
+    "Ficção juvenil",
+    "Ciências",
+    "Drama",
+    "História",
+    "Poesia",
+    "Não-ficção juvenil",
+    "Religião",
+]
+
 export default function Gostos() {
     const { width } = useWindowDimensions()
-    const buttonWidth = (width - 32 - 32 - 16) / 3
-    const genres = [
-        "Ficção",
-        "Crítica Literária", 
-        "Comics & HQs",
-        "Biografia e autobiografia",
-        "Filosofia",
-        "Ficção juvenil",
-        "Ciências",
-        "Drama",
-        "História",
-        "Poesia",
-        "Não-ficção juvenil",
-        "Religião",
-    ]
 
+    // Calcula a largura de cada botão para caber exatamente 3 por linha
+    // Desconta o padding horizontal da tela (32 + 32) e os gaps entre os 3 botões (16)
+    const buttonWidth = (width - 32 - 32 - 16) / 3
+
+    // Estado que armazena os gêneros selecionados pelo usuário
     const [selectedGenres, setSelectedGenres] = useState<string[]>([])
 
+    // Valida a seleção e futuramente envia os gêneros para o backend
     function handleConfirm(){
         if(selectedGenres.length == 0){
             Alert.alert("Você não selecionou nenhum genêro")
@@ -33,18 +40,20 @@ export default function Gostos() {
         const userGenres = {
             genres : selectedGenres
         }
-        //futuramente: await userService.updateUser(userGenres)
+        // futuramente: await userService.updateUser(userGenres)
 
         router.replace("/") // COLOCAR A TELA DE HOME QUANDO FOR DESENVOLVIDA
     }
 
+    // Adiciona ou remove um gênero da lista de selecionados ao clicar
     function handleSelectGenre(genre: string){
-        if (selectedGenres.includes(genre) ){
+        if (selectedGenres.includes(genre)){
+            // Se já está selecionado, remove da lista
             setSelectedGenres(prev => prev.filter(genres => genres !== genre));
-        }else{
+        } else {
+            // Se não está selecionado, adiciona na lista
             setSelectedGenres(prev => [...prev, genre])
         }
-    
     }
 
   return (
@@ -55,18 +64,24 @@ export default function Gostos() {
                 <Divider />
                 <Text style={styles.subtitle}>Selecione os gêneros que você mais gosta</Text>
                 <Divider />
+
+                {/* Grade de botões de gêneros — 3 por linha com flexWrap */}
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {genres.map((genre)=>
+                {genres.map((genre) =>
                 <TouchableOpacity 
-                style={[selectedGenres.includes(genre) ? styles.selecionado : styles.normal, { width: buttonWidth }]} 
-                key={genre} 
-                onPress={() => handleSelectGenre(genre)}>
+                    style={[selectedGenres.includes(genre) ? styles.selecionado : styles.normal, { width: buttonWidth }]} 
+                    key={genre} 
+                    onPress={() => handleSelectGenre(genre)}
+                >
+                    {/* Texto muda de cor conforme o estado de seleção */}
                     <Text style={selectedGenres.includes(genre) ? styles.textoSelecionado : styles.textoNormal}>
                         {genre}
                     </Text>
                 </TouchableOpacity>
                 )}
                 </View>
+
+                {/* Botão de confirmação centralizado */}
                 <View style={{ alignItems: "center", marginTop: 24 }}>
                     <Button label="Confirmar" onPress={handleConfirm} />
                 </View>
@@ -91,6 +106,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginBottom: 20,
     },
+    // Estilo do botão de gênero não selecionado
     normal: {
         paddingVertical: 8,
         paddingHorizontal: 4,
@@ -100,7 +116,8 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         justifyContent: "center",
         alignItems: "center",
-},
+    },
+    // Estilo do botão de gênero selecionado
     selecionado: {
         paddingVertical: 8,
         paddingHorizontal: 4,
@@ -118,6 +135,7 @@ const styles = StyleSheet.create({
         padding: 28,
         paddingTop: 60,
     },
+    // Texto do botão não selecionado
     textoNormal: {
         fontFamily: "RedHatDisplay_500Medium",
         color: "#6F1D1B",
@@ -126,6 +144,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 4,
     },
+    // Texto do botão selecionado
     textoSelecionado: {
         fontFamily: "RedHatDisplay_500Medium",
         color: "#FFFFFF",
@@ -135,4 +154,3 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
     },
 })
-
