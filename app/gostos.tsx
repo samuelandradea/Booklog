@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button";
 import { Divider } from "@/components/Divider";
+import { PerfilController } from "@/controllers/perfilController";
 import { useAuth } from "@/context/authContext";
-import { updateUser } from "@/services/userService";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -31,53 +31,23 @@ const genres = [
     "Não-ficção juvenil",
     "Religião",
 ]
-
+const controller = new PerfilController();
 export default function Gostos() {
+  
   const { user } = useAuth();
   const { width } = useWindowDimensions();
 
   const buttonWidth = (width - 32 - 32 - 16) / 3;
-  const genres = [
-    "Ficção",
-    "Crítica Literária",
-    "Comics & HQs",
-    "Biografia e autobiografia",
-    "Filosofia",
-    "Ficção juvenil",
-    "Ciências",
-    "Drama",
-    "História",
-    "Poesia",
-    "Não-ficção juvenil",
-    "Religião",
-  ];
-
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   async function handleConfirm() {
-    if (selectedGenres.length == 0) {
-      Alert.alert("Você não selecionou nenhum genêro");
-      return;
-    }
-
-    const userGenres = {
-      genres: selectedGenres,
-    };
-
-    const uid = user?.uid;
-
-    if (!uid) {
-      alert("Usuário não encontrado.");
-      return;
-    }
-
-    try {
-      await updateUser(uid, userGenres);
-      router.replace("/(tabs)/home");
-    } catch (error) {
-      console.error("Erro ao atualizar gostos:", error);
-    }
+  try {
+    await controller.salvarGeneros(user?.uid, selectedGenres);
+    router.replace("/(tabs)/home");
+  } catch (error: any) {
+    Alert.alert(error.message);
   }
+}
 
   function handleSelectGenre(genre: string) {
     if (selectedGenres.includes(genre)) {
