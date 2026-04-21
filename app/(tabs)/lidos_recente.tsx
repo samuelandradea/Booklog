@@ -1,43 +1,141 @@
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { ActivityIndicator } from "react-native";
+import { api } from "@/lib/api";
+import { auth } from "@/lib/firebase";
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+// Importando seus componentes (ajuste os caminhos conforme sua pasta)
+import { CardLivro } from "@/components/CardLivro";
 import { Divider } from "@/components/Divider";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Header } from "@/components/Header";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 
 export default function Gostos() {
-    const { width } = useWindowDimensions()
+  const { user, loading } = useProtectedRoute();
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
 
+  useFocusEffect(
+    useCallback(() => {
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        api(`/users/${uid}/reviews`)
+          .then(async (data) => {
+            const reviewsComCapa = await Promise.all(
+              data.map(async (review: any) => {
+                try {
+                  const livro = await api(`/books/${review.bookIsbn}`);
+                  return { ...review, thumbnail: livro.thumbnail };
+                } catch {
+                  return review;
+                }
+              }),
+            );
+            setReviews(reviewsComCapa);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setCarregando(false));
+      } else {
+        setCarregando(false);
+      }
+    }, []),
+  );
+
+  if (loading) return null;
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height"})}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-            <View style={styles.container}>
-                <Text style={styles.title}>Leituras recentes</Text>
-                <Divider/>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({ ios: "padding", android: "height" })}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ backgroundColor: "#D4AA94" }} // Cor de fundo da foto
+      >
+        <View style={styles.container}>
+          <Header />
+          <View style={styles.subHeaderContainer}>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
+              <Ionicons name="chevron-back" size={30} color="#500903" />
+            </TouchableOpacity>
 
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>Leituras recentes</Text>
+              <Divider />
             </View>
-        </ScrollView>
+          </View>
+
+          {carregando ? (
+            <ActivityIndicator size="large" color="#500903" />
+          ) : reviews.length === 0 ? (
+            <Text
+              style={{
+                color: "#500903",
+                fontFamily: "Poppins_700Bold",
+                textAlign: "center",
+                marginTop: 40,
+              }}
+            >
+              Nenhum livro lido ainda
+            </Text>
+          ) : (
+            <View style={styles.grid}>
+              {reviews.map((item) => (
+                <CardLivro
+                  key={item.id}
+                  nome={item.nomeLivro}
+                  nota={item.nota}
+                  thumbnail={item.thumbnail}
+                  variante="grid"
+                />
+              ))}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-    title: {
-        fontFamily: "Poppins_700Bold",
-        fontSize: 28,
-        color: "#500903",
-        textAlign: "center",
-        marginBottom: 20,
-    },
-    subtitle: {
-        fontFamily: "Poppins_700Bold",
-        fontSize: 19,
-        color: "#500903",
-        textAlign: "center",
-        marginBottom: 20,
-    },
-    container: {
-        flex: 1,
-        backgroundColor: "#D4AA94",
-        padding: 28,
-        paddingTop: 60,
-    },
-})
-
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 60,
+  },
+  subHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 20,
+    gap: 5,
+  },
+  title: {
+    fontFamily: "Poppins_700Bold",
+    fontSize: 20,
+    color: "#500903",
+    textAlign: "right",
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+  },
+  cardAjustado: {
+    width: "23%",
+    marginBottom: 20,
+    alignItems: "center",
+  },
+});

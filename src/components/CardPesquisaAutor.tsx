@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type Props = { nome: string };
 
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2EBE5",
     padding: 15,
     borderRadius: 8,
-    marginBottom: 25, // Maior margem para separar da seção de livros
+    marginBottom: 25,
   },
   authorText: { fontFamily: "Poppins_700Bold", color: "#500903" },
 });

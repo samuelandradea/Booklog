@@ -1,12 +1,16 @@
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { CardLivro } from "./CardLivro";
+// IMPORTANDO O MODELO
+import { ILivro } from "@/models/LivroModel";
 
 type CarrosselProps = {
   titulo: string;
-  dados: any[];
+  dados: ILivro[]; // Sai o "any[]", entra a tipagem forte!
   variante?: "padrao" | "feed";
   mostrarBolinhas?: boolean;
+  ocultarTextos?: boolean;
 };
 
 export function CarrosselLivros({
@@ -14,9 +18,12 @@ export function CarrosselLivros({
   dados,
   variante = "padrao",
   mostrarBolinhas = true,
+  ocultarTextos = false,
 }: CarrosselProps) {
+  const router = useRouter();
   const [paginaAtual, setPaginaAtual] = useState(0);
-  const qtdBolinhas = Math.ceil(dados.length / 3);
+
+  const qtdBolinhas = dados ? Math.ceil(dados.length / 3) : 0;
   const bolinhasArray = Array.from({ length: qtdBolinhas });
 
   const handleScroll = (event: any) => {
@@ -25,12 +32,17 @@ export function CarrosselLivros({
     setPaginaAtual(indice);
   };
 
+  if (!dados || dados.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>{titulo}</Text>
 
       <FlatList
         data={dados}
+        // Usando o ID limpo que veio do nosso Builder
         keyExtractor={(item) => item.id}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -38,14 +50,23 @@ export function CarrosselLivros({
         decelerationRate="fast"
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        renderItem={({ item }) => (
-          <CardLivro
-            variante={variante}
-            nome={item.nome}
-            nota={item.nota}
-            usuario={item.usuario}
-          />
-        )}
+        renderItem={({ item }) => {
+          // O Builder já tratou a imagem, mas mantemos o replace de segurança para HTTPS
+          const imagemSegura = item.capa.replace("http:", "https:");
+
+          return (
+            <CardLivro
+              variante={variante}
+              // Usando as propriedades oficiais do ILivro!
+              nome={item.titulo}
+              nota={item.notaMedia.toString()}
+              usuario={"Usuário"} // Ajustaremos quando tivermos a POO de amigos
+              thumbnail={imagemSegura}
+              ocultarTextos={ocultarTextos}
+              onPress={() => router.push(`/infolivro?isbn=${item.id}`)}
+            />
+          );
+        }}
       />
 
       {mostrarBolinhas && (
@@ -63,9 +84,7 @@ export function CarrosselLivros({
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    justifyContent: "center",
-  },
+  sectionContainer: { justifyContent: "center" },
   sectionTitle: {
     fontFamily: "RedHatDisplay_700Bold",
     fontSize: 18,

@@ -1,44 +1,56 @@
+// src/app/(tabs)/home.tsx
 import { CarrosselLivros } from "@/components/CarrosselLivros";
+import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
-import { Header } from "@/components/Header"; // IMPORTANDO O NOVO COMPONENTE
+import { HomeController } from "@/controllers/homeController";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
+import { ILivro } from "@/models/LivroModel";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
-
-// Teste para a visualização dos cards
-const livrosPadrao = [
-  { id: "1", nome: "O Hobbit", nota: "4.5/5" },
-  { id: "2", nome: "1984", nota: "5/5" },
-  { id: "3", nome: "Duna", nota: "4.8/5" },
-  { id: "4", nome: "A Fundação", nota: "4/5" },
-  { id: "5", nome: "O Hobbit", nota: "4.5/5" },
-  { id: "6", nome: "1984", nota: "5/5" },
-  { id: "7", nome: "Duna", nota: "4.8/5" },
-  { id: "8", nome: "A Fundação", nota: "4/5" },
-  { id: "9", nome: "A Fundação", nota: "4/5" },
-];
-
-const livrosFeed = [
-  { id: "1", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "2", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "3", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-  { id: "4", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "5", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "6", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-  { id: "7", nome: "O Iluminado", nota: "8/10", usuario: "user1" },
-  { id: "8", nome: "Drácula", nota: "7/10", usuario: "user2" },
-  { id: "9", nome: "Frankenstein", nota: "10/10", usuario: "user3" },
-];
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 export default function Home() {
+  const { user, loading } = useProtectedRoute();
   const router = useRouter();
   const [textoHome, setTextoHome] = useState("");
 
+  const [livrosBanco, setLivrosBanco] = useState<ILivro[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    const buscarLivros = async () => {
+      try {
+        const data = await HomeController.buscarLivrosEmAlta();
+        setLivrosBanco(data);
+      } catch (error) {
+        console.error("Erro ao buscar livros para a Home:", error);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    if (!loading) {
+      buscarLivros();
+    }
+  }, [loading]);
+
+  if (loading) return null;
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.mainContent}>
+      {/* Trocamos a View por ScrollView */}
+      <ScrollView
+        style={styles.mainContent}
+        contentContainerStyle={styles.scrollContent} // Estilo de quem está dentro
+        showsVerticalScrollIndicator={false} // Esconde a barra de rolagem feia do lado
+      >
         <View>
-          {/* USANDO O COMPONENTE AQUI */}
           <Header />
           <View style={styles.searchSection}>
             <SearchBar
@@ -51,23 +63,33 @@ export default function Home() {
           </View>
         </View>
 
-        <CarrosselLivros
-          titulo="Recomendações"
-          dados={livrosPadrao}
-          mostrarBolinhas={true}
-        />
-        <CarrosselLivros
-          titulo="Melhores do mês"
-          dados={livrosPadrao}
-          mostrarBolinhas={true}
-        />
-        <CarrosselLivros
-          titulo="Feed amigos"
-          dados={livrosFeed}
-          variante="feed"
-          mostrarBolinhas={false}
-        />
-      </View>
+        {carregando ? (
+          <ActivityIndicator
+            size="large"
+            color="#500903"
+            style={{ marginTop: 50 }}
+          />
+        ) : (
+          <View style={styles.carrosselContainer}>
+            <CarrosselLivros
+              titulo="Recomendações"
+              dados={livrosBanco.slice(0, 9)}
+              mostrarBolinhas={false}
+            />
+            <CarrosselLivros
+              titulo="Melhores do mês"
+              dados={livrosBanco.slice(0, 9)}
+              mostrarBolinhas={false}
+            />
+            <CarrosselLivros
+              titulo="Feed amigos"
+              dados={livrosBanco.slice(0, 9)}
+              variante="feed"
+              mostrarBolinhas={false}
+            />
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -81,11 +103,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 22,
     paddingTop: 10,
-    paddingBottom: 4,
-    justifyContent: "space-between",
+  },
+  scrollContent: {
+    paddingBottom: 40, // Adiciona um respiro no final para o último carrossel não encostar no menu
   },
   searchSection: {
     marginTop: 8,
-    marginBottom: 0,
+    marginBottom: 20, // Afastamos um pouco a barra de pesquisa do primeiro carrossel
+  },
+  carrosselContainer: {
+    gap: 16, // Cria um espaçamento uniforme entre os 3 carrosséis (se sua versão do RN for mais antiga e não suportar gap, me avise!)
   },
 });

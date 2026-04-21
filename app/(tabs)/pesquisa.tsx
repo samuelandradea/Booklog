@@ -1,3 +1,4 @@
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -11,10 +12,13 @@ import {
 import { CardPesquisaAutor } from "../../src/components/CardPesquisaAutor";
 import { CardPesquisaLivro } from "../../src/components/CardPesquisaLivro";
 import { CardPesquisaUsuario } from "../../src/components/CardPesquisaUsuario";
-import { Header } from "../../src/components/Header"; // IMPORTANDO O NOVO COMPONENTE
+import { Header } from "../../src/components/Header";
 import { SearchBar } from "../../src/components/SearchBar";
 
 export default function TelaPesquisa() {
+  const { user, loading } = useProtectedRoute();
+
+  if (loading) return null;
   const router = useRouter();
   const params = useLocalSearchParams();
   const queryInicial = (params.q as string) || "";
@@ -62,7 +66,6 @@ export default function TelaPesquisa() {
 
   return (
     <View style={styles.container}>
-      {/* USANDO O COMPONENTE AQUI */}
       <Header />
 
       <View style={styles.searchContainer}>
@@ -105,14 +108,14 @@ export default function TelaPesquisa() {
           {resultados.autores.map((autor: any) => (
             <CardPesquisaAutor key={autor.id} nome={autor.authors} />
           ))}
-
           {resultados.livros.map((livro: any) => (
             <CardPesquisaLivro
               key={livro.id}
               titulo={livro.title}
               autor={livro.authors}
               categoria={livro.categories || "Sem categoria"}
-              nota="3/5"
+              nota={livro.average_rating ? `${livro.average_rating}/5` : "-/5"}
+              thumbnail={livro.thumbnail} // Passa a imagem
             />
           ))}
         </ScrollView>
@@ -131,10 +134,7 @@ const styles = StyleSheet.create({
   searchContainer: { marginBottom: 30 },
   resultsContainer: { flex: 1 },
   emptyContainer: { flex: 1, alignItems: "center", marginTop: 50 },
-
-  // Novo estilo da imagem
   imagemVazia: { width: 150, height: 150, marginBottom: 20 },
-
   emptyTitle: { fontFamily: "Poppins_700Bold", fontSize: 22, color: "#500903" },
   emptySubtitle: {
     fontFamily: "RedHatDisplay_500Medium",
