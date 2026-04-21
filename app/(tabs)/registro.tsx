@@ -4,6 +4,7 @@ import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { auth } from '@/lib/firebase';
 import { api } from '@/lib/api';
 import { createBook } from '@/services/bookService';
+import { RegistroController } from '@/controllers/registroController';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -28,6 +29,7 @@ type Livro = {
   authors: string;
   thumbnail?: string;
   average_rating?: number;
+  isbn13?: string;
 }
 
 export default function RegistroLeitura() {
@@ -48,14 +50,9 @@ export default function RegistroLeitura() {
       return;
     }
     setBuscando(true);
-    try {
-      const data = await api(`/search?q=${termo}`);
-      setResultados(data.livros || []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setBuscando(false);
-    }
+   const livros = await RegistroController.buscarLivros(termo);
+   setResultados(livros);
+   setBuscando(false);
   };
 
   const selecionarLivro = (livro: Livro) => {
@@ -75,21 +72,19 @@ export default function RegistroLeitura() {
       Alert.alert('Erro', 'Usuário não autenticado');
       return;
     }
-    const novoLivro = {
+    const sucesso = await RegistroController.salvarAvaliacao(uid, {
+      bookIsbn: livroSelecionado.isbn13 || '',
       nomeLivro: livroSelecionado.title,
       nomeAutor: livroSelecionado.authors,
       nota,
       resenha,
-    };
-    try {
-      await createBook(uid, novoLivro);
+    });
+    if (sucesso) {
       Alert.alert('Sucesso', 'Livro registrado com sucesso!');
       setLivroSelecionado(null);
       setNota(0);
       setResenha('');
-      router.replace('/home');
-    } catch (error: any) {
-      Alert.alert('Erro', error.message);
+      router.replace('/home')
     }
   };
 
@@ -104,7 +99,7 @@ export default function RegistroLeitura() {
     : null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Header />
 
@@ -221,14 +216,13 @@ export default function RegistroLeitura() {
 const styles = StyleSheet.create({
   safeArea: { 
     flex: 1, 
-    backgroundColor: '#D4AA94' 
+    backgroundColor: '#D4AA94', 
   },
   container: { 
     flex: 1 
   },
   content: { 
     padding: 20, 
-    paddingBottom: 40 
   },
   header: { 
     fontSize: 24, 
@@ -302,7 +296,11 @@ const styles = StyleSheet.create({
   },
   resenhaInput: { 
     height: 150, 
-    textAlignVertical: 'top' 
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    color: '#500903',
   },
   botoesContainer: { 
     flexDirection: 'row', 
@@ -311,10 +309,13 @@ const styles = StyleSheet.create({
   },
   botaoDescartar: { 
     flex: 1, 
-    backgroundColor: '#500903' 
+    backgroundColor: '#D4AA94',
+    borderRadius: 24,
   },
   botaoSalvar: { 
-    flex: 1 
+    flex: 1,
+    backgroundColor: '#500903',
+    borderRadius: 24,
   },
   modalContainer: { 
     flex: 1, 

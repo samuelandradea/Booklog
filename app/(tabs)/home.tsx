@@ -1,31 +1,32 @@
+// src/app/(tabs)/home.tsx
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
+import { HomeController } from "@/controllers/homeController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
+import { ILivro } from "@/models/LivroModel";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
-import { api } from "@/lib/api";
 
 export default function Home() {
-  const { user, loading } = useProtectedRoute()
+  const { user, loading } = useProtectedRoute();
   const router = useRouter();
   const [textoHome, setTextoHome] = useState("");
- 
-  if (loading) return null
 
-  const [livrosBanco, setLivrosBanco] = useState([]);
+  const [livrosBanco, setLivrosBanco] = useState<ILivro[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
     const buscarLivros = async () => {
       try {
-        const data = await api("/books");
+        const data = await HomeController.buscarLivrosEmAlta();
         setLivrosBanco(data);
       } catch (error) {
         console.error("Erro ao buscar livros para a Home:", error);
@@ -34,12 +35,21 @@ export default function Home() {
       }
     };
 
-    buscarLivros();
-  }, []);
+    if (!loading) {
+      buscarLivros();
+    }
+  }, [loading]);
+
+  if (loading) return null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.mainContent}>
+      {/* Trocamos a View por ScrollView */}
+      <ScrollView
+        style={styles.mainContent}
+        contentContainerStyle={styles.scrollContent} // Estilo de quem está dentro
+        showsVerticalScrollIndicator={false} // Esconde a barra de rolagem feia do lado
+      >
         <View>
           <Header />
           <View style={styles.searchSection}>
@@ -54,18 +64,22 @@ export default function Home() {
         </View>
 
         {carregando ? (
-          <ActivityIndicator size="large" color="#500903" style={{ flex: 1 }} />
+          <ActivityIndicator
+            size="large"
+            color="#500903"
+            style={{ marginTop: 50 }}
+          />
         ) : (
-          <>
+          <View style={styles.carrosselContainer}>
             <CarrosselLivros
               titulo="Recomendações"
               dados={livrosBanco.slice(0, 9)}
-              mostrarBolinhas={true}
+              mostrarBolinhas={false}
             />
             <CarrosselLivros
               titulo="Melhores do mês"
               dados={livrosBanco.slice(0, 9)}
-              mostrarBolinhas={true}
+              mostrarBolinhas={false}
             />
             <CarrosselLivros
               titulo="Feed amigos"
@@ -73,9 +87,9 @@ export default function Home() {
               variante="feed"
               mostrarBolinhas={false}
             />
-          </>
+          </View>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -89,11 +103,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 22,
     paddingTop: 10,
-    paddingBottom: 4,
-    justifyContent: "space-between",
+  },
+  scrollContent: {
+    paddingBottom: 40, // Adiciona um respiro no final para o último carrossel não encostar no menu
   },
   searchSection: {
     marginTop: 8,
-    marginBottom: 0,
+    marginBottom: 20, // Afastamos um pouco a barra de pesquisa do primeiro carrossel
+  },
+  carrosselContainer: {
+    gap: 16, // Cria um espaçamento uniforme entre os 3 carrosséis (se sua versão do RN for mais antiga e não suportar gap, me avise!)
   },
 });

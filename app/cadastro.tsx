@@ -8,15 +8,19 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, To
 import { TextInputMask } from 'react-native-masked-text'
 import { CadastroController } from "@/controllers/cadastroController"
 
+// tela responsavel por capturar as entradas do usuario e repassar pro controller
 export default function Signup() {
+    // gerenciamento do estado local apenas pra capturar os dados
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [gender, setGender] = useState("");
-    const genders = ["Mulher", "Homem", "Outros"];
+    const genders = ["Mulher", "Homem", "Outros"]; // opcoes que vão ser renderizadas na tela
 
+    // instancia do controller para realizar a logica de cadastro
+    // funcao acionada pelo evento de submissao do formulario, envia os dados para o controller
     const controller = new CadastroController();
     async function handleSignUp() {
         console.log("handleSignUp chamado")
@@ -30,6 +34,7 @@ export default function Signup() {
             gender
         );
 
+        // caso ocorra tudo bem, navega para a tela de gostos.
         if (sucesso) {
             router.replace("/gostos")
         }
@@ -112,7 +117,7 @@ export default function Signup() {
                     <FooterLink linkLabel="Possue conta? Faça seu login!" href="/" 
                     />
                 </View>
-            </ScrollView>
+            </ScrollView> 
         </KeyboardAvoidingView>
     );
 }

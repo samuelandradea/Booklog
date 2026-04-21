@@ -1,7 +1,10 @@
+// Importação de componentes reutilizáveis da interface
 import { Button } from "@/components/Button";
 import { Divider } from "@/components/Divider";
+// Importação do controller responsável pela lógica de perfil (POO)
+import { PerfilController } from "@/controllers/perfilController";
+// Hook de autenticação para acessar o usuário logado
 import { useAuth } from "@/context/authContext";
-import { updateUser } from "@/services/userService";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -16,59 +19,65 @@ import {
   View,
 } from "react-native";
 
+// Lista fixa de gêneros literários disponíveis para o usuário selecionar
+const genres = [
+  "Ficção",
+  "Crítica Literária", 
+  "Comics & HQs",
+  "Biografia e autobiografia",
+  "Filosofia",
+  "Ficção juvenil",
+  "Ciências",
+  "Drama",
+  "História",
+  "Poesia",
+  "Não-ficção juvenil",
+  "Religião",
+];
+
+// Instância do controller (camada de lógica da aplicação)
+const controller = new PerfilController();
+
 export default function Gostos() {
-  // ✅ HOOK MOVIDO PARA O TOPO (Onde ele pertence!)
+
+  // Obtém o usuário autenticado
   const { user } = useAuth();
+
   const { width } = useWindowDimensions();
 
+  // Define a largura dos botões dinamicamente
   const buttonWidth = (width - 32 - 32 - 16) / 3;
-  const genres = [
-    "Ficção",
-    "Crítica Literária",
-    "Comics & HQs",
-    "Biografia e autobiografia",
-    "Filosofia",
-    "Ficção juvenil",
-    "Ciências",
-    "Drama",
-    "História",
-    "Poesia",
-    "Não-ficção juvenil",
-    "Religião",
-  ];
 
+  // Estado que armazena os gêneros selecionados pelo usuário
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
+  // Função chamada ao confirmar seleção de gêneros
   async function handleConfirm() {
-    if (selectedGenres.length == 0) {
-      Alert.alert("Você não selecionou nenhum genêro");
-      return;
-    }
-
-    const userGenres = {
-      genres: selectedGenres,
-    };
-
-    // Agora ele apenas lê a variável "user" que foi criada lá em cima
-    const uid = user?.uid;
-
-    if (!uid) {
-      alert("Usuário não encontrado.");
-      return;
-    }
-
     try {
-      await updateUser(uid, userGenres);
+      // Chama o controller (regra de negócio) para salvar os dados
+      await controller.salvarGeneros(user?.uid, selectedGenres);
+
       router.replace("/(tabs)/home");
-    } catch (error) {
-      console.error("Erro ao atualizar gostos:", error);
+
+    } catch (error: any) {
+      Alert.alert(error.message);
     }
   }
 
+  // Função para adicionar/remover um gênero da lista (toggle)
   function handleSelectGenre(genre: string) {
+
+    // Verifica se o gênero já está selecionado
     if (selectedGenres.includes(genre)) {
-      setSelectedGenres((prev) => prev.filter((genres) => genres !== genre));
+
+      // Remove o gênero da lista
+      setSelectedGenres((prev) =>
+        prev.filter((genres) => genres !== genre)
+      );
+
     } else {
+
+      // Adiciona o gênero à lista
       setSelectedGenres((prev) => [...prev, genre]);
     }
   }
@@ -83,24 +92,37 @@ export default function Gostos() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
+
           <Text style={styles.title}>Gêneros favoritos</Text>
+
           <Divider />
+
           <Text style={styles.subtitle}>
             Selecione os gêneros que você mais gosta
           </Text>
+
           <Divider />
+
+          {/* Lista de botões de gêneros */}
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+
             {genres.map((genre) => (
+
               <TouchableOpacity
+                key={genre}
+
+                // Estilo muda conforme seleção
                 style={[
                   selectedGenres.includes(genre)
                     ? styles.selecionado
                     : styles.normal,
                   { width: buttonWidth },
                 ]}
-                key={genre}
+
+                // Ao clicar, adiciona/remove gênero
                 onPress={() => handleSelectGenre(genre)}
               >
+
                 <Text
                   style={
                     selectedGenres.includes(genre)
@@ -110,11 +132,16 @@ export default function Gostos() {
                 >
                   {genre}
                 </Text>
+
               </TouchableOpacity>
             ))}
+
           </View>
+
+          {/* Botão de confirmação */}
           <View style={{ alignItems: "center", marginTop: 24 }}>
             <Button label="Confirmar" onPress={handleConfirm} />
+
           </View>
         </View>
       </ScrollView>
@@ -137,6 +164,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
+
+  // Estilo padrão dos botões de gênero
   normal: {
     paddingVertical: 8,
     paddingHorizontal: 4,
@@ -158,6 +187,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  // Container principal da tela
   container: {
     flex: 1,
     backgroundColor: "#D4AA94",
