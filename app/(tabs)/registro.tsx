@@ -23,6 +23,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+// Tipo local que representa um livro retornado pela API de busca
 type Livro = {
   id: string;
   title: string;
@@ -32,6 +33,8 @@ type Livro = {
   isbn13?: string;
 }
 
+// Tela responsável pelo registro de leituras do usuário
+// Permite selecionar um livro via busca, atribuir nota e escrever resenha
 export default function RegistroLeitura() {
   const { user, loading } = useProtectedRoute()
   const [nota, setNota] = useState(0);
@@ -44,6 +47,7 @@ export default function RegistroLeitura() {
 
   if (loading) return null
 
+  // Busca livros na API pelo termo digitado e atualiza a lista de resultados
   const buscarLivros = async (termo: string) => {
     if (!termo.trim()) {
       setResultados([]);
@@ -55,6 +59,7 @@ export default function RegistroLeitura() {
    setBuscando(false);
   };
 
+  // Preenche os dados do livro selecionado e fecha o modal de busca
   const selecionarLivro = (livro: Livro) => {
     setLivroSelecionado(livro);
     setModalVisivel(false);
@@ -62,6 +67,7 @@ export default function RegistroLeitura() {
     setResultados([]);
   };
 
+  // Valida os dados e salva a avaliação via RegistroController
   const handleSalvar = async () => {
     if (!livroSelecionado) {
       Alert.alert('Erro', 'Selecione um livro');
@@ -88,12 +94,14 @@ export default function RegistroLeitura() {
     }
   };
 
+  // Limpa todos os campos do formulário
   const handleDescartar = () => {
     setLivroSelecionado(null);
     setNota(0);
     setResenha('');
   };
 
+  // converte a URL da capa para HTTPS para evitar erros de segurança no iOS
   const thumbnail = livroSelecionado?.thumbnail
     ? livroSelecionado.thumbnail.replace('http:', 'https:')
     : null;
@@ -309,13 +317,15 @@ const styles = StyleSheet.create({
   },
   botaoDescartar: { 
     flex: 1, 
-    backgroundColor: '#D4AA94',
-    borderRadius: 24,
+    backgroundColor: '#C4906A',
+    borderRadius: 10,
+    height: 50,
   },
   botaoSalvar: { 
     flex: 1,
     backgroundColor: '#500903',
-    borderRadius: 24,
+    borderRadius: 10,
+    height: 50,
   },
   modalContainer: { 
     flex: 1, 

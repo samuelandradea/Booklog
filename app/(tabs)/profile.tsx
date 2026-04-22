@@ -21,12 +21,13 @@ import { CardLivro } from "@/components/CardLivro";
 export default function profile() {
   const { user, loading } = useProtectedRoute();
   const [reviews, setReviews] = useState<any[]>([]);
+  const leituraController = new LeituraController();
 
   useFocusEffect(
     useCallback(() => {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
-     LeituraController.buscarReviews(uid)
+     leituraController.buscarReviews(uid)
       .then(data => setReviews(data.slice(0, 4)))
       .catch(err => console.error("Erro ao buscar reviews:", err));
     }, []),

@@ -12,12 +12,16 @@ import {
 } from 'react-native';
 import { api } from "@/lib/api";
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Tela responsável por exibir as informações detalhadas de um livro
+// Recebe o isbn via parâmetro de rota e busca os dados na API
 export default function LivroInfo() {
   const { user, loading } = useProtectedRoute()
   const { isbn } = useLocalSearchParams();
   const [livro, setLivro] = useState<any>(null);
   const [carregando, setCarregando] = useState(true);
 
+  // busca os dados do livro na API pelo isbn recebido via parâmetro de rota
   useEffect(() => {
     if (isbn) {
       api(`/books/${isbn}`)
@@ -45,10 +49,12 @@ export default function LivroInfo() {
     );
   }
 
+  // converte a URL da capa para HTTPS para evitar erros de segurança no iOS
   const thumbnail = livro.thumbnail
     ? livro.thumbnail.replace('http:', 'https:')
     : null;
 
+    // separa as categorias que vêm como string separada por vírgula
   const categorias = livro.categories
     ? livro.categories.split(',').map((c: string) => c.trim())
     : [];

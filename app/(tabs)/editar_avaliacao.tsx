@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useLocalSearchParams, router } from "expo-router";
+import { Button } from "@/components/Button";
 import { LeituraController } from "@/controllers/leituraController";
 import { useState } from "react";
 import Slider from "@react-native-community/slider";
@@ -11,7 +12,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -88,7 +88,7 @@ export default function EditarAvaliacao() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content}>
         <Header />
 
@@ -134,20 +134,23 @@ export default function EditarAvaliacao() {
           placeholder="Escreva sua resenha..."
         />
 
-        <TouchableOpacity style={styles.botaoSalvar} onPress={salvarEdicao}>
-          <Text style={styles.botaoTexto}>Salvar e sair</Text>
-        </TouchableOpacity>
+        <Button
+          label="Salvar e sair"
+          style={styles.botaoSalvar}
+          onPress={salvarEdicao}
+        />
 
-        <TouchableOpacity
+        <Button
+          label="Sair sem salvar"
           style={styles.botaoSairSemSalvar}
           onPress={sairSemSalvar}
-        >
-          <Text style={styles.botaoTexto}>Sair sem salvar</Text>
-        </TouchableOpacity>
+        />
 
-        <TouchableOpacity style={styles.botaoDeletar} onPress={deletarReview}>
-          <Text style={styles.botaoTexto}>Deletar avaliação</Text>
-        </TouchableOpacity>
+        <Button
+          label="Deletar avaliação"
+          style={styles.botaoDeletar}
+          onPress={deletarReview}
+        />
       </ScrollView>
     </SafeAreaView>
   );
