@@ -1,49 +1,65 @@
+import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Divider } from "@/components/Divider";
+import { Header } from "@/components/Header"
 import { MenuOpcao } from "@/components/MenuOpcao";
+import { PerfilController } from "@/controllers/perfilController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { LeituraController } from "@/controllers/leituraController";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { router, useFocusEffect } from "expo-router";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View} from "react-native";
 import { useCallback, useState } from "react";
-import { useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
 import { auth } from "@/lib/firebase";
-import { CardLivro } from "@/components/CardLivro";
 
-export default function profile() {
+
+const controller = new PerfilController();
+
+// tela responsavel por exibir os dados do perfil do usuario autenticado
+export default function Profile() {
   const { user, loading } = useProtectedRoute();
-  const [reviews, setReviews] = useState<any[]>([]);
-  const leituraController = new LeituraController();
 
+  // gerenciamento do estado local para os dados exibidos na tela
+  const [nome, setNome] = useState("");
+  const [bio, setBio] = useState("");
+  const [reviews, setReviews] = useState<any[]>([]);
+  
+  // useFocusEffect garante que os dados sejam recarregados toda vez que a tela recebe foco
   useFocusEffect(
     useCallback(() => {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
-     leituraController.buscarReviews(uid)
-      .then(data => setReviews(data.slice(0, 4)))
-      .catch(err => console.error("Erro ao buscar reviews:", err));
+      
+      controller.carregarPerfil(uid).then((perfil) => {
+        if (perfil) {
+          setNome(perfil.nome)
+          setBio(perfil.bio)
+        }
+      })
+      
+      // busca as reviews do usuario e enriquece cada uma com a capa do livro correspondente
+      api(`/users/${uid}/reviews`)
+        .then(async (data) => {
+          const reviewsComCapa = await Promise.all(
+            // limita a 4 reviews e busca a thumbnail de cada livro pela isbn
+            data.slice(0, 4).map(async (review: any) => {
+              try {
+                const livro = await api(`/books/${review.bookIsbn}`);
+                return { ...review, thumbnail: livro.thumbnail };
+              } catch {
+                // caso a capa nao seja encontrada, retorna a review sem thumbnail
+                return review;
+              }
+            }),
+          );
+          setReviews(reviewsComCapa);
+        })
+        .catch((err) => console.error("Erro ao buscar reviews:", err));
+
     }, []),
-);
+  );
 
-
+  // aguarda a verificacao de autenticacao antes de renderizar a tela
   if (loading) return null;
-
-  const emailCompleto = auth.currentUser?.email || "";
-  const nomeUsuario =
-    auth.currentUser?.displayName ||
-    emailCompleto
-      .split("@")[0]
-      .replace(".", " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()) ||
-    "Usuário";
 
   return (
     <KeyboardAvoidingView
@@ -55,13 +71,17 @@ export default function profile() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
+        <Header />
+
+        {/* cabecalho do perfil com avatar, nome e bio do usuario */}
         <View style={styles.header}>
           <View style={styles.avatar}>
             <Ionicons name="person" size={40} color="#D4AA94" />
           </View>
           <View style={styles.headerTextos}>
-            <Text style={styles.username}>{nomeUsuario}</Text>
-            <Text style={styles.bio}>"biografia do usuário</Text>
+            <Text style={styles.username}>{nome || "Usuário"}</Text>
+            {/* bio só aparece se existir */}
+            {bio ? <Text style={styles.bio}>{bio}</Text> : null}
           </View>
         </View>
 
@@ -80,51 +100,30 @@ export default function profile() {
               marginBottom: 12,
             }}
           >
-            Nenhum livro lido ainda
+            Nenhum livro adicionado
           </Text>
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 12 }}
-          >
-            {reviews.map((r) => (
-              <CardLivro
-                key={r.id}
-                nome={r.nomeLivro}
-                nota={r.nota}
-                thumbnail={
-                  r.thumbnail
-                    ? r.thumbnail.replace("http:", "https:")
-                    : undefined
-                }
-                onPress={() =>
-                  router.push({
-                    pathname: "/avaliacao",
-                    params: {
-                      nomeLivro: r.nomeLivro,
-                      nomeAutor: r.nomeAutor,
-                      nota: r.nota,
-                      resenha: r.resenha,
-                      thumbnail: r.thumbnail || "",
-                    },
-                  })
-                }
-              />
-            ))}
-          </ScrollView>
+          <CarrosselLivros
+            titulo=""
+            dados={reviews.map((r) => ({
+              ...r,
+              title: r.nomeLivro,
+              average_rating: r.nota,
+            }))}
+            mostrarBolinhas={false}
+          />
         )}
 
         <MenuOpcao
-          label="Configurações"
-          onPress={() => router.push("/configuracoes")}
+          label="Amizades" onPress={() => router.push("/amizades")}
         />
         <Divider style={styles.dividerCompacto} />
-        <MenuOpcao label="Amizades" onPress={() => router.push("/amizades")} />
+        <MenuOpcao 
+          label="Minhas Listas" onPress={() => router.push("/minhas_listas")}
+        />
         <Divider style={styles.dividerCompacto} />
         <MenuOpcao
-          label="Minhas listas"
-          onPress={() => router.push("/minhas_listas")}
+          label="Configurações" onPress={() => router.push("/configuracoes")}
         />
         <Divider style={styles.dividerCompacto} />
       </ScrollView>
