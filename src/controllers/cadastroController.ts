@@ -8,9 +8,16 @@ export class CadastroController {
     
     public async registrar(nome: string, email: string, senha: string, confirmacaoSenha: string, dataNasc: string, genero: string): Promise<boolean> {
         
-        // validacoes do cadastro
+        // valida se os campos estao vazios
         if (!nome || !email || !senha || !confirmacaoSenha || !dataNasc || !genero) {
             Alert.alert("Atenção", "Por favor, preencha todos os campos.");
+            return false;
+        }
+
+        // uso do regex para testar se o texto inserido na senha segue as regras do app
+        const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!regexSenha.test(senha)){
+            Alert.alert("Senha fraca, por favor siga os critérios descritos abaixo.");
             return false;
         }
 
