@@ -106,9 +106,12 @@ export default function Profile() {
           <CarrosselLivros
             titulo=""
             dados={reviews.map((r) => ({
-              ...r,
-              title: r.nomeLivro,
-              average_rating: r.nota,
+              id: r.bookIsbn || r.id || "",
+              titulo: r.nomeLivro || "Título Desconhecido",
+              autores: r.nomeAutor || "Autor Desconhecido",
+              capa: r.thumbnail || "",
+              notaMedia: r.nota || 0,
+              categoria: "",
             }))}
             mostrarBolinhas={false}
           />
