@@ -106,7 +106,8 @@ export default function Profile() {
           <CarrosselLivros
             titulo=""
             dados={reviews.map((r) => ({
-              id: r.bookIsbn || r.id || "",
+              id: r.id || r.bookIsbn || "",
+              isbn13: r.bookIsbn || "",
               titulo: r.nomeLivro || "Título Desconhecido",
               autores: r.nomeAutor || "Autor Desconhecido",
               capa: r.thumbnail || "",

@@ -105,7 +105,7 @@ export default function Leituras() {
                   // Ao clicar, navega para a tela de edição passando os dados da review
                   onPress={() =>
                     router.push({
-                      pathname: "/editar_avaliacao",
+                      pathname: "/edicao",
                       params: {
                         id: item.id,
                         nomeLivro: item.nomeLivro,

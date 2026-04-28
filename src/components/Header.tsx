@@ -11,6 +11,7 @@ type HeaderProps = {
    * @default false (Se ninguém avisar nada, ela começa escondida)
    */
   mostrarEngrenagem?: boolean;
+  onPressLogo?: () => void; 
 };
 
 /**
@@ -18,7 +19,7 @@ type HeaderProps = {
  * * Exibe a logo "booklog" que, ao ser clicada, sempre redireciona o usuário
  * de volta para a aba principal (Home). Suporta um botão de configurações opcional.
  */
-export function Header({ mostrarEngrenagem = false }: HeaderProps) {
+export function Header({ mostrarEngrenagem = false, onPressLogo }: HeaderProps) {
   const router = useRouter();
 
   return (
@@ -26,7 +27,8 @@ export function Header({ mostrarEngrenagem = false }: HeaderProps) {
       {/* Botão da Logo: Age como um botão de "Início" em qualquer tela do app */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.navigate("/(tabs)/home")}
+        /* Usa onPressLogo se existir, senão navega para home */
+        onPress={onPressLogo ?? (() => router.navigate("/(tabs)/home"))}
       >
         <Text style={styles.logo}>booklog</Text>
       </TouchableOpacity>
