@@ -318,14 +318,18 @@ const styles = StyleSheet.create({
   botaoDescartar: { 
     flex: 1, 
     backgroundColor: '#C4906A',
+    padding: 8,
     borderRadius: 10,
     height: 50,
+    alignItems: "center",
   },
   botaoSalvar: { 
     flex: 1,
     backgroundColor: '#500903',
+    padding: 8,
     borderRadius: 10,
     height: 50,
+    alignItems: "center",
   },
   modalContainer: { 
     flex: 1, 
