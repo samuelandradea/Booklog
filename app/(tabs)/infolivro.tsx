@@ -25,8 +25,7 @@ export default function LivroInfo() {
   useEffect(() => {
     if (isbn) {
       api(`/books/${isbn}`)
-        .then(data => {
-          setLivro(data)})
+        .then(data => setLivro(data))
         .catch(err => console.error(err))
         .finally(() => setCarregando(false));
     }

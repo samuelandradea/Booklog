@@ -7,6 +7,7 @@
  */
 export interface ILivro {
   id: string;
+  isbn13: string
   titulo: string;
   autores: string;
   capa: string;

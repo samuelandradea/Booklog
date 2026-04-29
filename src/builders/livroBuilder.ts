@@ -15,6 +15,11 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     // gera um ID aleatório para evitar erros no keyExtractor das FlatLists do React.
     id: livroBruto.id || livroBruto.isbn13 || Math.random().toString(),
 
+    // ISBN13 do livro — identificador universal usado para navegar para a tela de detalhes do livro.
+    // Separado do 'id' pois o Firestore gera seu próprio identificador interno,
+    // enquanto o isbn13 é necessário para buscar os dados na API externa.
+    isbn13: livroBruto.isbn13 || "",
+    
     // Mapeia o título. Se a API retornar nulo, previne a quebra exibindo um texto padrão.
     titulo: livroBruto.title || "Título Desconhecido",
 
