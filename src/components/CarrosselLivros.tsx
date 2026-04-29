@@ -104,7 +104,7 @@ export function CarrosselLivros({
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
               // Redireciona para a tela de informações do livro passando o ISBN (ou ID) como parâmetro
-              onPress={() => router.push(`/infolivro?isbn=${item.id}`)}
+              onPress={() => router.push(`/infolivro?isbn=${item.isbn13}`)}
             />
           );
         }}
