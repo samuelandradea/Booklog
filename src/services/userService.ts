@@ -17,6 +17,9 @@ export async function updateUser(uid: string, data: Partial<{
     friendIds: string[]
     listIds: string[]
     reviewIds: string[]
+    semanaSalva: string
+    diasLidosSemana: number[]
+    totalDiasLidos: number
 }>) {
     return await api(`/users/${uid}`, {
         method: 'PUT',
