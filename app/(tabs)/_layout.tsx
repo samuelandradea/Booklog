@@ -46,7 +46,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="game"
+        name="gameficacao"
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="trophy-outline" size={36} color={color} />
