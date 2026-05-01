@@ -114,7 +114,7 @@ export default function Signup() {
                         <Divider />
                     </View>
 
-                    <FooterLink linkLabel="Possue conta? Faça seu login!" href="/" 
+                    <FooterLink text="Possue conta?" linkLabel= "Faça seu login!" href="/" 
                     />
                 </View>
             </ScrollView> 

@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         color: "#500903",
         fontFamily: "RedHatDisplay_400Regular",
         fontSize: 18,
-        marginTop: 5,
+        marginTop: 2,
     },
     footerLink: {
         color: "#500903",
