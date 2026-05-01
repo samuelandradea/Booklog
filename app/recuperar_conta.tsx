@@ -118,10 +118,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#6F1D1B",
   },
-  link: {
-    fontFamily: "RedHatDisplay_700Bold",
-    color: "#500903",
-    fontSize: 16,
-    marginTop: 4,
-  },
 });
