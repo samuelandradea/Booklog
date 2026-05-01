@@ -18,13 +18,33 @@ import {
 export default function RecuperarConta() {
   const [email, setEmail] = useState("");
 
-  const handleContinuar = () => {
+  const handleContinuar = async () => {
     if (!email.trim()) {
       Alert.alert("Atenção", "Por favor, informe seu email.");
       return;
     }
-    // Navega para a tela de código de recuperação passando o email
-    router.push({ pathname: "/codigo_recuperacao", params: { email } });
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/recovery/send-code`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert("Sucesso", `Código enviado para ${email}`);
+        router.push({
+          pathname: "/codigo_recuperacao" as any,
+          params: { email },
+        });
+      } else {
+        Alert.alert("Erro", data.detail || "Erro ao enviar código.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
   };
 
   return (
@@ -56,9 +76,16 @@ export default function RecuperarConta() {
         />
 
         <Divider />
-        <FooterLink  text="Possue conta?" linkLabel="Faça seu login!" href={"/"}  />
-        <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/cadastro" />
-        
+        <FooterLink
+          text="Possue conta?"
+          linkLabel="Faça seu login!"
+          href={"/"}
+        />
+        <FooterLink
+          text="Não possui uma conta?"
+          linkLabel="Cadastre-se aqui!"
+          href="/cadastro"
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -86,7 +113,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   botao: {
-    width: '50%',
+    width: "50%",
     padding: 4,
     borderRadius: 10,
     backgroundColor: "#6F1D1B",
