@@ -36,7 +36,7 @@ export default function Index(){
                         <Button label="Entrar" onPress={handleSignIn}></Button>
                     </View>
                     <Divider />
-                    <FooterLink linkLabel="Esqueci minha senha" href="/" />
+                    <FooterLink linkLabel="Esqueci minha senha" href="/recuperar_conta" />
                     <FooterLink text="Não possui uma conta?" linkLabel="Cadastre-se aqui!" href="/cadastro" />
                 </View>
             </ScrollView>
