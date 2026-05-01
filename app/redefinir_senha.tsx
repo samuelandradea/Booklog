@@ -1,15 +1,23 @@
-import { Button } from '@/components/Button';
-import { Divider } from '../src/components/Divider';
-import { Input } from '@/components/Input';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native';
+import { Button } from "@/components/Button";
+import { Divider } from "../src/components/Divider";
+import { Input } from "@/components/Input";
+import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+} from "react-native";
 
 // Tela responsável pela redefinição de senha do usuário
 // Valida os requisitos mínimos de segurança antes de salvar
 export default function RedefinirSenha() {
-  const [novaSenha, setNovaSenha] = useState('');
-  const [confirmacao, setConfirmacao] = useState('');
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmacao, setConfirmacao] = useState("");
+  const { email, codigo } = useLocalSearchParams();
 
   // Valida se a senha atende aos requisitos mínimos de segurança
   const senhaValida = (senha: string) => {
@@ -20,27 +28,53 @@ export default function RedefinirSenha() {
     return temOito && temMaiuscula && temMinuscula && temNumero;
   };
 
-  const handleEnviar = () => {
+  const handleEnviar = async () => {
     if (!novaSenha.trim() || !confirmacao.trim()) {
-      Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+      Alert.alert("Atenção", "Por favor, preencha todos os campos.");
       return;
     }
     if (!senhaValida(novaSenha)) {
-      Alert.alert('Senha inválida', 'A senha não atende aos requisitos mínimos.');
+      Alert.alert(
+        "Senha inválida",
+        "A senha não atende aos requisitos mínimos.",
+      );
       return;
     }
     if (novaSenha !== confirmacao) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
+      Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
-    Alert.alert('Sucesso', 'Senha redefinida com sucesso!', [
-      { text: 'OK', onPress: () => router.replace('/index') },
-    ]);
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/recovery/reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, codigo, nova_senha: novaSenha }),
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert("Sucesso", "Senha redefinida com sucesso!", [
+          { text: "OK", onPress: () => router.replace("/" as any) },
+        ]);
+      } else {
+        Alert.alert("Erro", data.detail || "Erro ao redefinir senha.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: 'padding', android: 'height' })}>
-      <ScrollView contentContainerStyle={styles.container} style={styles.scroll}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({ ios: "padding", android: "height" })}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        style={styles.scroll}
+      >
         <Text style={styles.titulo}>Digite sua nova senha:</Text>
 
         <Input
@@ -60,10 +94,10 @@ export default function RedefinirSenha() {
         />
 
         <Text style={styles.requisitos}>
-          A senha precisa conter pelo menos:{'\n'}
-          Oito caracteres{'\n'}
-          Uma letra maiúscula{'\n'}
-          Uma letra minúscula{'\n'}
+          A senha precisa conter pelo menos:{"\n"}
+          Oito caracteres{"\n"}
+          Uma letra maiúscula{"\n"}
+          Uma letra minúscula{"\n"}
           Um número
         </Text>
 
@@ -80,43 +114,43 @@ export default function RedefinirSenha() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { backgroundColor: '#D4AA94' },
+  scroll: { backgroundColor: "#D4AA94" },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
     gap: 16,
   },
   titulo: {
-    fontFamily: 'Poppins_700Bold',
+    fontFamily: "Poppins_700Bold",
     fontSize: 22,
-    color: '#500903',
-    textAlign: 'center',
+    color: "#500903",
+    textAlign: "center",
     marginBottom: 16,
   },
   input: {
-    width: '100%',
-    backgroundColor: '#6F1D1B',
+    width: "100%",
+    backgroundColor: "#6F1D1B",
     borderRadius: 10,
-    color: '#fff',
+    color: "#fff",
   },
   requisitos: {
-    fontFamily: 'RedHatDisplay_500Medium',
-    color: '#500903',
+    fontFamily: "RedHatDisplay_500Medium",
+    color: "#500903",
     fontSize: 13,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     lineHeight: 22,
   },
   botao: {
-    width: '60%',
+    width: "60%",
     borderRadius: 24,
-    backgroundColor: '#6F1D1B',
-    textAlign: 'center',
+    backgroundColor: "#6F1D1B",
+    textAlign: "center",
   },
   linkVoltar: {
-    fontFamily: 'RedHatDisplay_500Medium',
-    color: '#500903',
+    fontFamily: "RedHatDisplay_500Medium",
+    color: "#500903",
     fontSize: 14,
     marginTop: 16,
     opacity: 0.7,
