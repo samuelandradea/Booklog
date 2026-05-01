@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button";
 import { Divider } from "../src/components/Divider";
+import { FooterLink } from "@/components/Footerlink";
 import { Input } from "@/components/Input";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -17,21 +18,9 @@ export default function CodigoRecuperacao() {
   const { email } = useLocalSearchParams();
   const [codigo, setCodigo] = useState("");
 
-  const handleContinuar = () => {
+  const handleContinuar = async () => {
     if (!codigo.trim()) {
       Alert.alert("Atenção", "Por favor, informe o código recebido.");
-      return;
-    }
-    // Navega para a tela de redefinição de senha
-    router.push({ pathname: "/redefinir_senha", params: { email, codigo } });
-  };
-
-  const handleReenviar = async () => {
-    if (!codigo.trim()) {
-      Alert.alert(
-        "Código reenviado",
-        "Um novo código foi enviado para o seu email.",
-      );
       return;
     }
     try {
@@ -51,6 +40,26 @@ export default function CodigoRecuperacao() {
         });
       } else {
         Alert.alert("Erro", data.detail || "Código inválido.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
+  };
+
+  const handleReenviar = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/recovery/send-code`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
+      if (response.ok) {
+        Alert.alert("Código reenviado", "Um novo código foi enviado para ${email}");
+      } else {
+        Alert.alert("Erro", "Não foi possível reenviar o código.");
       }
     } catch (error) {
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
@@ -78,6 +87,10 @@ export default function CodigoRecuperacao() {
           keyboardType="number-pad"
         />
 
+        <Text style={styles.aviso}>
+          Caso não encontre o email, verifique a caixa de spam.
+        </Text>
+
         <Button
           label="Continuar"
           style={styles.botao}
@@ -90,9 +103,7 @@ export default function CodigoRecuperacao() {
 
         <Divider />
 
-        <Text style={styles.linkVoltar} onPress={() => router.back()}>
-          Voltar
-        </Text>
+        <FooterLink linkLabel="Voltar" href={"/"} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -120,22 +131,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: "#fff",
   },
+  aviso: {
+    fontFamily: "RedHatDisplay_500Medium",
+    color: "#6F1D1B",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: -8,
+  },
   botao: {
     width: "60%",
     borderRadius: 24,
     backgroundColor: "#6F1D1B",
   },
   link: {
-    fontFamily: "RedHatDisplay_500Medium",
+    fontFamily: "RedHatDisplay_700Bold",
     color: "#500903",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  linkVoltar: {
-    fontFamily: "RedHatDisplay_500Medium",
-    color: "#500903",
-    fontSize: 14,
-    marginTop: 16,
-    opacity: 0.7,
+    fontSize: 18,
+    marginTop: 2,
+    textAlign: 'center',
   },
 });

@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button";
 import { Divider } from "../src/components/Divider";
 import { Input } from "@/components/Input";
+import { FooterLink } from "@/components/Footerlink";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
@@ -105,9 +106,8 @@ export default function RedefinirSenha() {
 
         <Divider />
 
-        <Text style={styles.linkVoltar} onPress={() => router.back()}>
-          Voltar
-        </Text>
+        <FooterLink linkLabel="Voltar"href={"/"} />
+        
       </ScrollView>
     </KeyboardAvoidingView>
   );
