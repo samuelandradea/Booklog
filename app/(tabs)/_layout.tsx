@@ -69,6 +69,9 @@ export default function TabLayout() {
       <Tabs.Screen name="infolivro" options={{ href: null }} />
       <Tabs.Screen name="pesquisa" options={{ href: null }} />
       <Tabs.Screen name="edicao" options={{ href: null }} />
+      <Tabs.Screen name="avaliacao" options={{ href: null }} />
+      <Tabs.Screen name="editar_avaliacao" options={{ href: null }} />
+      <Tabs.Screen name="dentroLista" options={{ href: null }} />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}
     </Tabs>
   );
