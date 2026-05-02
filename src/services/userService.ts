@@ -43,3 +43,21 @@ export async function getUser(uid: string) {
         method: 'GET',
     })
 }
+
+export async function followUser(uid: string, targetUid: string) {
+    return await api(`/users/${uid}/follow/${targetUid}`, {
+        method: 'POST',
+    })
+}
+ 
+export async function unfollowUser(uid: string, targetUid: string) {
+    return await api(`/users/${uid}/unfollow/${targetUid}`, {
+        method: 'DELETE',
+    })
+}
+ 
+export async function getFollowing(uid: string) {
+    return await api(`/users/${uid}/following`, {
+        method: 'GET',
+    })
+}
