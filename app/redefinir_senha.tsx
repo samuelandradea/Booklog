@@ -120,14 +120,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    gap: 16,
+    gap: 4,
   },
   titulo: {
     fontFamily: "Poppins_700Bold",
     fontSize: 22,
     color: "#500903",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 2,
   },
   input: {
     width: "100%",
@@ -143,16 +143,15 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   botao: {
-    width: "60%",
-    borderRadius: 24,
+    width: "50%",
+    borderRadius: 10,
     backgroundColor: "#6F1D1B",
     textAlign: "center",
+    padding: 3,
   },
   linkVoltar: {
     fontFamily: "RedHatDisplay_500Medium",
     color: "#500903",
-    fontSize: 14,
-    marginTop: 16,
-    opacity: 0.7,
+    fontSize: 16,
   },
 });

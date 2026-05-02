@@ -29,15 +29,15 @@ export default function RecuperarConta() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email: email.toLowerCase()}),
         },
       );
       const data = await response.json();
       if (response.ok) {
         Alert.alert("Sucesso", `Código enviado para ${email}`);
         router.push({
-          pathname: "/codigo_recuperacao" as any,
-          params: { email },
+          pathname: "/codigo_recuperacao",
+          params: { email: email.toLowerCase() },
         });
       } else {
         Alert.alert("Erro", data.detail || "Erro ao enviar código.");
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   botao: {
     width: "50%",
-    padding: 4,
+    padding: 3,
     borderRadius: 10,
     backgroundColor: "#6F1D1B",
   },
