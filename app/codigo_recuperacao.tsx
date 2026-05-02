@@ -29,7 +29,7 @@ export default function CodigoRecuperacao() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, codigo }),
+          body: JSON.stringify({ email: (email as string).toLowerCase(), codigo }),
         },
       );
       const data = await response.json();
@@ -47,17 +47,18 @@ export default function CodigoRecuperacao() {
   };
 
   const handleReenviar = async () => {
+    console.log('reenviar para email:', email);
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/recovery/send-code`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email: (email as string).toLowerCase() }),
         },
       );
       if (response.ok) {
-        Alert.alert("Código reenviado", "Um novo código foi enviado para ${email}");
+        Alert.alert("Código reenviado", `Um novo código foi enviado para ${email}`);
       } else {
         Alert.alert("Erro", "Não foi possível reenviar o código.");
       }
@@ -103,7 +104,7 @@ export default function CodigoRecuperacao() {
 
         <Divider />
 
-        <FooterLink linkLabel="Voltar" href={"/"} />
+        <FooterLink linkLabel="Voltar" href={"/recuperar_conta"} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    gap: 16,
+    gap: 10,
   },
   titulo: {
     fontFamily: "Poppins_700Bold",
@@ -132,22 +133,21 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   aviso: {
-    fontFamily: "RedHatDisplay_500Medium",
+    fontFamily: "RedHatDisplay_700Bold",
     color: "#6F1D1B",
-    fontSize: 12,
+    fontSize: 18,
     textAlign: "center",
-    marginTop: -8,
   },
   botao: {
     width: "60%",
-    borderRadius: 24,
+    borderRadius: 10,
     backgroundColor: "#6F1D1B",
+    padding: 3,
   },
   link: {
     fontFamily: "RedHatDisplay_700Bold",
     color: "#500903",
     fontSize: 18,
-    marginTop: 2,
     textAlign: 'center',
   },
 });
