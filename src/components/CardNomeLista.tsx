@@ -18,7 +18,7 @@ type Props = {
  * uma página com todos os livros daquela lista
  * Também possuirá um ícone que servirá para ir para a tela de edição da respectiva lista.
  */
-export function CardPesquisaLista({
+export function CardLista({
   nome,
   variante = "novaLista",
   onPressPrincipal,
@@ -68,9 +68,9 @@ const styles = StyleSheet.create({
     alignItems: "center",        
     backgroundColor: "#500903",
     borderRadius: 8,
-    marginBottom: 25,
+    marginTop: 30,
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 6,
   },
   botaoPrincipal: {
     flex: 1, 
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_700Bold",
     color: "#f2ebe5",
     flexShrink: 1,
+    fontSize: 17
   },
   botaoAcao: {
     backgroundColor: "#500903",
