@@ -154,8 +154,12 @@ export default function TelaPesquisa() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }} // Margem de respiro no fim da lista
         >
-          {resultados.usuarios.map((user: any) => (
-            <CardPesquisaUsuario key={user.id} nome={user.name} />
+          {resultados.usuarios.map((u: any) => (
+            <CardPesquisaUsuario
+              key={u.id}
+              id={u.id}   // prop `id` adicionada — antes era só `nome={user.name}`, sem id
+              nome={u.name}
+            />
           ))}
 
           {resultados.autores.map((autor: any) => (

@@ -6,7 +6,7 @@ import { ConfiguracoesController, DadosPerfil } from "@/controllers/configuracoe
 import { auth } from "@/lib/firebase"
 import { router } from "expo-router"
 import { useEffect, useRef, useState } from "react"
-import {Alert, Animated, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native"
+import { Alert, Animated, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native"
 
 // instancia do controller fora do componente
 const controller = new ConfiguracoesController()
@@ -81,11 +81,11 @@ export default function Configuracoes() {
         if (sucesso) {
             // exibe toast de sucesso e volta para o perfil apos esmaecer
             exibirToast("Dados salvos")
-            setTimeout(() => router.replace("/(tabs)/profile"), 3000)
+            setTimeout(() => router.replace("/(tabs)/profile"), 1000)
         } else {
             // exibe toast de erro e volta para configuracoes
             exibirToast("Não foi possível alterar seus dados")
-            setTimeout(() => router.replace("/configuracoes"), 3000)
+            setTimeout(() => router.replace("/configuracoes"), 1000)
         }
     }
 
@@ -120,7 +120,8 @@ export default function Configuracoes() {
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height" })}>
+        <KeyboardAvoidingView style={{ flex: 1 }} 
+            behavior={Platform.select({ ios: "padding", android: "height" })}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
                 {/* HEADER */}
