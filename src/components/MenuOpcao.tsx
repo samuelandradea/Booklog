@@ -9,7 +9,7 @@ export function MenuOpcao({ label, ...rest }: MenuOpcaoProps) {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} {...rest}>
       <Text style={styles.label}>{label}</Text>
-      <Ionicons name="chevron-forward" size={20} color="#6F1D1B" />
+      <Ionicons name="chevron-forward" size={22} color="#6F1D1B" />
     </TouchableOpacity>
   )
 }
