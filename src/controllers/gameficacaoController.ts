@@ -15,6 +15,7 @@ export class GameficacaoController {
             const domingoAtual = this.getDomingoDestaSemana();
             const semanaSalvaNoBanco = userData.semanaSalva;
             const diasLidos = userData.diasLidosSemana || [];
+            const metaSalva = userData.metaAnual || 0;
 
             if (semanaSalvaNoBanco !== domingoAtual) {
                 const dadosResetados = {
@@ -25,18 +26,29 @@ export class GameficacaoController {
                
                 await updateUser(uid, dadosResetados);
                 
-                return [];
+                return { diasLidos: [], totalDias: userData.totalDiasLidos || 0, metaAnual: metaSalva };
             }
 
             
-            return diasLidos;
+            return { diasLidos: diasLidos, totalDias: userData.totalDiasLidos || 0, metaAnual: metaSalva };
 
         } catch (error) {
             console.error("Erro ao carregar progresso:", error);
-            return [];
+            return { diasLidos: [], totalDias: 0 };
         }
     }
-
+    
+    public async salvarMetaAnual(uid: string, novaMeta: number) {
+        try {
+            await updateUser(uid, {
+                metaAnual: novaMeta
+            });
+            return true;
+        } catch (error) {
+            console.error("Erro ao salvar meta anual:", error);
+            return false;
+        }
+    }
 
     public async marcarDiaComoLido(uid: string, diaDaSemana: number, diasJaLidos: number[], totalDiasHistorico: number = 0) {
         try {

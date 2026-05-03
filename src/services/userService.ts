@@ -28,6 +28,7 @@ export async function updateUser(uid: string, data: Partial<{
     semanaSalva: string
     diasLidosSemana: number[]
     totalDiasLidos: number
+    metaAnual: number
 }>) {
     // atualiza os dados do usuario existente no banco de dados
     // partial permite que apenas os campos alterados sejam enviados
