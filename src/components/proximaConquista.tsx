@@ -60,12 +60,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         gap: 8,
+        flexWrap: "wrap",
     },
     titulo: {
         fontFamily: "Poppins_700Bold",
         fontSize: 17,
         color: "#500903",
-        flexShrink: 0,
     },
     badge: {
         backgroundColor: "#500903",
