@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { GameficacaoController } from "@/controllers/gameficacaoController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const diasdaSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
@@ -14,13 +14,13 @@ export function LeituraDiaria() {
     const diaAtual = new Date().getDay(); 
 
     useEffect(() => {
-        if (user?.uid) {
-            controller.carregarProgresso(user.uid).then((dias) => {
-                setDiasLidos(dias);
-                setCarregando(false);
-            });
-        }
-    }, [user]);
+            if (user?.uid) {
+                controller.carregarProgresso(user.uid).then((dados) => {
+                    setDiasLidos(dados.diasLidos); 
+                    setCarregando(false);
+                });
+            }
+        }, [user]);
 
     async function handleMarcarDia() {
         if (!user?.uid) return;

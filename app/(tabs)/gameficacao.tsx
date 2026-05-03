@@ -1,10 +1,12 @@
+import { Header } from "@/components/Header";
+import { LeituraDiaria } from "@/components/leituraDiaria";
+import { ProximaConquista } from "@/components/proximaConquista";
+import { GameficacaoController } from "@/controllers/gameficacaoController";
+import { LeituraController } from "@/controllers/leituraController";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Header } from "@/components/Header";
-import { LeituraController } from "@/controllers/leituraController";
-import { useProtectedRoute } from "@/hook/useProtectedRoute";
-import { LeituraDiaria } from "@/components/leituraDiaria";
 
 
 
@@ -13,20 +15,41 @@ export default function Gameficacao(){
     const [meta, setMeta] = useState("0");
     const [isEditing, setIsEditing] = useState(false);
     const [livrosLidos, setlivrosLidos] = useState(0);
+    const [totalDias, setTotalDias] = useState(0);
+    const controller = new GameficacaoController();
 
     useFocusEffect(
-        useCallback(() => {
+            useCallback(() => {
+                // só faz a busca no banco se o usuário já estiver logado
+                if (user?.uid) {
+                    
+                    // busca a quantidade de livros lidos
+                    const leituraController = new LeituraController();
+                    leituraController.buscarReviews(user.uid)
+                        .then((data) => {
+                            setlivrosLidos(data.length);
+                        }).catch((err) => console.error("Erro ao buscar livros para gameficação:", err));
+
+                    // busca o total de dias em que houve leitura e a meta anual do usuario
+                    controller.carregarProgresso(user.uid)
+                        .then((dados) => {
+                            setTotalDias(dados.totalDias);
+                            setMeta(String(dados.metaAnual));
+                        }).catch((err) => console.error("Erro ao buscar o progresso do usuario:", err));
+
+                }
+            }, [user])
+        );
+
+        const handleSalvarMeta = async () => {
+            setIsEditing(false);
+        
             if (user?.uid) {
-                const controller = new LeituraController();
-                
-                controller.buscarReviews(user.uid)
-                    .then((data) => {
-                        setlivrosLidos(data.length);
-                    })
-                    .catch((err) => console.error("Erro ao buscar livros para gameficação:", err));
+                const numeroMeta = parseInt(meta) || 0;
+                // chama o controller pra salvar no firebase
+                await controller.salvarMetaAnual(user.uid, numeroMeta);
             }
-        }, [user])
-    );
+        };
 
     const metaNumero = parseInt(meta) || 0; 
     const livrosRestantes = Math.max(0, metaNumero - livrosLidos);
@@ -52,8 +75,8 @@ export default function Gameficacao(){
                                     onChangeText={setMeta}
                                     keyboardType="numeric"
                                     autoFocus={true}
-                                    onBlur={() => setIsEditing(false)}
-                                    onSubmitEditing={() => setIsEditing(false)}
+                                    onBlur={handleSalvarMeta}
+                                    onSubmitEditing={handleSalvarMeta}
                                     maxLength={4}
                                 />
                                 <Text style={styles.textoLivros}> livros</Text>
@@ -77,6 +100,8 @@ export default function Gameficacao(){
                 </View>
 
                 <LeituraDiaria />
+
+                <ProximaConquista livrosLidos={livrosLidos} totalDiasLidos={totalDias} />
 
             </View>
         </KeyboardAvoidingView>
