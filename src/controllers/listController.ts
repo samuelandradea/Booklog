@@ -1,3 +1,4 @@
+import { api } from '@/lib/api'
 import {
     addBookToList,
     createList,
@@ -79,4 +80,47 @@ export class ListController {
             throw new Error('Não foi possível deletar a lista.')
         }
     }
+
+    //Busca os livros presentes na lista
+    async buscarLivrosDaLista(listId: string) {
+    try {
+        const lista = await getList(listId)
+        if (!lista) return { nome: "", livros: [] }
+
+        // Converte o bookEntries em array de ISBNs
+        const isbns = Object.keys(lista.bookEntries as Record<string, string>)
+
+        // Para cada ISBN, busca os dados do livro no backend
+        const livros = await Promise.all(
+            isbns.map(async (isbn) => {
+                try {
+                    const livro = await api(`/books/${isbn}`)
+                    return {
+                        bookIsbn: isbn,
+                        addedAt: lista.bookEntries[isbn],
+                        titulo: livro.title || "Sem título",
+                        authors: livro.authors || "",
+                        thumbnail: livro.thumbnail
+                            ? livro.thumbnail.replace("http:", "https:")
+                            : undefined,
+                    }
+                } catch {
+                    // Se não encontrar o livro, retorna só o ISBN
+                    return {
+                        bookIsbn: isbn,
+                        addedAt: lista.bookEntries[isbn],
+                        titulo: isbn,
+                        authors: "",
+                        thumbnail: undefined,
+                    }
+                }
+            })
+        )
+
+        return { nome: lista.name, livros }
+    } catch (error) {
+        console.error('Erro ao buscar livros da lista:', error)
+        return { nome: "", livros: [] }
+    }
+}
 }
