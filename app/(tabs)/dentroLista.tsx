@@ -81,7 +81,7 @@ export default function dentroLista(){
 
             // Exibe mensagem quando o usuário ainda não tem livros lidos
             <Text style={styles.emptyText}>
-              Nenhum livro lido ainda
+              Nenhum livro ainda
             </Text>
 
           ) : (
@@ -95,7 +95,6 @@ export default function dentroLista(){
                   nota=""
                   thumbnail={item.thumbnail}
                   variante="grid"
-                  ocultarTextos= {false}
                 />
               ))}
             </View>
