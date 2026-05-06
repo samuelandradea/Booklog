@@ -13,3 +13,12 @@ export interface IListBookEntry {
     bookIsbn: string
     addedAt: string
 }
+
+//Interface para judar a ter todas as caracteristicas do livro
+export interface IListBookFull {
+    bookIsbn: string
+    addedAt: string
+    titulo: string
+    authors: string
+    thumbnail?: string
+}

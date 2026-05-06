@@ -91,8 +91,10 @@ export function CardLivro({
               <Text style={styles.notaFeed}>{nota}/5</Text>
             </>
           ) : (
+          nota !== "" && (
             <Text style={styles.notaLivro}>nota {nota}/5</Text>
-          )}
+          )
+        )}
         </>
       )}
     </TouchableOpacity>
