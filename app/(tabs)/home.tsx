@@ -90,6 +90,7 @@ export default function Home() {
           <View style={styles.searchSection}>
             <SearchBar
               mostrarBotaoLocalizacao={true}
+              onPressLocation={() => router.push("/mapa")}
               placeholderText="booklog"
               value={textoHome}
               onChangeText={setTextoHome}

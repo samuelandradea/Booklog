@@ -182,7 +182,7 @@ export default function TelaPesquisa() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#D9B39A",
+    backgroundColor: "#D4AA94",
     paddingHorizontal: 20,
     paddingTop: 50,
   },
