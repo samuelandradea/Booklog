@@ -52,8 +52,8 @@ export function ProximaConquista({ livrosLidos, totalDiasLidos }: ProximaConquis
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 32,
-        gap: 20,
+        marginTop: 20,
+        gap: 10,
     },
     header: {
         flexDirection: "row",
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     titulo: {
-        fontFamily: "Poppins_700Bold",
-        fontSize: 17,
+        fontFamily: "RedHatDisplay_700Bold",
+        fontSize: 18,
         color: "#500903",
     },
     badge: {
@@ -95,9 +95,9 @@ const styles = StyleSheet.create({
         marginLeft: 4,
     },
     barraFundo: {
-        height: 24,
+        height: 34,
         backgroundColor: "#FFFFFF",
-        borderRadius: 12,
+        borderRadius: 16,
         overflow: "hidden",
         elevation: 3, 
         shadowColor: "#000",
