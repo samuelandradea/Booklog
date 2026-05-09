@@ -1,11 +1,15 @@
 import { Header } from "@/components/Header";
+import { MapWrapper } from "@/components/Map/MapWrapper";
 import { MapaController } from "@/controllers/mapaController";
 import { ILocation } from "@/models/LocationModel";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
+  Dimensions,
+  PanResponder,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,12 +17,56 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { MapWrapper } from "@/components/Map/MapWrapper";
 
 export default function Mapa() {
   const router = useRouter();
   const [locais, setLocais] = useState<ILocation[]>([]);
   const [carregando, setCarregando] = useState(true);
+
+  // ==========================================
+  // LÓGICA DO BOTTOM SHEET ANIMADO
+  // ==========================================
+  const windowHeight = Dimensions.get("window").height;
+  const COLLAPSED_HEIGHT = 48; // Altura quando guardado (mostra só o drag handle e o título)
+  const EXPANDED_HEIGHT = windowHeight * 0.55; // 55% da tela quando aberto
+  const initialTranslateY = EXPANDED_HEIGHT - COLLAPSED_HEIGHT;
+
+  const translateY = useRef(new Animated.Value(initialTranslateY)).current;
+  const isExpanded = useRef(false);
+
+  const toggleSheet = (toExpand: boolean) => {
+    Animated.spring(translateY, {
+      toValue: toExpand ? 0 : initialTranslateY,
+      useNativeDriver: true,
+      bounciness: 4, // Dá um pequeno salto suave
+    }).start();
+    isExpanded.current = toExpand;
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderRelease: (e, gestureState) => {
+        // Se o usuário arrastou pra cima (y negativo) e estava fechado
+        if (gestureState.dy < -30 && !isExpanded.current) {
+          toggleSheet(true);
+        }
+        // Se o usuário arrastou pra baixo (y positivo) e estava aberto
+        else if (gestureState.dy > 30 && isExpanded.current) {
+          toggleSheet(false);
+        }
+        // Se apenas deu um clique rápido (sem arrastar)
+        else if (Math.abs(gestureState.dy) < 10) {
+          toggleSheet(!isExpanded.current);
+        } else {
+          // Se arrastou um pouco mas soltou, volta pra onde estava
+          toggleSheet(isExpanded.current);
+        }
+      },
+    }),
+  ).current;
+
+  // ==========================================
 
   useEffect(() => {
     const fetchLocais = async () => {
@@ -32,7 +80,15 @@ export default function Mapa() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={{ zIndex: 1, backgroundColor: "#D4AA94", paddingBottom: 10 }}>
+      <View
+        style={{
+          zIndex: 1,
+          backgroundColor: "#D4AA94",
+          paddingBottom: 10,
+          paddingHorizontal: 22,
+          paddingTop: 10,
+        }}
+      >
         <Header />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Mapa</Text>
@@ -45,16 +101,31 @@ export default function Mapa() {
         <MapWrapper locais={locais} />
       </View>
 
-      {/* BOTTOM SHEET FIXO (PAINEL INFERIOR) */}
-      <View style={styles.bottomSheet}>
-        <View style={styles.dragHandle} />
-        <Text style={styles.sheetTitle}>Locais próximos</Text>
-        <View style={styles.sheetDivider} />
+      {/* BOTTOM SHEET ANIMADO (PAINEL INFERIOR) */}
+      <Animated.View
+        style={[
+          styles.bottomSheet,
+          { transform: [{ translateY: translateY }] },
+        ]}
+      >
+        {/* ÁREA DE TOQUE DO HEADER DO SHEET */}
+        <View {...panResponder.panHandlers} style={styles.sheetHeaderArea}>
+          <View style={styles.dragHandle} />
+          <Text style={styles.sheetTitle}>Locais próximos</Text>
+          <View style={styles.sheetDivider} />
+        </View>
 
         {carregando ? (
-          <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+          <ActivityIndicator
+            size="large"
+            color="#FFF"
+            style={{ marginTop: 20 }}
+          />
         ) : (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 80 }}
+          >
             {locais.map((local) => (
               <View key={local.id} style={styles.locationCard}>
                 <View style={styles.iconWrapper}>
@@ -68,8 +139,8 @@ export default function Mapa() {
             ))}
 
             {/* CARD PARA ADICIONAR NOVO LOCAL */}
-            <TouchableOpacity 
-              style={styles.suggestCard} 
+            <TouchableOpacity
+              style={styles.suggestCard}
               activeOpacity={0.8}
               onPress={() => router.push("/sugerir-local")}
             >
@@ -77,13 +148,17 @@ export default function Mapa() {
                 <Feather name="plus" size={24} color="#500903" />
               </View>
               <View style={styles.locationInfo}>
-                <Text style={styles.suggestTitle}>Não encontrou seu lugar favorito?</Text>
-                <Text style={styles.suggestSubtitle}>Sugira um novo local literário</Text>
+                <Text style={styles.suggestTitle}>
+                  Não encontrou seu lugar favorito?
+                </Text>
+                <Text style={styles.suggestSubtitle}>
+                  Sugira um novo local literário
+                </Text>
               </View>
             </TouchableOpacity>
           </ScrollView>
         )}
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -116,12 +191,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: "55%", // Ocupa a metade inferior da tela
+    height: Dimensions.get("window").height * 0.55, // Sempre tem 55% de altura, mas afunda pra baixo
     backgroundColor: "#500903",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  sheetHeaderArea: {
+    backgroundColor: "transparent",
+    paddingBottom: 5,
   },
   dragHandle: {
     width: 40,
