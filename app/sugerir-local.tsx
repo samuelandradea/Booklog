@@ -1,4 +1,4 @@
-import { Header } from "@/components/Header";
+import { BackButton } from "@/components/BackButton";
 import { MapaController } from "@/controllers/mapaController";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -55,12 +55,9 @@ export default function SugerirLocal() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* HEADER COM BOTÃO VOLTAR */}
+        {/* BOTÃO VOLTAR */}
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Feather name="chevron-left" size={28} color="#500903" />
-          </TouchableOpacity>
-          <Header />
+          <BackButton />
         </View>
         
         <View style={styles.titleContainer}>
@@ -164,11 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 15,
-  },
-  backButton: {
-    position: "absolute",
-    left: 15,
-    zIndex: 10,
+    marginTop: 15, // Dá um pequeno respiro no topo
   },
   titleContainer: {
     alignItems: "center",
