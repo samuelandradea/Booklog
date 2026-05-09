@@ -73,6 +73,7 @@ export default function TabLayout() {
       <Tabs.Screen name="editar_avaliacao" options={{ href: null }} />
       <Tabs.Screen name="dentroLista" options={{ href: null }} />
       <Tabs.Screen name="perfilAmizade" options={{ href: null }} />
+      <Tabs.Screen name="mapa" options={{ href: null }} />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}
     </Tabs>
   );
