@@ -21,6 +21,9 @@ type SearchBarProps = TextInputProps & {
 
   /** O texto de dica que aparece quando a barra está vazia (ex: "Pesquise aqui...") */
   placeholderText: string;
+
+  /** Ação executada ao clicar no botão de localização */
+  onPressLocation?: () => void;
 };
 
 /**
@@ -31,6 +34,7 @@ type SearchBarProps = TextInputProps & {
 export function SearchBar({
   mostrarBotaoLocalizacao = true,
   placeholderText,
+  onPressLocation,
   ...rest // O "rest" pega todas as propriedades nativas passadas e guarda aqui
 }: SearchBarProps) {
   return (
@@ -51,7 +55,7 @@ export function SearchBar({
 
       {/* Renderização condicional do botão lateral de localização */}
       {mostrarBotaoLocalizacao && (
-        <TouchableOpacity style={styles.locationButton} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.locationButton} activeOpacity={0.7} onPress={onPressLocation}>
           <Feather name="map-pin" size={20} color="#500903" />
         </TouchableOpacity>
       )}
