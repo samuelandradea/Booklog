@@ -20,7 +20,6 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#500903",
       }}
     >
-      {/* ========== TELAS DA BARRA DE NAVEGAÇÃO ========== */}
       <Tabs.Screen
         name="minhas_listas"
         options={{
@@ -62,7 +61,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* ========== TELAS QUE TÊM A BARRA MAS NÃO APARECEM NELA ========== */}
       <Tabs.Screen name="lidos_recente" options={{ href: null }} />
       <Tabs.Screen name="home" options={{ href: null }} />
       <Tabs.Screen name="amizades" options={{ href: null }} />
@@ -74,6 +72,7 @@ export default function TabLayout() {
       <Tabs.Screen name="dentroLista" options={{ href: null }} />
       <Tabs.Screen name="perfilAmizade" options={{ href: null }} />
       <Tabs.Screen name="autor" options={{ href: null }} />
+      <Tabs.Screen name="mapa" options={{ href: null }} />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}
     </Tabs>
   );

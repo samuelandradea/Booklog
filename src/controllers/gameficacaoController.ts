@@ -50,6 +50,18 @@ export class GameficacaoController {
         }
     }
 
+    public async excluirMetaAnual(uid: string) {
+        try {
+            await updateUser(uid, {
+                metaAnual: 0
+            });
+            return true;
+        } catch (error) {
+            console.error("Erro ao excluir meta anual:", error);
+            return false;
+        }
+    }
+    
     public async marcarDiaComoLido(uid: string, diaDaSemana: number, diasJaLidos: number[], totalDiasHistorico: number = 0) {
         try {
             const novaListaDeDias = [...diasJaLidos, diaDaSemana];
