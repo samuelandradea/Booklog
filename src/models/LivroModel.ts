@@ -12,6 +12,7 @@ export interface ILivro {
   autores: string;
   capa: string;
   notaMedia: number;
+  ratingsCount: number;
   categoria: string;
   anoPublicacao?: number;
 }
