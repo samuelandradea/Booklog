@@ -7,6 +7,7 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 type Props = {
   /** Nome completo do autor retornado pela busca. */
   nome: string;
+  onPress?: () => void;
 };
 
 /**
@@ -14,9 +15,9 @@ type Props = {
  * * É um botão simples (TouchableOpacity) que, no futuro, pode redirecionar para
  * uma página com todos os livros daquele autor específico.
  */
-export function CardPesquisaAutor({ nome }: Props) {
+export function CardPesquisaAutor({ nome, onPress }: Props) {
   return (
-    <TouchableOpacity style={styles.authorButton} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.authorButton} activeOpacity={0.7} onPress={onPress}>
       <Text style={styles.authorText}>{nome}</Text>
     </TouchableOpacity>
   );

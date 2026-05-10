@@ -38,6 +38,10 @@ export const livroBuilder = (livroBruto: any): ILivro => {
       ? Number(livroBruto.average_rating)
       : 0,
 
+    ratingsCount: livroBruto.ratings_count
+      ? Number(livroBruto.ratings_count)
+      : 0,
+
     // Categoria literária com tratamento de erro embutido.
     categoria: livroBruto.categories || "Sem categoria",
 

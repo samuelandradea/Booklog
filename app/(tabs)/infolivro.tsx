@@ -1,5 +1,5 @@
 import { useProtectedRoute } from '@/hook/useProtectedRoute';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import {
@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { api } from "@/lib/api";
@@ -95,8 +96,10 @@ export default function LivroInfo() {
         </View>
 
         <Text style={styles.nomeLivro}>{livro.title}</Text>
-        <Text style={styles.nomeAutor}>{livro.authors}</Text>
-
+        <TouchableOpacity onPress={() => router.push({ pathname: '/autor', params: { nomeAutor: livro.authors }})}>
+          <Text style={styles.nomeAutor}>{livro.authors}</Text>
+        </TouchableOpacity>
+    
         <Text style={styles.sinopseLabel}>Sinopse:</Text>
         <View style={styles.sinopseContainer}>
           <Text style={styles.sinopseTexto}>{livro.description}</Text>
@@ -189,6 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#500903',
     marginBottom: 16,
+    fontWeight: 'bold'
   },
   sinopseLabel: {
     fontSize: 18,
