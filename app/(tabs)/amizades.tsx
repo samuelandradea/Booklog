@@ -1,8 +1,9 @@
 import { Divider } from "@/components/Divider";
 import { Header } from "@/components/Header";
 import { AmizadesController, Amigo } from "@/controllers/amizadesController";
+import { CardAmizade } from "@/components/CardAmizade";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -10,7 +11,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -79,28 +79,13 @@ export default function Amizades() {
           </>
         }
         renderItem={({ item }) => (
-          <>
-            <View style={styles.card}>
-              <TouchableOpacity
-                style={styles.cardEsquerda}
-                activeOpacity={0.8}
-                onPress={() =>
-                  router.push({ pathname: "/perfilAmizade", params: { uid: item.id } })
-                }
-              >
-                <View style={styles.avatar}>
-                  <Ionicons name="person" size={20} color="#D4AA94" />
-                </View>
-                <Text style={styles.nome}>{item.name}</Text>
-              </TouchableOpacity>
-              <Pressable
-                onPress={() => removerAmigo(item.id, item.name)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Feather name="trash-2" size={20} color="#6F1D1B" />
-              </Pressable>
-            </View>
-          </>
+          <CardAmizade
+            nome={item.name}
+            onPressPrincipal={() =>
+              router.push({ pathname: "/perfilAmizade", params: { uid: item.id } })
+            }
+            onPressAcao={() => removerAmigo(item.id, item.name)}
+          />
         )}
       />
     </KeyboardAvoidingView>
@@ -136,20 +121,6 @@ const styles = StyleSheet.create({
   dividerCompacto: {
     marginVertical: 4,
   },
-  card: {
-    backgroundColor: "#F2EBE5",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  cardEsquerda: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
   avatar: {
     width: 40,
     height: 40,
@@ -157,11 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#6F1D1B",
     alignItems: "center",
     justifyContent: "center",
-  },
-  nome: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 16,
-    color: "#500903",
   },
   vazio: {
     textAlign: "center",
