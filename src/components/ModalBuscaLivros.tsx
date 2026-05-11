@@ -53,7 +53,7 @@ export function ModalBuscaLivro({
             const filtrados = livrosDaLista.filter(
                 (l) =>
                     l.title.toLowerCase().includes(termo.toLowerCase()) ||
-                    l.authors.toLowerCase().includes(termo.toLowerCase())
+                    l.author.toLowerCase().includes(termo.toLowerCase())
             )
             setResultados(filtrados)
             return
@@ -121,8 +121,8 @@ export function ModalBuscaLivro({
                         keyExtractor={(item) => item.isbn13 || item.id}
                         renderItem={({ item }) => {
                             // Converte http para https para evitar erros de segurança no iOS
-                            const thumb = item.thumbnail
-                                ? item.thumbnail.replace("http:", "https:")
+                            const thumb = item.img
+                                ? item.img.replace("http:", "https:")
                                 : null
 
                             return (
@@ -146,7 +146,7 @@ export function ModalBuscaLivro({
                                             {item.title}
                                         </Text>
                                         <Text style={styles.autorResultado} numberOfLines={1}>
-                                            {item.authors}
+                                            {item.author}
                                         </Text>
                                     </View>
                                 </TouchableOpacity>

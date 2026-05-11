@@ -17,7 +17,7 @@ export class LeituraController {
             // Busca os dados do livro para pegar o thumbnail
             const livro = await api(`/books/${review.bookIsbn}`);
             // Constrói o objeto review com o thumbnail do livro
-            return reviewBuilder({ ...review, thumbnail: livro.thumbnail });
+            return reviewBuilder({ ...review, img: livro.img });
           } catch {
             // Se não encontrar o livro, constrói a review sem thumbnail
             return reviewBuilder(review);

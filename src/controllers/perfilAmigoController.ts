@@ -28,7 +28,7 @@ export class PerfilAmizadeController {
         reviewsRaw.slice(0, 4).map(async (review: any) => {
           try {
             const livro = await api(`/books/${review.bookIsbn}`);
-            return { ...review, thumbnail: livro.thumbnail };
+            return { ...review, img: livro.img };
           } catch {
             return review;
           }

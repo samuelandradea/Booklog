@@ -19,6 +19,6 @@ export const reviewBuilder = (reviewBruto: any): IReview => {
     // data de criação da avaliação em formato ISO
     dataCriacao: reviewBruto.dataCriacao || "",
     // URL da capa do livro — opcional, pode ser undefined
-    thumbnail: reviewBruto.thumbnail || undefined,
+    thumbnail: reviewBruto.img || reviewBruto.thumbnail || undefined,
   };
 };

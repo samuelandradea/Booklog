@@ -23,31 +23,22 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     // Mapeia o título. Se a API retornar nulo, previne a quebra exibindo um texto padrão.
     titulo: livroBruto.title || "Título Desconhecido",
 
-    // Mapeia os autores garantindo que sempre haverá uma string legível.
-    autores: livroBruto.authors || "Autor Desconhecido",
+    autores: livroBruto.author || "Autor Desconhecido",
 
-    // Se o livro não possuir capa, injeta uma imagem gerada automaticamente (placeholder)
-    // para que a interface gráfica dos Cards não fique desconfigurada.
     capa:
-      livroBruto.thumbnail ||
+      livroBruto.img ||
       "https://via.placeholder.com/150x220.png?text=Sem+Capa",
 
-    // Converte a avaliação média garantindo que o tipo primitivo seja sempre 'Number'.
-    // Caso a obra ainda não tenha avaliações, assume nota 0.
-    notaMedia: livroBruto.average_rating
-      ? Number(livroBruto.average_rating)
+    notaMedia: livroBruto.rating
+      ? Number(livroBruto.rating)
       : 0,
 
-    ratingsCount: livroBruto.ratings_count
-      ? Number(livroBruto.ratings_count)
+    ratingsCount: livroBruto.totalratings
+      ? Number(livroBruto.totalratings)
       : 0,
 
-    // Categoria literária com tratamento de erro embutido.
-    categoria: livroBruto.categories || "Sem categoria",
+    categoria: livroBruto.genre || "Sem categoria",
 
-    // O ano é o único campo opcional na nossa interface. Se existir, converte para número.
-    anoPublicacao: livroBruto.published_year
-      ? Number(livroBruto.published_year)
-      : undefined,
+    anoPublicacao: undefined,
   };
 };
