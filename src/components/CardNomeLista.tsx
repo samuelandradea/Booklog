@@ -13,7 +13,7 @@ type Props = {
 };
 
 /**
- * Componente visual (Dumb Component) que representa uma lista na tela que contém todas as listas du usuário.
+ * Componente visual (Dumb Component) que representa uma lista na tela que contém todas as listas do usuário.
  * * É um botão que redirecionará para
  * uma página com todos os livros daquela lista
  * Também possuirá um ícone que servirá para ir para a tela de edição da respectiva lista.

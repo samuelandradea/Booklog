@@ -1,6 +1,6 @@
 import { auth } from "@/lib/firebase";
 import { getFollowing, unfollowUser } from "@/services/userService";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
  
 export type Amigo = {
   id: string;
@@ -23,6 +23,7 @@ export class AmizadesController {
   }
  
   // exibe confirmacao e deixa de seguir o usuario caso confirmado
+  // usa window.confirm na web pois Alert.alert nao funciona no browser
   public async removerAmigo(
     targetUid: string,
     nome: string,
@@ -30,6 +31,19 @@ export class AmizadesController {
   ): Promise<void> {
     const uid = auth.currentUser?.uid;
     if (!uid) return;
+ 
+    if (Platform.OS === "web") {
+      const confirmado = window.confirm(`Deseja deixar de seguir ${nome}?`);
+      if (!confirmado) return;
+      try {
+        await unfollowUser(uid, targetUid);
+        onSucesso();
+      } catch (err) {
+        console.error("Erro ao deixar de seguir:", err);
+        window.alert("Não foi possível deixar de seguir.");
+      }
+      return;
+    }
  
     Alert.alert(
       "Deixar de seguir",
