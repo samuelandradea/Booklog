@@ -35,9 +35,10 @@ export const livroBuilder = (livroBruto: any): ILivro => {
 
     // Converte a avaliação média garantindo que o tipo primitivo seja sempre 'Number'.
     // Caso a obra ainda não tenha avaliações, assume nota 0.
-    notaMedia: livroBruto.average_rating
-      ? Number(livroBruto.average_rating)
-      : 0,
+    notaMedia:
+      livroBruto.rating || livroBruto.average_rating
+        ? Number(livroBruto.rating || livroBruto.average_rating)
+        : 0,
 
     ratingsCount: livroBruto.ratings_count
       ? Number(livroBruto.ratings_count)
