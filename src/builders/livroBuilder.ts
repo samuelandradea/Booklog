@@ -19,7 +19,7 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     // Separado do 'id' pois o Firestore gera seu próprio identificador interno,
     // enquanto o isbn13 é necessário para buscar os dados na API externa.
     isbn13: livroBruto.isbn13 || "",
-    
+
     // Mapeia o título. Se a API retornar nulo, previne a quebra exibindo um texto padrão.
     titulo: livroBruto.title || "Título Desconhecido",
 
@@ -29,6 +29,7 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     // Se o livro não possuir capa, injeta uma imagem gerada automaticamente (placeholder)
     // para que a interface gráfica dos Cards não fique desconfigurada.
     capa:
+      livroBruto.img ||
       livroBruto.thumbnail ||
       "https://via.placeholder.com/150x220.png?text=Sem+Capa",
 
