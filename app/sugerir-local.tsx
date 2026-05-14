@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -28,47 +28,82 @@ export default function SugerirLocal() {
 
   const handleSubmit = async () => {
     if (!nome || !endereco) {
-      Alert.alert("Campos obrigatórios", "Por favor, preencha o nome e o endereço do local.");
+      Alert.alert(
+        "Campos obrigatórios",
+        "Por favor, preencha o nome e o endereço do local.",
+      );
       return;
     }
 
     setEnviando(true);
-    
-    // Simula o envio
-    await MapaController.enviarSugestaoMock({
+
+    // Faz o fetch real para o backend Python
+    const sucesso = await MapaController.enviarSugestao({
       nome,
       categoria,
       endereco,
-      motivo
+      motivo,
     });
 
     setEnviando(false);
-    
-    // Feedback de sucesso
-    Alert.alert(
-      "Sucesso!", 
-      "Sua sugestão foi enviada para nossa equipe avaliar. Obrigado por contribuir com o Booklog!",
-      [{ text: "OK", onPress: () => router.back() }]
-    );
+
+    if (sucesso) {
+      // Limpa os campos por garantia
+      setNome("");
+      setEndereco("");
+      setMotivo("");
+      setCategoria("Livraria");
+
+      // Na web, o Alert.alert do react-native às vezes não dispara o onPress do botão OK.
+      // Por isso fazemos o tratamento separadamente.
+      if (Platform.OS === "web") {
+        window.alert(
+          "Sucesso! Sua sugestão foi enviada para nossa equipe avaliar. Obrigado por contribuir com o Booklog!",
+        );
+        router.back(); // Volta para o mapa
+      } else {
+        Alert.alert(
+          "Sucesso!",
+          "Sua sugestão foi enviada para nossa equipe avaliar. Obrigado por contribuir com o Booklog!",
+          [{ text: "OK", onPress: () => router.back() }],
+        );
+      }
+    } else {
+      if (Platform.OS === "web") {
+        window.alert(
+          "Erro: Ocorreu um problema ao enviar a sugestão. Tente novamente mais tarde.",
+        );
+      } else {
+        Alert.alert(
+          "Erro",
+          "Ocorreu um problema ao enviar a sugestão. Tente novamente mais tarde.",
+        );
+      }
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* BOTÃO VOLTAR */}
         <View style={styles.headerContainer}>
           <BackButton />
         </View>
-        
+
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Sugerir Local</Text>
-          <Text style={styles.subtitle}>Conhece um lugar incrível para leitores? Envie para nós! Nossa equipe vai avaliar em breve.</Text>
+          <Text style={styles.subtitle}>
+            Conhece um lugar incrível para leitores? Envie para nós! Nossa
+            equipe vai avaliar em breve.
+          </Text>
           <View style={styles.divider} />
         </View>
 
         {/* FORMULÁRIO */}
         <View style={styles.formContainer}>
-          
           <TextInput
             style={styles.inputCard}
             placeholder="Nome do Local"
@@ -95,8 +130,18 @@ export default function SugerirLocal() {
           </View>
 
           <Text style={styles.sectionLabel}>Endereço:</Text>
-          <View style={[styles.inputCard, { flexDirection: "row", alignItems: "center" }]}>
-            <Feather name="search" size={18} color="#500903" style={{ marginRight: 8 }} />
+          <View
+            style={[
+              styles.inputCard,
+              { flexDirection: "row", alignItems: "center" },
+            ]}
+          >
+            <Feather
+              name="search"
+              size={18}
+              color="#500903"
+              style={{ marginRight: 8 }}
+            />
             <TextInput
               style={{ flex: 1, color: "#500903", fontWeight: "bold" }}
               placeholder="Digite a rua, bairro ou nome do local..."
@@ -106,18 +151,9 @@ export default function SugerirLocal() {
             />
           </View>
 
-          {/* MAPA ESTÁTICO DE ENFEITE (MOCK) */}
-          <View style={styles.staticMapContainer}>
-            {/* 
-              No futuro, você pode colocar o <MapView> estático aqui ou uma imagem do Google Maps Static API 
-              Por enquanto, vamos simular com uma imagem local ou apenas um fundo com um ícone.
-            */}
-            <View style={styles.mockMapBackground}>
-              <Text style={{ color: "rgba(0,0,0,0.3)" }}>[ Área do Mini Mapa da API do Google ]</Text>
-            </View>
-          </View>
-
-          <Text style={styles.sectionLabel}>Por que este local é especial? (Opcional)</Text>
+          <Text style={styles.sectionLabel}>
+            Por que este local é especial? (Opcional)
+          </Text>
           <TextInput
             style={[styles.inputCard, styles.textArea]}
             placeholder="Conte-nos sobre este lugar..."
@@ -130,8 +166,8 @@ export default function SugerirLocal() {
           />
 
           {/* BOTÃO ENVIAR */}
-          <TouchableOpacity 
-            style={styles.submitButton} 
+          <TouchableOpacity
+            style={styles.submitButton}
             activeOpacity={0.8}
             onPress={handleSubmit}
             disabled={enviando}
@@ -142,7 +178,6 @@ export default function SugerirLocal() {
               <Text style={styles.submitText}>ENVIAR SUGESTÃO</Text>
             )}
           </TouchableOpacity>
-
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -239,20 +274,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
-  staticMapContainer: {
-    height: 120,
-    width: "100%",
-    backgroundColor: "#E5E5E5",
-    marginBottom: 20,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  mockMapBackground: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#CDE5CD", // Corzinha verde parecida com Google Maps
-  },
+
   textArea: {
     height: 100,
   },
