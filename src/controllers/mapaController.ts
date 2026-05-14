@@ -32,18 +32,26 @@ export class MapaController {
   }
 
   /**
-   * MOCK: Função que simula o envio de uma sugestão para o backend.
-   * Depois nós construiremos a rota oficial de 'suggestions' no Python.
+   * Envia os dados do formulário de Sugestão de Local para o Backend.
    */
-  static async enviarSugestaoMock(dadosSugestao: any): Promise<boolean> {
-    console.log("=========================================");
-    console.log("MOCK: Enviando sugestão para o backend...");
-    console.log(dadosSugestao);
-    console.log("=========================================");
-    
-    // Simula o delay de internet (1 segundo)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    return true; // Retorna sucesso
+  static async enviarSugestao(dadosSugestao: { nome: string, categoria: string, endereco: string, motivo: string }): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_URL}/suggestions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dadosSugestao),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao enviar sugestão: ${response.status}`);
+      }
+
+      return true; // Retorna sucesso
+    } catch (error) {
+      console.error("Erro no envio da sugestão:", error);
+      return false; // Retorna falha para a tela lidar (se quiser)
+    }
   }
 }
