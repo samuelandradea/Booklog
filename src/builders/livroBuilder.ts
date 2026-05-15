@@ -24,7 +24,7 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     titulo: livroBruto.title || "Título Desconhecido",
 
     // Mapeia os autores garantindo que sempre haverá uma string legível.
-    autores: livroBruto.authors || "Autor Desconhecido",
+    autores: livroBruto.author || livroBruto.authors || "Autor Desconhecido",
 
     // Se o livro não possuir capa, injeta uma imagem gerada automaticamente (placeholder)
     // para que a interface gráfica dos Cards não fique desconfigurada.
@@ -45,7 +45,8 @@ export const livroBuilder = (livroBruto: any): ILivro => {
       : 0,
 
     // Categoria literária com tratamento de erro embutido.
-    categoria: livroBruto.categories || "Sem categoria",
+    // O banco de dados novo usa 'genre', mas mantemos 'categories' por segurança.
+    categoria: livroBruto.genre || livroBruto.categories || "Sem categoria",
 
     // O ano é o único campo opcional na nossa interface. Se existir, converte para número.
     anoPublicacao: livroBruto.published_year

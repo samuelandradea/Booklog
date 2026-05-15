@@ -163,7 +163,11 @@ export default function TelaPesquisa() {
           ))}
 
           {resultados.autores.map((autor: any) => (
-            <CardPesquisaAutor key={autor.id} nome={autor.authors} />
+            <CardPesquisaAutor 
+              key={autor.id} 
+              nome={autor.author} 
+              onPress={() => router.push({ pathname: "/autor", params: { nomeAutor: autor.author } })}
+            />
           ))}
 
           {resultados.livros.map((livro) => (
@@ -175,6 +179,7 @@ export default function TelaPesquisa() {
               categoria={livro.categoria}
               nota={livro.notaMedia > 0 ? `${livro.notaMedia}/5` : "-/5"}
               thumbnail={livro.capa}
+              onPress={() => router.push({ pathname: "/infolivro", params: { isbn: livro.isbn13 || livro.id } })}
             />
           ))}
         </ScrollView>
