@@ -11,6 +11,7 @@ type Props = {
   categoria: string;
   nota: string;
   thumbnail?: string;
+  onPress?: () => void;
 };
 
 /**
@@ -24,6 +25,7 @@ export function CardPesquisaLivro({
   categoria,
   nota,
   thumbnail,
+  onPress,
 }: Props) {
   // Tratamento de segurança: O React Native exige HTTPS para carregar imagens remotas em alguns dispositivos.
   // Isso substitui o 'http' legado por 'https', caso exista uma URL.
@@ -35,7 +37,7 @@ export function CardPesquisaLivro({
   // RENDERIZAÇÃO VISUAL (JSX)
   // ==========================================
   return (
-    <TouchableOpacity style={styles.bookCard} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.bookCard} activeOpacity={0.7} onPress={onPress}>
       {/* Coluna Esquerda: Exibe a Capa e a Nota */}
       <View style={styles.bookLeft}>
         {/* Lógica para mostrar a capa real ou o fundo vinho com texto de fallback */}
