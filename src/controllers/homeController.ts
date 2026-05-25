@@ -40,4 +40,24 @@ export class HomeController {
       return [];
     }
   }
+
+  static async buscarDadosUsuario(uid: string) {
+  return await api(`/users/${uid}`)
+}
+
+  static async buscarRecomendacoes(uid: string, generos: string[], topN = 9) {
+  const data = await api(`/users/${uid}/recomendacoes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      generos,
+      top_n: topN,
+    }),
+  });
+
+  return data.recomendacoes ?? [];
+}
+
 }

@@ -37,6 +37,7 @@ export default function Home() {
   // Armazena a lista oficial de livros. Graças ao TypeScript e à nossa POO,
   // o React sabe que aqui dentro só existem objetos seguros do tipo 'ILivro'.
   const [livrosBanco, setLivrosBanco] = useState<ILivro[]>([]);
+  const [livrosRecomendados, setLivrosRecomendados] = useState<ILivro[]>([]); // ← adiciona aqui
 
   // Controle de interface: Mostra o "spinner" enquanto os livros estão sendo baixados da API
   const [carregando, setCarregando] = useState(true);
@@ -50,23 +51,36 @@ export default function Home() {
    * de login (loading) é concluída.
    */
   useEffect(() => {
-    const buscarLivros = async () => {
+    const buscarDados = async () => {
       try {
-        // A TELA "BURRA": A Home não sabe qual a URL da API ou como limpar os dados.
-        // Ela simplesmente pede à Controller e aguarda a lista de livros perfeitos.
-        const data = await HomeController.buscarLivrosEmAlta();
-        setLivrosBanco(data);
-      } catch (error) {
-        console.error("Erro ao buscar livros para a Home:", error);
-      } finally {
-        // Independente de dar certo ou errado, desliga o ícone de carregamento
-        setCarregando(false);
-      }
-    };
+        if(user){
+          // Buscar os dados do usuário logado para pegar os genres
+          const dadosUsuario = await HomeController.buscarDadosUsuario(user.uid);
+          const generosUsuario: string[] = dadosUsuario?.genres ?? [];
 
-    // Só busca os livros na API depois que o Firebase confirmar que o usuário está logado
-    if (!loading) {
-      buscarLivros();
+          // Se o usuário tem géneros definidos → buscar recomendações personalizadas
+          // Se não tem → fallback para livros genéricos
+          if (generosUsuario.length > 0) {
+            const recomendados = await HomeController.buscarRecomendacoes(
+              user.uid,
+              generosUsuario
+            );
+            setLivrosRecomendados(recomendados);
+          }
+
+          // Livros genéricos continuam para os outros carrosseis
+          const data = await HomeController.buscarLivrosEmAlta();
+          setLivrosBanco(data);
+        }
+        } catch (error) {
+          console.error("Erro ao buscar dados da home:", error);
+        } finally {
+          setCarregando(false);
+        }
+      };
+
+    if (!loading && user) {
+      buscarDados();
     }
   }, [loading]);
 
@@ -112,8 +126,7 @@ export default function Home() {
           <View style={styles.carrosselContainer}>
             <CarrosselLivros
               titulo="Recomendações"
-              // Envia apenas os primeiros 9 livros para não pesar a memória
-              dados={livrosBanco.slice(0, 9)}
+              dados={livrosRecomendados.length > 0 ? livrosRecomendados : livrosBanco.slice(0, 9)}
               mostrarBolinhas={false}
             />
             <CarrosselLivros
