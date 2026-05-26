@@ -1,15 +1,23 @@
-import { api } from "../lib/api";
 import { Alert } from "react-native";
+import { api } from "../lib/api";
 
-// Controller responsável pelas operações da tela de registro de leitura
 export class RegistroController {
-  
-    // Busca livros na API pelo termo de pesquisa digitado pelo usuário
-    // Retorna uma lista de livros ou lista vazia em caso de erro
+
   static async buscarLivros(termo: string): Promise<any[]> {
     try {
       const data = await api(`/search?q=${termo}`);
-      return data.livros || [];
+      const livrosBrutos = data.livros || [];
+
+      // Mapear para garantir que thumbnail está preenchido
+      return livrosBrutos.map((livro: any) => ({
+        ...livro,
+        thumbnail: livro.thumbnail || livro.img || null,
+        title: livro.title || "Título Desconhecido",
+        authors: livro.author || livro.authors || "Autor Desconhecido",
+        isbn13: livro.isbn13 || livro.isbn || "",
+        id: livro.id || livro.isbn13 || livro.isbn || Math.random().toString(),
+      }));
+
     } catch (error) {
       console.error("Erro ao buscar livros:", error);
       return [];

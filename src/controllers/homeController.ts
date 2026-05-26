@@ -45,19 +45,24 @@ export class HomeController {
   return await api(`/users/${uid}`)
 }
 
+  // controllers/homeController.ts
   static async buscarRecomendacoes(uid: string, generos: string[], topN = 9) {
-  const data = await api(`/users/${uid}/recomendacoes`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      generos,
-      top_n: topN,
-    }),
-  });
+    const data = await api(`/users/${uid}/recomendacoes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ generos, top_n: topN })
+    });
 
-  return data.recomendacoes ?? [];
+    // Mapear para o formato ILivro que o CarrosselLivros espera
+    return (data.recomendacoes ?? []).map((livro: any, index: number) => ({
+      id: livro.isbn ?? livro.isbn13 ?? String(index),
+      titulo: livro.title ?? 'Sem título',
+      capa: (livro.img ?? '').replace('http:', 'https:'),
+      notaMedia: livro.rating ?? 0,
+      isbn13: livro.isbn ?? '',
+      autor: livro.autor ?? '',
+      genero: livro.genre ?? '',
+    }));
 }
 
 }
