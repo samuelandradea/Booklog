@@ -159,6 +159,7 @@ export default function TelaPesquisa() {
               key={u.id}
               id={u.id}   // prop `id` adicionada — antes era só `nome={user.name}`, sem id
               nome={u.name}
+              fotoURL={u.fotoURL}
             />
           ))}
 

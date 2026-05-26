@@ -1,6 +1,7 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Divider } from "@/components/Divider";
 import { Header } from "@/components/Header";
+import { Avatar } from "@/components/Avatar"
 import { MenuOpcao } from "@/components/MenuOpcao";
 import { PerfilAmizadeController } from "@/controllers/perfilAmigoController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
@@ -26,6 +27,7 @@ export default function PerfilAmizade() {
  
   const [nome, setNome] = useState("");
   const [bio, setBio] = useState("");
+  const [fotoURL, setFotoURL] = useState("")
   const [reviews, setReviews] = useState<any[]>([]);
   const [seguindo, setSeguindo] = useState(false);
   const [carregando, setCarregando] = useState(true);
@@ -44,6 +46,7 @@ export default function PerfilAmizade() {
     if (data) {
       setNome(data.nome);
       setBio(data.bio);
+      setFotoURL(data.fotoURL ?? "")
       setSeguindo(data.seguindo);
       setReviews(data.reviews);
     }
@@ -82,9 +85,7 @@ export default function PerfilAmizade() {
  
         {/* avatar, nome, bio e botao de seguir — mesmo layout do configuracoes */}
         <View style={styles.avatarRow}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={40} color="#D4AA94" />
-          </View>
+          <Avatar fotoURL={fotoURL} size={90} />
           <View style={styles.camposLaterais}>
             <Text style={styles.username}>{nome || "Usuário"}</Text>
             {bio ? <Text style={styles.bio}>{bio}</Text> : null}
