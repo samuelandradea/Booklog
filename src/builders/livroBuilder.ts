@@ -18,26 +18,33 @@ export const livroBuilder = (livroBruto: any): ILivro => {
     // ISBN13 do livro — identificador universal usado para navegar para a tela de detalhes do livro.
     // Separado do 'id' pois o Firestore gera seu próprio identificador interno,
     // enquanto o isbn13 é necessário para buscar os dados na API externa.
-    isbn13: livroBruto.isbn || "",
+    isbn13: livroBruto.isbn || livroBruto.isbn13 ||"",
     
     // Mapeia o título. Se a API retornar nulo, previne a quebra exibindo um texto padrão.
     titulo: livroBruto.title || "Título Desconhecido",
 
-    autores: livroBruto.author || "Autor Desconhecido",
+    // Mapeia os autores garantindo que sempre haverá uma string legível.
+    autores: livroBruto.author || livroBruto.authors || "Autor Desconhecido",
 
     capa:
       livroBruto.img ||
+      livroBruto.thumbnail ||
       "https://via.placeholder.com/150x220.png?text=Sem+Capa",
 
-    notaMedia: livroBruto.rating
-      ? Number(livroBruto.rating)
-      : 0,
+    // Converte a avaliação média garantindo que o tipo primitivo seja sempre 'Number'.
+    // Caso a obra ainda não tenha avaliações, assume nota 0.
+    notaMedia:
+      livroBruto.rating || livroBruto.average_rating
+        ? Number(livroBruto.rating || livroBruto.average_rating)
+        : 0,
 
     ratingsCount: livroBruto.totalratings
       ? Number(livroBruto.totalratings)
       : 0,
 
-    categoria: livroBruto.genre || "Sem categoria",
+    // Categoria literária com tratamento de erro embutido.
+    // O banco de dados novo usa 'genre', mas mantemos 'categories' por segurança.
+    categoria: livroBruto.genre || livroBruto.categories || "Sem categoria",
 
     anoPublicacao: undefined,
   };
