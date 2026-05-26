@@ -1,6 +1,6 @@
 import { UsuarioBuilder } from "@/builders/usuarioBuilder"
 import { auth } from "@/lib/firebase"
-import { getUser, updateUser } from "@/services/userService"
+import { getUser, updateUser, uploadProfilePicture } from "@/services/userService"
 import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword } from "firebase/auth"
 
 // dados que a tela exibe e permite editar
@@ -11,6 +11,7 @@ export type DadosPerfil = {
     dataNascimento: string
     genero: string
     senha: string
+    fotoURL: string
 }
 
 export class ConfiguracoesController {
@@ -26,6 +27,7 @@ export class ConfiguracoesController {
                 dataNascimento: dados.birthDate ?? "",
                 genero: dados.gender ?? "",
                 senha: "",  // senha nunca e exibida, campo sempre comeca vazio
+                fotoURL: dados.fotoURL ?? "",
             }
         } catch (error) {
             console.log("Erro ao carregar dados:", error)
@@ -45,6 +47,7 @@ export class ConfiguracoesController {
             dataNascimento: "Data de Nascimento",
             genero: "Gênero",
             senha: "Senha",
+            fotoURL: "Foto de perfil", 
         }
 
         // percorre cada campo e adiciona o rotulo na lista se o valor mudou
@@ -68,7 +71,8 @@ export class ConfiguracoesController {
         uid: string,
         original: DadosPerfil,
         editado: DadosPerfil,
-        senhaAtual: string
+        senhaAtual: string,
+        fotoLocalUri: string 
     ): Promise<boolean> {
         try {
             const user = auth.currentUser
@@ -77,6 +81,13 @@ export class ConfiguracoesController {
             // reautentica com a senha atual antes de qualquer alteracao sensivel
             const credencial = EmailAuthProvider.credential(user.email!, senhaAtual)
             await reauthenticateWithCredential(user, credencial)
+
+            // faz o upload da foto ANTES de salvar os outros dados
+            let fotoURL = editado.fotoURL
+            if (fotoLocalUri) {
+                const url = await uploadProfilePicture(uid, fotoLocalUri)
+                if (url) fotoURL = url
+            }
 
             // usa o builder para montar apenas os campos que serao atualizados
             const builder = new UsuarioBuilder()
@@ -98,7 +109,7 @@ export class ConfiguracoesController {
                 builder.adicionarSenha(editado.senha)
             }
 
-            const dadosAtualizados = builder.construir()
+            const dadosAtualizados = { ...builder.construir(), fotoURL }
 
             // salva na API
             await updateUser(uid, dadosAtualizados)

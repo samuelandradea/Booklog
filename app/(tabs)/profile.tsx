@@ -5,6 +5,7 @@ import { MenuOpcao } from "@/components/MenuOpcao";
 import { PerfilController } from "@/controllers/perfilController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
+import { Avatar } from "@/components/Avatar";
 import { router, useFocusEffect } from "expo-router";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View} from "react-native";
 import { useCallback, useState } from "react";
@@ -22,6 +23,7 @@ export default function Profile() {
   const [nome, setNome] = useState("");
   const [bio, setBio] = useState("");
   const [reviews, setReviews] = useState<any[]>([]);
+  const [fotoURL, setFotoURL] = useState("")
   
   // useFocusEffect garante que os dados sejam recarregados toda vez que a tela recebe foco
   useFocusEffect(
@@ -33,6 +35,7 @@ export default function Profile() {
         if (perfil) {
           setNome(perfil.nome)
           setBio(perfil.bio)
+          setFotoURL(perfil.fotoURL ?? "")   // ← linha nova
         }
       })
       
@@ -75,9 +78,7 @@ export default function Profile() {
 
         {/* cabecalho do perfil com avatar, nome e bio do usuario */}
         <View style={styles.header}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={40} color="#D4AA94" />
-          </View>
+          <Avatar fotoURL={fotoURL} size={80} />
           <View style={styles.headerTextos}>
             <Text style={styles.username}>{nome || "Usuário"}</Text>
             {/* bio só aparece se existir */}

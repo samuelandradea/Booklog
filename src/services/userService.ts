@@ -21,6 +21,7 @@ export async function updateUser(uid: string, data: Partial<{
     birthDate: string
     bio: string
     password: string
+    fotoURL: string
     genres: string[]
     friendIds: string[]
     listIds: string[]
@@ -61,4 +62,30 @@ export async function getFollowing(uid: string) {
     return await api(`/users/${uid}/following`, {
         method: 'GET',
     })
+}
+
+export async function uploadProfilePicture(uid: string, uri: string): Promise<string | null> {
+    try {
+        const formData = new FormData()
+        formData.append("file", {
+            uri,
+            name: "foto.jpg",
+            type: "image/jpeg",
+        } as any)
+
+        // substitua pela URL base da sua API
+        const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+
+        const resposta = await fetch(`${BASE_URL}/users/${uid}/foto`, {
+            method: "POST",
+            body: formData,
+            // SEM Content-Type — o boundary do multipart é gerado automaticamente
+        })
+
+        const dados = await resposta.json()
+        return dados.fotoURL ?? null
+    } catch (error) {
+        console.log("Erro ao fazer upload da foto:", error)
+        return null
+    }
 }

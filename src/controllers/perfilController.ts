@@ -6,6 +6,7 @@ export class PerfilController {
     public async carregarPerfil(uid: string): Promise<{
         nome: string
         bio: string
+        fotoURL: string
     } | null> {
         try {
             // consulta a API com o uid do usuario autenticado
@@ -13,6 +14,7 @@ export class PerfilController {
             return {
                 nome: dados.name ?? "",
                 bio: dados.bio ?? "",   // se não existir bio, retorna string vazia
+                fotoURL: dados.fotoURL ?? "",
             }
         } catch (error: any) {
             console.log("Erro ao carregar perfil:", error)

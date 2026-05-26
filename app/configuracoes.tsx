@@ -2,9 +2,11 @@ import { Ionicons } from "@expo/vector-icons"
 import { Divider } from "@/components/Divider"
 import { Input } from "@/components/Input"
 import { InputPerfil } from "@/components/VariacaoInput"
+import { Avatar } from "@/components/Avatar"
 import { ConfiguracoesController, DadosPerfil } from "@/controllers/configuracoesController"
 import { auth } from "@/lib/firebase"
 import { router } from "expo-router"
+import * as ImagePicker from "expo-image-picker"
 import { useEffect, useRef, useState } from "react"
 import { Alert, Animated, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native"
 
@@ -16,11 +18,14 @@ const generos = ["Mulher", "Homem", "Outro"]
 // tela responsavel por exibir e permitir a edicao dos dados do perfil do usuario
 export default function Configuracoes() {
     const [original, setOriginal] = useState<DadosPerfil>({
-        nome: "", email: "", bio: "", dataNascimento: "", genero: "", senha: ""
+        nome: "", email: "", bio: "", dataNascimento: "", genero: "", senha: "", fotoURL: ""
     })
     const [editado, setEditado] = useState<DadosPerfil>({
-        nome: "", email: "", bio: "", dataNascimento: "", genero: "", senha: ""
+        nome: "", email: "", bio: "", dataNascimento: "", genero: "", senha: "", fotoURL: ""
     })
+
+    // uri local da imagem escolhida; só existe antes de salvar
+    const [fotoLocalUri, setFotoLocalUri] = useState("")
 
     // controle do modal de confirmacao
     const [modalVisivel, setModalVisivel] = useState(false)
@@ -54,14 +59,41 @@ export default function Configuracoes() {
         }).start()
     }
 
+    // abre a galeria do dispositivo para o usuario escolher uma foto
+    async function handleEscolherFoto() {
+        const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        if (!permissao.granted) {
+            Alert.alert("Permissão necessária", "Permita o acesso à galeria para escolher uma foto.")
+            return
+        }
+
+        const resultado = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],     // recorte quadrado = avatar circular perfeito
+            quality: 0.8,
+        })
+
+        if (!resultado.canceled && resultado.assets.length > 0) {
+            const uri = resultado.assets[0].uri
+            setFotoLocalUri(uri)
+            // exibe preview imediato antes do upload
+            setEditado((prev) => ({ ...prev, fotoURL: uri }))
+        }
+    }
+
     // abre o modal apenas se houver campos alterados
     function handleAbrirModal() {
         const campos = controller.detectarAlteracoes(original, editado)
-        if (campos.length === 0) {
+        const listaFinal = fotoLocalUri && !campos.includes("Foto de perfil")
+            ? ["Foto de perfil", ...campos]
+            : campos
+
+        if (listaFinal.length === 0) {
             Alert.alert("Nenhuma alteração", "Nenhum campo foi modificado.")
             return
         }
-        setAlteracoes(campos)
+        setAlteracoes(listaFinal)
         setSenhaAtual("")
         setModalVisivel(true)
     }
@@ -76,7 +108,8 @@ export default function Configuracoes() {
         }
 
         setModalVisivel(false)
-        const sucesso = await controller.salvarAlteracoes(uid, original, editado, senhaAtual)
+        
+        const sucesso = await controller.salvarAlteracoes(uid, original, editado, senhaAtual, fotoLocalUri)
 
         if (sucesso) {
             // exibe toast de sucesso e volta para o perfil apos esmaecer
@@ -139,9 +172,12 @@ export default function Configuracoes() {
 
                 {/* AVATAR + DATA DE NASCIMENTO E GENERO */}
                 <View style={styles.avatarRow}>
-                    <View style={styles.avatar}>
-                        <Ionicons name="person" size={48} color="#D4AA94" />
-                    </View>
+                    <TouchableOpacity onPress={handleEscolherFoto} activeOpacity={0.8} style={styles.avatarWrapper}>
+                        <Avatar fotoURL={editado.fotoURL} size={90} />
+                        <View style={styles.editarIcone}>
+                            <Ionicons name="camera" size={14} color="#FFFFFF" />
+                        </View>
+                    </TouchableOpacity>
                     <View style={styles.camposLaterais}>
                         <InputPerfil
                           label="Nome de usuário"
@@ -292,6 +328,22 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 12,
+    },
+    avatarWrapper: { 
+        position: "relative" 
+    },
+    editarIcone: {
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+        backgroundColor: "#500903",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 2,
+        borderColor: "#D4AA94",
     },
     avatar: {
         width: 90,
