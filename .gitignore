@@ -45,3 +45,5 @@ serviceAccountKey.json
 .env
 .env.local
 instrucoes_gemini.md
+data/data.csv
+data/data_limpo.csv
