@@ -2,8 +2,8 @@ import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { useProtectedRoute } from '@/hook/useProtectedRoute';
 import { auth } from '@/lib/firebase';
-import { api } from '@/lib/api';
-import { createBook } from '@/services/bookService';
+import { Livro } from '@/models/LivroLocal';
+import { ModalBuscaLivro } from '@/components/ModalBuscaLivros';
 import { RegistroController } from '@/controllers/registroController';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,9 +11,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
-  FlatList,
   Image,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,15 +21,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Tipo local que representa um livro retornado pela API de busca
-type Livro = {
-  id: string;
-  title: string;
-  authors: string;
-  thumbnail?: string;
-  average_rating?: number;
-  isbn13?: string;
-}
 
 // Tela responsável pelo registro de leituras do usuário
 // Permite selecionar um livro via busca, atribuir nota e escrever resenha
@@ -41,32 +30,9 @@ export default function RegistroLeitura() {
   const [resenha, setResenha] = useState('');
   const [livroSelecionado, setLivroSelecionado] = useState<Livro | null>(null);
   const [modalVisivel, setModalVisivel] = useState(false);
-  const [textoBusca, setTextoBusca] = useState('');
-  const [resultados, setResultados] = useState<Livro[]>([]);
-  const [buscando, setBuscando] = useState(false);
 
   if (loading) return null
-
-  // Busca livros na API pelo termo digitado e atualiza a lista de resultados
-  const buscarLivros = async (termo: string) => {
-    if (!termo.trim()) {
-      setResultados([]);
-      return;
-    }
-    setBuscando(true);
-   const livros = await RegistroController.buscarLivros(termo);
-   setResultados(livros);
-   setBuscando(false);
-  };
-
-  // Preenche os dados do livro selecionado e fecha o modal de busca
-  const selecionarLivro = (livro: Livro) => {
-    setLivroSelecionado(livro);
-    setModalVisivel(false);
-    setTextoBusca('');
-    setResultados([]);
-  };
-
+  
   // Valida os dados e salva a avaliação via RegistroController
   const handleSalvar = async () => {
     if (!livroSelecionado) {
@@ -79,9 +45,9 @@ export default function RegistroLeitura() {
       return;
     }
     const sucesso = await RegistroController.salvarAvaliacao(uid, {
-      bookIsbn: livroSelecionado.isbn13 || '',
+      bookIsbn: livroSelecionado.isbn || '',
       nomeLivro: livroSelecionado.title,
-      nomeAutor: livroSelecionado.authors,
+      nomeAutor: livroSelecionado.author || '',
       nota,
       resenha,
     });
@@ -102,8 +68,8 @@ export default function RegistroLeitura() {
   };
 
   // converte a URL da capa para HTTPS para evitar erros de segurança no iOS
-  const thumbnail = livroSelecionado?.thumbnail
-    ? livroSelecionado.thumbnail.replace('http:', 'https:')
+  const thumbnail = livroSelecionado?.img
+    ? livroSelecionado.img.replace('http:', 'https:')
     : null;
 
   return (
@@ -127,7 +93,7 @@ export default function RegistroLeitura() {
             {livroSelecionado?.title || 'Nome do livro'}
           </Text>
           <Text style={styles.nomeAutor}>
-            {livroSelecionado?.authors || 'Autor'}
+            {livroSelecionado?.author || 'Autor'}
           </Text>
         </View>
 
@@ -163,60 +129,14 @@ export default function RegistroLeitura() {
       </ScrollView>
 
       {/* Modal de seleção de livro */}
-      <Modal visible={modalVisivel} animationType="slide" onRequestClose={() => setModalVisivel(false)}>
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitulo}>Selecionar Livro</Text>
-            <TouchableOpacity onPress={() => setModalVisivel(false)}>
-              <Ionicons name="close" size={28} color="#500903" />
-            </TouchableOpacity>
-          </View>
-
-          <TextInput
-            style={styles.modalBusca}
-            placeholder="Pesquisar livro..."
-            placeholderTextColor="#999"
-            value={textoBusca}
-            onChangeText={(texto) => {
-              setTextoBusca(texto);
-              buscarLivros(texto);
-            }}
-            autoFocus
-          />
-
-          {buscando ? (
-            <Text style={styles.buscandoTexto}>Buscando...</Text>
-          ) : (
-            <FlatList
-              data={resultados}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => {
-                const thumb = item.thumbnail
-                  ? item.thumbnail.replace('http:', 'https:')
-                  : null;
-                return (
-                  <TouchableOpacity style={styles.resultadoItem} onPress={() => selecionarLivro(item)}>
-                    {thumb ? (
-                      <Image source={{ uri: thumb }} style={styles.resultadoImagem} />
-                    ) : (
-                      <View style={styles.resultadoImagemPlaceholder} />
-                    )}
-                    <View style={styles.resultadoInfo}>
-                      <Text style={styles.resultadoTitulo} numberOfLines={2}>{item.title}</Text>
-                      <Text style={styles.resultadoAutor} numberOfLines={1}>{item.authors}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-              ListEmptyComponent={
-                textoBusca.length > 0 ? (
-                  <Text style={styles.buscandoTexto}>Nenhum livro encontrado</Text>
-                ) : null
-              }
-            />
-          )}
-        </SafeAreaView>
-      </Modal>
+      <ModalBuscaLivro
+        visivel={modalVisivel}
+        onFechar={() => setModalVisivel(false)}
+        onSelecionar={(livro) => {
+          setLivroSelecionado(livro);
+          setModalVisivel(false);
+        }}
+      />
     </SafeAreaView>
   );
 }

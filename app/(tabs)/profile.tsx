@@ -44,7 +44,7 @@ export default function Profile() {
             data.slice(0, 4).map(async (review: any) => {
               try {
                 const livro = await api(`/books/${review.bookIsbn}`);
-                return { ...review, thumbnail: livro.thumbnail };
+                return { ...review, thumbnail: livro.img };
               } catch {
                 // caso a capa nao seja encontrada, retorna a review sem thumbnail
                 return review;
@@ -112,6 +112,7 @@ export default function Profile() {
               autores: r.nomeAutor || "Autor Desconhecido",
               capa: r.thumbnail || "",
               notaMedia: r.nota || 0,
+              ratingsCount: 0,
               categoria: "",
             }))}
             mostrarBolinhas={false}

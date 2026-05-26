@@ -51,25 +51,25 @@ export default function LivroInfo() {
   }
 
   // converte a URL da capa para HTTPS para evitar erros de segurança no iOS
-  const thumbnail = livro.thumbnail
-    ? livro.thumbnail.replace('http:', 'https:')
+  const capa = livro.img
+    ? livro.img.replace('http:', 'https:')
     : null;
 
     // separa as categorias que vêm como string separada por vírgula
-  const categorias = livro.categories
-    ? livro.categories.split(',').map((c: string) => c.trim())
+  const genero = livro.genre
+    ? livro.genre.split(',').map((c: string) => c.trim())
     : [];
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
 
         <Header />
 
         <View style={styles.topoContainer}>
           <View style={styles.capa}>
-            {thumbnail ? (
-              <Image source={{ uri: thumbnail }} style={styles.capaImagem} />
+            {capa ? (
+              <Image source={{ uri: capa }} style={styles.capaImagem} />
             ) : (
               <Text style={styles.capaTexto}>Livro</Text>
             )}
@@ -78,31 +78,24 @@ export default function LivroInfo() {
           <View style={styles.infoContainer}>
             <Text style={styles.infoLabel}>Nota do livro:</Text>
             <View style={styles.badge}>
-              <Text style={styles.badgeTexto}>{livro.average_rating}/5</Text>
-            </View>
-
-            <Text style={styles.infoLabel}>Lançamento:</Text>
-            <View style={styles.badgeLargo}>
-              <Text style={styles.badgeTexto}>{livro.published_year}</Text>
+              <Text style={styles.badgeTexto}>{livro.rating}/5</Text>
             </View>
 
             <Text style={styles.infoLabel}>Gênero:</Text>
             <View style={styles.badgeLargo}>
-              {categorias.map((cat: string, index: number) => (
-                <Text key={index} style={styles.badgeTexto}>{cat}</Text>
-              ))}
+              <Text style={styles.badgeTexto}>{genero.join(", ")}</Text> 
             </View>
           </View>
         </View>
 
         <Text style={styles.nomeLivro}>{livro.title}</Text>
         <TouchableOpacity onPress={() => router.push({ pathname: '/autor', params: { nomeAutor: livro.authors }})}>
-          <Text style={styles.nomeAutor}>{livro.authors}</Text>
+          <Text style={styles.nomeAutor}>{livro.author}</Text>
         </TouchableOpacity>
     
         <Text style={styles.sinopseLabel}>Sinopse:</Text>
         <View style={styles.sinopseContainer}>
-          <Text style={styles.sinopseTexto}>{livro.description}</Text>
+          <Text style={styles.sinopseTexto}>{livro.desc}</Text>
         </View>
 
       </ScrollView>

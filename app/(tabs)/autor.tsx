@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarrosselLivros } from '@/components/CarrosselLivros';
 import { livroBuilder } from '@/builders/livroBuilder';
 import { ILivro } from '@/models/LivroModel';
+import { api } from '@/lib/api';
 
 // Tela que exibe informações de um autor e seus livros
 export default function Autor() {

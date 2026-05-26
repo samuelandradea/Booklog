@@ -5,6 +5,6 @@ export type Livro = {
     title: string
     author: string
     img?: string
-    isbn13?: string
+    isbn?: string
     rating?: number
 }

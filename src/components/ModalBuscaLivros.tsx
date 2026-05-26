@@ -118,7 +118,7 @@ export function ModalBuscaLivro({
                     <FlatList
                         data={resultados}
                         // isbn13 como chave pois é o identificador único do livro no dataset
-                        keyExtractor={(item) => item.isbn13 || item.id}
+                        keyExtractor={(item) => item.isbn || item.id}
                         renderItem={({ item }) => {
                             // Converte http para https para evitar erros de segurança no iOS
                             const thumb = item.img
