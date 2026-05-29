@@ -1,7 +1,7 @@
 import { RegistroController } from "@/controllers/registroController"
 import { Livro } from "@/models/LivroLocal"
 import { Ionicons } from "@expo/vector-icons"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     FlatList,
     Image,
@@ -18,8 +18,6 @@ type ModalBuscaLivroProps = {
     visivel: boolean
     onFechar: () => void
     onSelecionar: (livro: Livro) => void
-    // Quando passado, a busca filtra só nesses livros em vez de chamar a API
-    // Usado no campo "Remover da Lista" para buscar só o que já está na lista
     livrosDaLista?: Livro[]
 }
 
@@ -29,53 +27,66 @@ export function ModalBuscaLivro({
     onSelecionar,
     livrosDaLista,
 }: ModalBuscaLivroProps) {
-    // Texto digitado no campo de busca
+
     const [textoBusca, setTextoBusca] = useState("")
-
-    // Lista de resultados exibida no modal
     const [resultados, setResultados] = useState<Livro[]>([])
-
-    // Indica se a busca está em andamento para mostrar "Buscando..."
     const [buscando, setBuscando] = useState(false)
 
-    // Executada toda vez que o usuário digita no campo de busca
-    async function buscarLivros(termo: string) {
-        setTextoBusca(termo)
+    // Busca com debounce
+    useEffect(() => {
 
-        if (!termo.trim()) {
-            setResultados([])
-            return
+        async function realizarBusca() {
+
+            // Limpa resultados se input vazio
+            if (!textoBusca.trim()) {
+                setResultados([])
+                return
+            }
+
+            // Busca local (remover da lista)
+            if (livrosDaLista) {
+                const filtrados = livrosDaLista.filter(
+                    (l) =>
+                        l.title.toLowerCase().includes(textoBusca.toLowerCase()) ||
+                        l.author.toLowerCase().includes(textoBusca.toLowerCase())
+                )
+
+                setResultados(filtrados)
+                return
+            }
+
+            try {
+                setBuscando(true)
+
+                console.log("BUSCANDO:", textoBusca)
+
+                const livros = await RegistroController.buscarLivros(textoBusca)
+
+                setResultados(livros)
+
+            } catch (error) {
+                console.error("Erro na busca:", error)
+            } finally {
+                setBuscando(false)
+            }
         }
 
-        // Se livrosDaLista foi passado, filtra localmente sem chamar a API
-        // Isso é usado no campo "Remover da Lista"
-        if (livrosDaLista) {
-            const filtrados = livrosDaLista.filter(
-                (l) =>
-                    l.title.toLowerCase().includes(termo.toLowerCase()) ||
-                    l.author.toLowerCase().includes(termo.toLowerCase())
-            )
-            setResultados(filtrados)
-            return
-        }
+        // Espera 500ms antes de buscar
+        const timeout = setTimeout(() => {
+            realizarBusca()
+        }, 500)
 
-        // Se livrosDaLista não foi passado, busca no dataset completo via API
-        // Isso é usado no campo "Adicionar à Lista"
-        setBuscando(true)
-        const livros = await RegistroController.buscarLivros(termo)
-        setResultados(livros)
-        setBuscando(false)
-    }
+        // Cancela timeout anterior ao digitar novamente
+        return () => clearTimeout(timeout)
 
-    // Executada quando o usuário seleciona um livro da lista de resultados
-    // Limpa o estado interno e avisa a tela pai via onSelecionar
+    }, [textoBusca, livrosDaLista])
+
     function handleSelecionar(livro: Livro) {
         setTextoBusca("")
         setResultados([])
         onSelecionar(livro)
     }
 
-    // Executada quando o modal é fechado sem selecionar nada
     function handleFechar() {
         setTextoBusca("")
         setResultados([])
@@ -90,37 +101,35 @@ export function ModalBuscaLivro({
         >
             <SafeAreaView style={styles.container}>
 
-                {/* Cabeçalho do modal com título e botão de fechar */}
                 <View style={styles.header}>
                     <Text style={styles.titulo}>
-                        {/* Muda o título dependendo do contexto */}
                         {livrosDaLista ? "Remover da Lista" : "Adicionar à Lista"}
                     </Text>
+
                     <TouchableOpacity onPress={handleFechar}>
                         <Ionicons name="close" size={28} color="#500903" />
                     </TouchableOpacity>
                 </View>
 
-                {/* Campo de busca — autoFocus abre o teclado automaticamente */}
                 <TextInput
                     style={styles.campoBusca}
                     placeholder="Pesquisar livro..."
                     placeholderTextColor="#999"
                     value={textoBusca}
-                    onChangeText={buscarLivros}
+                    onChangeText={setTextoBusca}
                     autoFocus
                 />
 
-                {/* Renderização condicional: buscando / resultados / vazio */}
                 {buscando ? (
-                    <Text style={styles.textoStatus}>Buscando...</Text>
+                    <Text style={styles.textoStatus}>
+                        Buscando...
+                    </Text>
                 ) : (
                     <FlatList
                         data={resultados}
-                        // isbn13 como chave pois é o identificador único do livro no dataset
                         keyExtractor={(item) => item.isbn || item.id}
                         renderItem={({ item }) => {
-                            // Converte http para https para evitar erros de segurança no iOS
+
                             const thumb = item.thumbnail
                                 ? item.thumbnail.replace("http:", "https:")
                                 : null
@@ -130,7 +139,6 @@ export function ModalBuscaLivro({
                                     style={styles.itemResultado}
                                     onPress={() => handleSelecionar(item)}
                                 >
-                                    {/* Capa do livro ou placeholder vinho */}
                                     {thumb ? (
                                         <Image
                                             source={{ uri: thumb }}
@@ -140,12 +148,18 @@ export function ModalBuscaLivro({
                                         <View style={styles.imagemPlaceholder} />
                                     )}
 
-                                    {/* Título e autor do livro */}
                                     <View style={styles.infoResultado}>
-                                        <Text style={styles.tituloResultado} numberOfLines={2}>
+                                        <Text
+                                            style={styles.tituloResultado}
+                                            numberOfLines={2}
+                                        >
                                             {item.title}
                                         </Text>
-                                        <Text style={styles.autorResultado} numberOfLines={1}>
+
+                                        <Text
+                                            style={styles.autorResultado}
+                                            numberOfLines={1}
+                                        >
                                             {item.author}
                                         </Text>
                                     </View>
@@ -153,9 +167,10 @@ export function ModalBuscaLivro({
                             )
                         }}
                         ListEmptyComponent={
-                            // Só exibe "Nenhum livro encontrado" se o usuário já digitou algo
                             textoBusca.length > 0 ? (
-                                <Text style={styles.textoStatus}>Nenhum livro encontrado</Text>
+                                <Text style={styles.textoStatus}>
+                                    Nenhum livro encontrado
+                                </Text>
                             ) : null
                         }
                     />
