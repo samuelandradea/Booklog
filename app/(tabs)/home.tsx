@@ -2,6 +2,7 @@ import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
+import { api } from "@/lib/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -10,7 +11,6 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { api } from "@/lib/api";
 
 export default function Home() {
   const { user, loading } = useProtectedRoute()
@@ -57,11 +57,6 @@ export default function Home() {
           <ActivityIndicator size="large" color="#500903" style={{ flex: 1 }} />
         ) : (
           <>
-            <CarrosselLivros
-              titulo="Recomendações"
-              dados={livrosBanco.slice(0, 9)}
-              mostrarBolinhas={true}
-            />
             <CarrosselLivros
               titulo="Melhores do mês"
               dados={livrosBanco.slice(0, 9)}
