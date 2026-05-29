@@ -21,7 +21,6 @@ Nossa plataforma é um ecossistema criado com e social focado em transformar a l
 - **Sistema de Pontuação**: Ganhe reconhecimento à medida que avança em suas leituras.
 
 🧠 **Inteligência e Curadoria**
-- **Recomendações sob medida**: Algoritmo que entende seu gosto e sugere o próximo livro ideal.
 - **Busca Estruturada**: Encontre novos títulos de forma rápida e intuitiva.
 
 ## 🛠️ Tecnologias Utilizadas
@@ -33,6 +32,7 @@ O projeto foi construído com foco em **escalabilidade, performance e segurança
 ## 🧪 Como Executar o Projeto
 **Pré-requisitos**
 - Node.js instalado.
+- Python instalado na versão 3.12
 - Expo Go no seu smartphone ou um emulador Android/iOS configurado.
 
 1. **Clone o repositório**:
@@ -41,6 +41,9 @@ O projeto foi construído com foco em **escalabilidade, performance e segurança
 2. **Navegue até a pasta do projeto**:
    ```bash
    cd Booklog
+3. **Instale os requerimentos**:
+   ```bash
+   pip freeze > requirements.txt   
 4. **Instale as depedências**:
    ```bash
    npm install
