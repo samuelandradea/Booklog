@@ -121,8 +121,8 @@ export function ModalBuscaLivro({
                         keyExtractor={(item) => item.isbn || item.id}
                         renderItem={({ item }) => {
                             // Converte http para https para evitar erros de segurança no iOS
-                            const thumb = item.img
-                                ? item.img.replace("http:", "https:")
+                            const thumb = item.thumbnail
+                                ? item.thumbnail.replace("http:", "https:")
                                 : null
 
                             return (

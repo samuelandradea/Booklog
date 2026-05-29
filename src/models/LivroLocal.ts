@@ -4,7 +4,7 @@ export type Livro = {
     id: string
     title: string
     author: string
-    img?: string
+    thumbnail?: string
     isbn?: string
     rating?: number
 }

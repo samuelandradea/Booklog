@@ -11,13 +11,13 @@ import { Ionicons } from "@expo/vector-icons"
 import { router, useLocalSearchParams } from "expo-router"
 import { useEffect, useState } from "react"
 import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native"
 
 export default function CriarLista() {
@@ -65,9 +65,9 @@ export default function CriarLista() {
                     const livrosFormatados: Livro[] = livros.map((l) => ({
                         id: l.bookIsbn,
                         title: l.titulo,
-                        authors: l.authors,
-                        thumbnail: l.thumbnail,
-                        isbn13: l.bookIsbn,
+                        author: l.authors,       
+                        img: l.thumbnail,        
+                        isbn: l.bookIsbn,        
                     }))
                     setLivrosDaLista(livrosFormatados as any)
                 })
@@ -87,7 +87,7 @@ export default function CriarLista() {
 
                 // Adiciona sequencialmente cada livro selecionado
                 for (const livro of livrosParaAdicionar) {
-                    await controller.adicionarLivro(novaLista.id, livro.isbn13 || livro.id)
+                    await controller.adicionarLivro(novaLista.id, livro.isbn || livro.id)
                 }
                 Alert.alert("Lista criada com sucesso")
             } else if (listId) {
@@ -96,12 +96,12 @@ export default function CriarLista() {
 
                 // Adiciona os livros novos à lista existente
                 for (const livro of livrosParaAdicionar) {
-                    await controller.adicionarLivro(listId, livro.isbn13 || livro.id)
+                    await controller.adicionarLivro(listId, livro.isbn || livro.id)
                 }
 
                 // Remove os livros marcados para remoção
                 for (const livro of livrosParaRemover) {
-                    await controller.removerLivro(listId, livro.isbn13 || livro.id)
+                    await controller.removerLivro(listId, livro.isbn || livro.id)
                 }
                 Alert.alert("Lista editada com sucesso")
             }
