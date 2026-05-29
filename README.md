@@ -32,7 +32,6 @@ O projeto foi construído com foco em **escalabilidade, performance e segurança
 ## 🧪 Como Executar o Projeto
 **Pré-requisitos**
 - Node.js instalado.
-- Python instalado na versão 3.12
 - Expo Go no seu smartphone ou um emulador Android/iOS configurado.
 
 1. **Clone o repositório**:
@@ -40,13 +39,10 @@ O projeto foi construído com foco em **escalabilidade, performance e segurança
     git clone https://github.com/samuelandradea/Booklog.git
 2. **Navegue até a pasta do projeto**:
    ```bash
-   cd Booklog
-3. **Instale os requerimentos**:
-   ```bash
-   pip freeze > requirements.txt   
-4. **Instale as depedências**:
+   cd Booklog  
+3. **Instale as depedências**:
    ```bash
    npm install
-5. **Inicie o servidor de desenvolvimento**:
+4. **Inicie o servidor de desenvolvimento**:
    ```bash
    npx expo start
