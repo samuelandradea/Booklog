@@ -111,12 +111,6 @@ export default function Home() {
         ) : (
           <View style={styles.carrosselContainer}>
             <CarrosselLivros
-              titulo="Recomendações"
-              // Envia apenas os primeiros 9 livros para não pesar a memória
-              dados={livrosBanco.slice(0, 9)}
-              mostrarBolinhas={false}
-            />
-            <CarrosselLivros
               titulo="Melhores do mês"
               dados={livrosBanco.slice(0, 9)}
               mostrarBolinhas={false}

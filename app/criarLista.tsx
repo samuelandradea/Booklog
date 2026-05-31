@@ -192,7 +192,7 @@ export default function CriarLista() {
                                         <CardLivro
                                             nome={livro.title}
                                             nota=""
-                                            thumbnail={livro.thumbnail}
+                                            thumbnail={livro.img}
                                         />
                                         {/* Botão X para desistir de adicionar o livro */}
                                         <TouchableOpacity
@@ -232,7 +232,7 @@ export default function CriarLista() {
                                             <CardLivro
                                                 nome={livro.title}
                                                 nota=""
-                                                thumbnail={livro.thumbnail}
+                                                thumbnail={livro.img}
                                             />
                                             {/* Ícone de lixeira para desmarcar a remoção */}
                                             <TouchableOpacity
