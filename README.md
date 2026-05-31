@@ -106,8 +106,9 @@ Para alternar entre os ambientes, basta mudar o valor de `EXPO_PUBLIC_API_URL` n
 ## 👥 Time
 
 Projeto desenvolvido para a disciplina de **DSI / PISI3 / ESSI1** — UFRPE.
-Clara Helena https://github.com/clarahelena
-Gabryel Gomes https://github.com/GabryelSouzazz
-Maria Eduarda https://github.com/mmaria-alves
-Matheus Cintra https://github.com/CintraMatheus
-Samuel Andrade https://github.com/samuelandradea
+
+Clara Helena https://github.com/clarahelena  
+Gabryel Gomes https://github.com/GabryelSouzazz  
+Maria Eduarda https://github.com/mmaria-alves  
+Matheus Cintra https://github.com/CintraMatheus  
+Samuel Andrade https://github.com/samuelandradea  
