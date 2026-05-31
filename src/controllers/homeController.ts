@@ -33,6 +33,23 @@ export class HomeController {
       // retornando uma nova lista perfeitamente tipada como ILivro[].
       const livrosLimpos = dadosBrutos.map((livro: any) => livroBuilder(livro));
 
+      // LÓGICA DE ORDENAÇÃO (MELHORES DO MÊS)
+      // Usamos a fórmula de Média Bayesiana para evitar que livros com apenas
+      // uma avaliação nota 5 fiquem acima de livros com nota 4.8 e milhares de avaliações.
+      
+      const m = 50; // Constante de peso de avaliações
+      // Calcula a média de todas as notas do banco para balancear
+      const livrosComNota = livrosLimpos.filter(l => l.ratingsCount > 0);
+      const mediaGlobal = livrosComNota.length > 0
+        ? livrosComNota.reduce((acc, l) => acc + l.notaMedia, 0) / livrosComNota.length
+        : 3.5;
+
+      livrosLimpos.sort((a, b) => {
+        const scoreA = (a.notaMedia * a.ratingsCount + mediaGlobal * m) / (a.ratingsCount + m);
+        const scoreB = (b.notaMedia * b.ratingsCount + mediaGlobal * m) / (b.ratingsCount + m);
+        return scoreB - scoreA; // Decrescente (maior nota primeiro)
+      });
+
       return livrosLimpos;
     } catch (error) {
       // Captura falhas de rede (ex: servidor offline, sem internet)

@@ -13,8 +13,8 @@ type CarrosselProps = {
   /** Título da prateleira/seção (ex: "Recomendações", "Melhores do Mês") */
   titulo: string;
 
-  /** Lista de livros tipada de forma estrita. Garante que só passem dados limpos pelo Builder. */
-  dados: ILivro[];
+  /** Lista de livros tipada de forma estrita (ou any para dados de feed mapeados). */
+  dados: ILivro[] | any[];
 
   /** Define o layout interno do CardLivro. 'padrao' foca na nota, 'feed' foca no usuário e nota. */
   variante?: "padrao" | "feed";
@@ -100,7 +100,7 @@ export function CarrosselLivros({
               // O mapeamento aqui ficou limpo e 100% seguro graças à interface ILivro
               nome={item.titulo}
               nota={item.notaMedia.toString()}
-              usuario={"Usuário"} // TODO: Ajustar para puxar o amigo quando houver a POO de Usuários
+              usuario={item.amigoNome || "Usuário"} // Puxa dinamicamente do feed
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
               // Redireciona para a tela de informações do livro passando o ISBN (ou ID) como parâmetro

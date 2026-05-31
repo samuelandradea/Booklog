@@ -2,6 +2,7 @@
 import { CarrosselLivros } from "@/components/CarrosselLivros";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
+import { FeedController } from "@/controllers/feedController";
 import { HomeController } from "@/controllers/homeController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { ILivro } from "@/models/LivroModel";
@@ -37,6 +38,9 @@ export default function Home() {
   // Armazena a lista oficial de livros. Graças ao TypeScript e à nossa POO,
   // o React sabe que aqui dentro só existem objetos seguros do tipo 'ILivro'.
   const [livrosBanco, setLivrosBanco] = useState<ILivro[]>([]);
+  
+  // Armazena a lista de livros avaliados pelos amigos
+  const [feedBanco, setFeedBanco] = useState<any[]>([]);
 
   // Controle de interface: Mostra o "spinner" enquanto os livros estão sendo baixados da API
   const [carregando, setCarregando] = useState(true);
@@ -56,6 +60,26 @@ export default function Home() {
         // Ela simplesmente pede à Controller e aguarda a lista de livros perfeitos.
         const data = await HomeController.buscarLivrosEmAlta();
         setLivrosBanco(data);
+
+        // Busca o feed dos amigos se o usuário estiver logado
+        if (user && user.uid) {
+          const feedController = new FeedController();
+          const rawFeed = await feedController.carregarFeed(user.uid);
+          
+          // Mapeia (flatten) o feed agrupado por amigo em uma lista de livros para o carrossel
+          const feedFormatado = rawFeed.flatMap((feedItem: any) => {
+            return feedItem.reviews.map((review: any) => ({
+              id: review.id,
+              titulo: review.nomeLivro,
+              notaMedia: review.nota,
+              capa: review.thumbnail || "",
+              isbn13: review.bookIsbn,
+              amigoNome: feedItem.amigo.name,
+            }));
+          });
+          
+          setFeedBanco(feedFormatado);
+        }
       } catch (error) {
         console.error("Erro ao buscar livros para a Home:", error);
       } finally {
@@ -68,7 +92,7 @@ export default function Home() {
     if (!loading) {
       buscarLivros();
     }
-  }, [loading]);
+  }, [loading, user]);
 
   // Se a autenticação ainda estiver sendo validada, retorna nulo para não piscar a tela
   if (loading) return null;
@@ -117,7 +141,7 @@ export default function Home() {
             />
             <CarrosselLivros
               titulo="Feed amigos"
-              dados={livrosBanco.slice(0, 9)}
+              dados={feedBanco}
               variante="feed" // Variante que muda o layout interno do Card para mostrar o "Usuário"
               mostrarBolinhas={false}
             />
