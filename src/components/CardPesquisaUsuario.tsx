@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Avatar } from "@/components/Avatar";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -10,6 +11,7 @@ type Props = {
   /** Nome ou Apelido (Nickname) do usuário retornado na busca. */
   id: string;
   nome: string;
+  fotoURL: string;
 };
 
 /**
@@ -17,16 +19,14 @@ type Props = {
  * * Inclui um ícone circular à esquerda do nome para ajudar a diferenciar visualmente
  * os usuários dos autores na tela mista de resultados.
  */
-export function CardPesquisaUsuario({ id, nome }: Props) {
+export function CardPesquisaUsuario({ id, nome, fotoURL }: Props) {
   return (
     <TouchableOpacity style={styles.userButton} 
     activeOpacity={0.7}
     onPress={() => router.push({ pathname: "/perfilAmizade", params: { uid: id } })}
     >
-      {/* Círculo decorativo que engloba o ícone do usuário */}
-      <View style={styles.userIconCircle}>
-        <Feather name="user" size={16} color="#FFF" />
-      </View>
+      
+      <Avatar fotoURL={fotoURL} size={36} />
 
       <Text style={styles.userText}>{nome}</Text>
     </TouchableOpacity>

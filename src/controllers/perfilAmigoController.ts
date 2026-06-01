@@ -5,6 +5,7 @@ import { followUser, getUser, unfollowUser } from "@/services/userService";
 export type PerfilAmigoData = {
   nome: string;
   bio: string;
+  fotoURL: string,
   seguindo: boolean;
   reviews: any[];
 };
@@ -38,6 +39,7 @@ export class PerfilAmizadeController {
       return {
         nome: perfilAmigo?.name || "",
         bio: perfilAmigo?.bio || "",
+        fotoURL: perfilAmigo?.fotoURL ?? "",
         seguindo,
         reviews,
       };
