@@ -115,8 +115,8 @@ export default function PerfilAmizade() {
               isbn13: r.bookIsbn || "",
               titulo: r.nomeLivro || "Título Desconhecido",
               autores: r.nomeAutor || "",
-              capa: r.thumbnail
-              ? r.thumbnail.replace("http:", "https:")
+              capa: r.img
+              ? r.img.replace("http:", "https:")
               : "",
               notaMedia: r.nota || 0,
               ratingsCount: 0,
