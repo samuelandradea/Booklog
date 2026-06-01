@@ -4,9 +4,9 @@ import { Header } from "@/components/Header";
 import { FeedController, FeedItem } from "@/controllers/feedController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function FeedAmigos() {
     const { user, loading } = useProtectedRoute();
@@ -53,12 +53,25 @@ export default function FeedAmigos() {
                         }
                         renderItem={({ item }) => (
                             <View style={styles.feedItem}>
-                                <View style={styles.usuarioRow}>
+                                <TouchableOpacity
+                                    style={styles.usuarioRow}
+                                    onPress={() =>
+                                        router.push({
+                                            pathname: "/perfilAmizade",
+                                            params: {
+                                                uid: item.amigo.id,
+                                            },
+                                        })
+                                    }
+                                >
                                     <View style={styles.avatar}>
                                         <Ionicons name="person" size={20} color="#EDD5C0" />
                                     </View>
-                                    <Text style={styles.nomeUsuario}>{item.amigo.name}</Text>
-                                </View>
+
+                                    <Text style={styles.nomeUsuario}>
+                                        {item.amigo.name}
+                                    </Text>
+                                </TouchableOpacity>
 
                                 <CarrosselLivros
                                     titulo=""
