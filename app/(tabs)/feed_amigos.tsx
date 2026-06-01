@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { CarrosselLivros } from "@/components/CarrosselLivros";
+import { Divider } from "@/components/Divider";
+import { Header } from "@/components/Header";
+import { FeedController, FeedItem } from "@/controllers/feedController";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
-import { Header } from "@/components/Header";
-import { Divider } from "@/components/Divider";
-import { CarrosselLivros } from "@/components/CarrosselLivros";
-import { useProtectedRoute } from "@/hook/useProtectedRoute";
-import { FeedController, FeedItem } from "@/controllers/feedController";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 
 export default function FeedAmigos() {
     const { user, loading } = useProtectedRoute();
@@ -68,8 +68,11 @@ export default function FeedAmigos() {
                                         isbn13: r.bookIsbn || "",
                                         titulo: r.nomeLivro || "Título Desconhecido",
                                         autores: r.nomeAutor || "",
-                                        capa: r.thumbnail || "",
+                                        capa: r.thumbnail
+                                            ? r.thumbnail.replace("http:", "https:")
+                                            : "",
                                         notaMedia: r.nota || 0,
+                                        ratingsCount: 0,
                                         categoria: "",
                                     }))}
                                 />
