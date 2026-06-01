@@ -1,36 +1,45 @@
-# 📚 Booklog — Conectando leitores, transformando hábitos
+# 📚 BookLog — Conectando leitores, transformando hábitos
 
-O **Booklog** é um aplicativo mobile que transforma a leitura em uma experiência social e gamificada, permitindo que leitores registrem seus livros, escrevam avaliações, sigam amigos e descubram novos títulos.
+## 🎯 Sobre o Projeto
 
----
+O BookLog nasce para enfrentar um dos maiores desafios da era digital: a preservação do hábito da leitura. Em um cenário dominado por conteúdos curtos e estímulos rápidos, a leitura profunda muitas vezes perde espaço por ser tratada como uma atividade solitária e sem incentivos imediatos.
 
-## 🛠️ Tecnologias
-
-- [React Native](https://reactnative.dev/) com [Expo](https://expo.dev/) — framework mobile multiplataforma
-- [TypeScript](https://www.typescriptlang.org/) — tipagem estática
-- [Firebase](https://firebase.google.com/) — autenticação de usuários
-- [Expo Router](https://expo.github.io/router/) — navegação baseada em arquivos
+Nossa plataforma é um ecossistema criado com foco social para transformar a leitura em uma experiência compartilhada, engajadora e gamificada.
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades Principais
 
-- 📖 Registre livros lidos e escreva avaliações
-- 👥 Siga amigos e acompanhe o feed de leituras
-- 🔍 Busque livros, autores e usuários
-- 📋 Crie e gerencie listas de leitura personalizadas
-- 🗺️ Descubra livrarias e pontos literários no mapa
-- 🔑 Recuperação de senha por e-mail
+👥 **Social Experience**
+- **Feed Dinâmico**: Acompanhe o que seus amigos estão lendo e suas avaliações em tempo real
+- **Perfis Personalizados**: Exiba sua estante virtual, metas e conquistas literárias
+- **Compartilhamento**: Discuta obras e troque recomendações diretamente na plataforma
+
+🎮 **Gamificação e Incentivo**
+- **Desafios Literários**: Participe de metas individuais
+- **Sistema de Pontuação**: Ganhe reconhecimento à medida que avança em suas leituras
+
+🧠 **Inteligência e Curadoria**
+- **Busca Estruturada**: Encontre novos títulos de forma rápida e intuitiva
 
 ---
 
-## ⚙️ Como rodar localmente
+## 🛠️ Tecnologias Utilizadas
+
+- **Linguagem**: [TypeScript](https://www.typescriptlang.org/) — segurança com tipagem estática
+- **Framework**: [React Native](https://reactnative.dev/) com [Expo](https://expo.dev/) — multiplataforma iOS/Android
+- **Autenticação**: [Firebase Authentication](https://firebase.google.com/docs/auth) — login seguro
+- **Backend**: API REST própria deployada no [Railway](https://railway.app/)
+
+---
+
+## ⚙️ Como Executar o Projeto
 
 ### Pré-requisitos
 
-- [Node.js](https://nodejs.org/) 18+
-- [Expo Go](https://expo.dev/client) instalado no celular **ou** um emulador Android/iOS configurado
-- O backend da aplicação rodando (localmente ou via deploy)
+- [Node.js](https://nodejs.org/) instalado
+- [Expo Go](https://expo.dev/go) no smartphone ou emulador Android/iOS configurado
+- Conta no [Firebase](https://firebase.google.com/) com um projeto Web criado
 
 ### 1. Clone o repositório
 
@@ -47,26 +56,39 @@ npm install
 
 ### 3. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+Crie um arquivo `.env` na raiz do projeto. Use o `.env.example` como base:
+
+```bash
+cp .env.example .env
+```
+
+Preencha as variáveis com os seus valores:
 
 ```env
-# URL do backend — use o link do deploy no Railway para rodar em produção,
-# ou http://localhost:8000 para rodar o backend localmente
+# URL do backend deployado no Railway
 EXPO_PUBLIC_API_URL=https://pisi3-production.up.railway.app
 
-# Firebase — configuração do projeto web
-# Acesse: Firebase Console → Configurações do projeto → Seus aplicativos → App da Web
+# Firebase Web — chaves do seu projeto Firebase
+# Acesse: Firebase Console → Configurações do projeto → Seus aplicativos → App Web
 EXPO_PUBLIC_FIREBASE_API_KEY=AIzaSy...
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=seu-projeto.firebaseapp.com
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=seu-projeto
 EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=seu-projeto.appspot.com
-EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-EXPO_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=000000000000
+EXPO_PUBLIC_FIREBASE_APP_ID=1:000000000000:web:xxxxxxxxxxxxxx
 ```
 
-> ⚠️ **Nunca commite o `.env` no repositório.** Certifique-se de que ele está no `.gitignore`.
+> ⚠️ Nunca commite o `.env` no repositório. As chaves do Firebase Web são necessárias para o login funcionar.
 
-> 💡 **Atenção:** No Expo, todas as variáveis de ambiente que o app precisa acessar devem começar com `EXPO_PUBLIC_`. Variáveis sem esse prefixo não ficam disponíveis no código do app.
+#### Como obter as chaves do Firebase Web
+
+1. Acesse o [Firebase Console](https://console.firebase.google.com/)
+2. Selecione (ou crie) seu projeto
+3. Vá em **Configurações do projeto** (ícone de engrenagem) → **Seus aplicativos**
+4. Clique em **Adicionar app** → escolha **Web** (`</>`)
+5. Registre o app e copie as chaves exibidas na tela
+
+> 💡 O backend (Supabase, Firestore e SendGrid) já está rodando no Railway — você não precisa configurar nada disso localmente.
 
 ### 4. Inicie o servidor de desenvolvimento
 
@@ -74,32 +96,7 @@ EXPO_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef
 npx expo start
 ```
 
-- Escaneie o QR code com o app **Expo Go** no celular
-- Ou pressione `a` para abrir no emulador Android, `i` para iOS
-
----
-
-## 🔗 Conexão com o Backend
-
-O app se comunica com a API do Booklog para buscar livros, gerenciar usuários, avaliações e listas.
-
-| Ambiente | URL |
-|----------|-----|
-| Produção | `https://pisi3-production.up.railway.app` |
-| Local | `http://localhost:8000` |
-
-Para alternar entre os ambientes, basta mudar o valor de `EXPO_PUBLIC_API_URL` no `.env` e reiniciar o Expo com `npx expo start --clear`.
-
-> ⚠️ **Testando no celular físico:** Se o backend estiver rodando localmente, substitua `localhost` pelo IP da sua máquina na rede local (ex: `http://192.168.1.100:8000`). O celular e o computador precisam estar na mesma rede Wi-Fi. O `localhost` no celular aponta para o próprio celular, não para o computador.
-
----
-
-## 🔥 Configuração do Firebase
-
-1. Acesse o [Firebase Console](https://console.firebase.google.com/)
-2. Selecione seu projeto → **Configurações do projeto** → **Seus aplicativos**
-3. Selecione o app Web (ou crie um novo clicando em `</>`)
-4. Copie os valores do objeto `firebaseConfig` para as variáveis `EXPO_PUBLIC_FIREBASE_*` no `.env`
+Escaneie o QR code com o Expo Go ou pressione `a` para abrir no emulador Android / `i` para iOS.
 
 ---
 
@@ -107,8 +104,10 @@ Para alternar entre os ambientes, basta mudar o valor de `EXPO_PUBLIC_API_URL` n
 
 Projeto desenvolvido para a disciplina de **DSI / PISI3 / ESSI1** — UFRPE.
 
-Clara Helena https://github.com/clarahelena  
-Gabryel Gomes https://github.com/GabryelSouzazz  
-Maria Eduarda https://github.com/mmaria-alves  
-Matheus Cintra https://github.com/CintraMatheus  
-Samuel Andrade https://github.com/samuelandradea  
+| Membro | GitHub |
+|--------|--------|
+| Clara Helena | [@clarahelena](https://github.com/clarahelena) |
+| Gabryel Gomes | [@GabryelSouzazz](https://github.com/GabryelSouzazz) |
+| Maria Eduarda | [@mmaria-alves](https://github.com/mmaria-alves) |
+| Matheus Cintra | [@CintraMatheus](https://github.com/CintraMatheus) |
+| Samuel Andrade | [@samuelandradea](https://github.com/samuelandradea) |
