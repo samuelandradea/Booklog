@@ -5,7 +5,7 @@ import { MenuOpcao } from "@/components/MenuOpcao";
 import { PerfilAmizadeController } from "@/controllers/perfilAmigoController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -111,12 +111,15 @@ export default function PerfilAmizade() {
           <CarrosselLivros
             titulo=""
             dados={reviews.map((r) => ({
-              id: r.id || r.bookIsbn || "",
+              id: r.id || r.bookIsbn || Math.random().toString(),
               isbn13: r.bookIsbn || "",
               titulo: r.nomeLivro || "Título Desconhecido",
-              autores: r.nomeAutor || "Autor Desconhecido",
-              capa: r.thumbnail || "",
+              autores: r.nomeAutor || "",
+              capa: r.thumbnail
+              ? r.thumbnail.replace("http:", "https:")
+              : "",
               notaMedia: r.nota || 0,
+              ratingsCount: 0,
               categoria: "",
             }))}
             mostrarBolinhas={false}
