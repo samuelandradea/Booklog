@@ -1,10 +1,12 @@
-import { getFollowing } from "@/services/userService";
 import { LeituraController } from "@/controllers/leituraController";
+import { getFollowing } from "@/services/userService";
 
 export interface FeedItem {
     amigo: {
         id: string;
         name: string;
+        fotoURL?: string;
+
     };
     reviews: any[];
 }
@@ -35,6 +37,7 @@ export class FeedController {
                             amigo: {
                                 id: amigo.id,
                                 name: amigo.name,
+                                fotoURL: amigo.fotoURL,
                             },
                             reviews: reviewsDoAmigo,
                         });

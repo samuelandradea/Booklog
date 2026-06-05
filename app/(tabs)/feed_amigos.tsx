@@ -6,7 +6,7 @@ import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function FeedAmigos() {
     const { user, loading } = useProtectedRoute();
@@ -64,10 +64,17 @@ export default function FeedAmigos() {
                                         })
                                     }
                                 >
-                                    <View style={styles.avatar}>
-                                        <Ionicons name="person" size={20} color="#EDD5C0" />
-                                    </View>
-
+                                    {item.amigo.fotoURL ? (
+                                        <Image
+                                            source={{ uri: item.amigo.fotoURL }}
+                                            style={styles.avatar}
+                                        />
+                                    ) : (
+                                        <View style={styles.avatar}>
+                                            <Ionicons name="person" size={20} color="#EDD5C0" />
+                                        </View>
+                                    )} 
+                                    
                                     <Text style={styles.nomeUsuario}>
                                         {item.amigo.name}
                                     </Text>
@@ -136,6 +143,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#500903",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
     },
     nomeUsuario: {
         fontFamily: "Poppins_700Bold",

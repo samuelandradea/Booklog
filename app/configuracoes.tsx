@@ -1,14 +1,14 @@
-import { Ionicons } from "@expo/vector-icons"
+import { Avatar } from "@/components/Avatar"
 import { Divider } from "@/components/Divider"
 import { Input } from "@/components/Input"
 import { InputPerfil } from "@/components/VariacaoInput"
-import { Avatar } from "@/components/Avatar"
 import { ConfiguracoesController, DadosPerfil } from "@/controllers/configuracoesController"
 import { auth } from "@/lib/firebase"
-import { router } from "expo-router"
+import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
+import { router } from "expo-router"
 import { useEffect, useRef, useState } from "react"
-import { Alert, Animated, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native"
+import { Alert, Animated, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 // instancia do controller fora do componente
 const controller = new ConfiguracoesController()
