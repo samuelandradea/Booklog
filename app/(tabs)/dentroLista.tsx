@@ -28,11 +28,12 @@ export default function dentroLista(){
   //Recebe o id da lista
   const { listId } = useLocalSearchParams();
 
+  if (!user) return null;
   // Busca as reviews sempre que a tela recebe foco (ex: ao voltar de outra tela)
   useFocusEffect(
     useCallback(() => {
         if (listId) {
-            controller.buscarLivrosDaLista(listId as string)
+            controller.buscarLivrosDaLista(user.uid, listId as string)
                 .then(({ nome, livros }) => {
                     setNomeLista(nome)
                     setLivros(livros)
