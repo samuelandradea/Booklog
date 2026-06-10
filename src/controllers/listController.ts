@@ -39,9 +39,9 @@ export class ListController {
                             bookIsbn: isbn,
                             addedAt: lista.bookEntries[isbn],
                             titulo: livro.title || "Sem título",
-                            authors: livro.authors || "",
-                            thumbnail: livro.thumbnail
-                                ? livro.thumbnail.replace("http:", "https:")
+                            authors: livro.author || "",
+                            thumbnail: livro.img
+                                ? livro.img.replace("http:", "https:")
                                 : undefined,
                         }
                     } catch {
