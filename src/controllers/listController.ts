@@ -1,17 +1,11 @@
 import { api } from '@/lib/api'
 import {
-    addBookToList,
-    createList,
-    deleteList,
-    getList,
-    getUserLists,
-    removeBookFromList,
-    updateList
+    addBookToList, createList, deleteList,
+    getList, getUserLists, removeBookFromList, updateList
 } from '@/services/listService'
 
 export class ListController {
 
-    // Busca todas as listas do usuário
     async buscarListas(uid: string) {
         try {
             return await getUserLists(uid)
@@ -21,17 +15,54 @@ export class ListController {
         }
     }
 
-    // Busca os detalhes de uma lista específica incluindo seus livros
-    async buscarLista(listId: string) {
+    async buscarLista(uid: string, listId: string) {
         try {
-            return await getList(listId)
+            return await getList(uid, listId)
         } catch (error) {
             console.error('Erro ao buscar lista:', error)
             return null
         }
     }
 
-    // Cria uma nova lista com o nome fornecido
+    async buscarLivrosDaLista(uid: string, listId: string) {
+        try {
+            const lista = await getList(uid, listId)
+            if (!lista) return { nome: "", livros: [] }
+
+            const isbns = Object.keys(lista.bookEntries as Record<string, string>)
+
+            const livros = await Promise.all(
+                isbns.map(async (isbn) => {
+                    try {
+                        const livro = await api(`/books/${isbn}`)
+                        return {
+                            bookIsbn: isbn,
+                            addedAt: lista.bookEntries[isbn],
+                            titulo: livro.title || "Sem título",
+                            authors: livro.author || "",
+                            thumbnail: livro.img
+                                ? livro.img.replace("http:", "https:")
+                                : undefined,
+                        }
+                    } catch {
+                        return {
+                            bookIsbn: isbn,
+                            addedAt: lista.bookEntries[isbn],
+                            titulo: isbn,
+                            authors: "",
+                            thumbnail: undefined,
+                        }
+                    }
+                })
+            )
+
+            return { nome: lista.name, livros }
+        } catch (error) {
+            console.error('Erro ao buscar livros da lista:', error)
+            return { nome: "", livros: [] }
+        }
+    }
+
     async criarLista(uid: string, name: string) {
         try {
             return await createList(uid, name)
@@ -41,86 +72,39 @@ export class ListController {
         }
     }
 
-    // Atualiza o nome de uma lista existente
-    async editarNomeLista(listId: string, name: string) {
+    async editarNomeLista(uid: string, listId: string, name: string) {
         try {
-            return await updateList(listId, name)
+            return await updateList(uid, listId, name)
         } catch (error) {
             console.error('Erro ao editar lista:', error)
             throw new Error('Não foi possível editar a lista.')
         }
     }
 
-    // Adiciona um livro à lista
-    async adicionarLivro(listId: string, bookIsbn: string) {
+    async adicionarLivro(uid: string, listId: string, bookIsbn: string) {
         try {
-            return await addBookToList(listId, bookIsbn)
+            return await addBookToList(uid, listId, bookIsbn)
         } catch (error) {
             console.error('Erro ao adicionar livro:', error)
             throw new Error('Não foi possível adicionar o livro.')
         }
     }
 
-    // Remove um livro da lista
-    async removerLivro(listId: string, bookIsbn: string) {
+    async removerLivro(uid: string, listId: string, bookIsbn: string) {
         try {
-            return await removeBookFromList(listId, bookIsbn)
+            return await removeBookFromList(uid, listId, bookIsbn)
         } catch (error) {
             console.error('Erro ao remover livro:', error)
             throw new Error('Não foi possível remover o livro.')
         }
     }
 
-    // Deleta a lista inteira
-    async deletarLista(listId: string) {
+    async deletarLista(uid: string, listId: string) {
         try {
-            return await deleteList(listId)
+            return await deleteList(uid, listId)
         } catch (error) {
             console.error('Erro ao deletar lista:', error)
             throw new Error('Não foi possível deletar a lista.')
         }
     }
-
-    //Busca os livros presentes na lista
-    async buscarLivrosDaLista(listId: string) {
-    try {
-        const lista = await getList(listId)
-        if (!lista) return { nome: "", livros: [] }
-
-        // Converte o bookEntries em array de ISBNs
-        const isbns = Object.keys(lista.bookEntries as Record<string, string>)
-
-        // Para cada ISBN, busca os dados do livro no backend
-        const livros = await Promise.all(
-            isbns.map(async (isbn) => {
-                try {
-                    const livro = await api(`/books/${isbn}`)
-                    return {
-                        bookIsbn: isbn,
-                        addedAt: lista.bookEntries[isbn],
-                        titulo: livro.title || "Sem título",
-                        authors: livro.author || "",
-                        thumbnail: livro.img
-                            ? livro.img.replace("http:", "https:")
-                            : undefined,
-                    }
-                } catch {
-                    // Se não encontrar o livro, retorna só o ISBN
-                    return {
-                        bookIsbn: isbn,
-                        addedAt: lista.bookEntries[isbn],
-                        titulo: isbn,
-                        authors: "",
-                        thumbnail: undefined,
-                    }
-                }
-            })
-        )
-
-        return { nome: lista.name, livros }
-    } catch (error) {
-        console.error('Erro ao buscar livros da lista:', error)
-        return { nome: "", livros: [] }
-    }
-}
 }

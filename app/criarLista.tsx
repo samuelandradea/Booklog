@@ -29,6 +29,8 @@ export default function CriarLista() {
         modo: "criar" | "editar"
     }>()
 
+    const listIdStr = Array.isArray(listId) ? listId[0] : listId
+
     const controller = new ListController()
     const { user, loading } = useProtectedRoute()
 
@@ -48,6 +50,8 @@ export default function CriarLista() {
     // Controla qual modal está aberto: "adicionar", "remover" ou null (fechado)
     const [modalAberto, setModalAberto] = useState<"adicionar" | "remover" | null>(null)
 
+    if (!user) return null
+
     // Preenche o input de nome com o nome atual ao entrar no modo editar
     useEffect(() => {
         if (modo === "editar" && nomeAtual) {
@@ -58,8 +62,8 @@ export default function CriarLista() {
     // Carrega os livros que já estão na lista no modo editar
     // Necessário para alimentar o campo "Remover da Lista"
     useEffect(() => {
-        if (modo === "editar" && listId) {
-            controller.buscarLivrosDaLista(listId)
+        if (modo === "editar" && listIdStr) {
+            controller.buscarLivrosDaLista(user.uid, listIdStr)
                 .then(({ livros }) => {
                     // Converte IListBookFull para Livro para compatibilidade com o modal
                     const livrosFormatados: Livro[] = livros.map((l) => ({
@@ -72,7 +76,7 @@ export default function CriarLista() {
                     setLivrosDaLista(livrosFormatados as any)
                 })
         }
-    }, [modo, listId])
+    }, [modo, listIdStr])
 
     if (loading) return null
 
@@ -82,30 +86,39 @@ export default function CriarLista() {
 
         try {
             if (modo === "criar") {
-                // Cria a lista e pega o ID gerado pelo backend
                 const novaLista = await controller.criarLista(user.uid, nomeLista)
-
-                // Adiciona sequencialmente cada livro selecionado
                 for (const livro of livrosParaAdicionar) {
-                    await controller.adicionarLivro(novaLista.id, livro.isbn || livro.id)
+                    if (!livro.isbn) continue
+
+                    await controller.adicionarLivro(
+                        user.uid,
+                        novaLista.id,
+                        livro.isbn
+                    )
                 }
                 Alert.alert("Lista criada com sucesso")
-            } else if (listId) {
-                // Atualiza o nome da lista
-                await controller.editarNomeLista(listId, nomeLista)
-
-                // Adiciona os livros novos à lista existente
+            } else if (listIdStr) {  // verifica se existe antes de usar
+                await controller.editarNomeLista(user.uid, listIdStr, nomeLista)
                 for (const livro of livrosParaAdicionar) {
-                    await controller.adicionarLivro(listId, livro.isbn || livro.id)
-                }
+                    if (!livro.isbn) continue
 
-                // Remove os livros marcados para remoção
+                    await controller.adicionarLivro(
+                        user.uid,
+                        listIdStr,
+                        livro.isbn
+                    )
+                }
                 for (const livro of livrosParaRemover) {
-                    await controller.removerLivro(listId, livro.isbn || livro.id)
+                    if (!livro.isbn) continue
+
+                    await controller.removerLivro(
+                        user.uid,
+                        listIdStr,
+                        livro.isbn
+                    )
                 }
                 Alert.alert("Lista editada com sucesso")
             }
-
             router.replace("/minhas_listas")
         } catch {
             Alert.alert("Erro ao salvar a lista")
@@ -117,8 +130,10 @@ export default function CriarLista() {
     }
 
     async function handleExcluir() {
+        if (!listIdStr) return
+        if (!user) return null
         try {
-            await controller.deletarLista(listId!)
+            await controller.deletarLista(user.uid, listIdStr)
             Alert.alert("Lista excluída com sucesso")
             router.replace("/minhas_listas")
         } catch {
