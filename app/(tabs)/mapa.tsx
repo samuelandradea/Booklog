@@ -6,9 +6,11 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   ActivityIndicator,
   Animated,
   Dimensions,
+  Linking,
   PanResponder,
   SafeAreaView,
   ScrollView,
@@ -17,11 +19,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as Location from 'expo-location';
 
 export default function Mapa() {
   const router = useRouter();
   const [locais, setLocais] = useState<ILocation[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
 
   // ==========================================
   // LÓGICA DO BOTTOM SHEET ANIMADO
@@ -70,13 +74,44 @@ export default function Mapa() {
 
   useEffect(() => {
     const fetchLocais = async () => {
-      const data = await MapaController.buscarLocais();
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setCarregando(false);
+        return;
+      }
+
+      const pos = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = pos.coords;
+      setLocalizacao({ latitude, longitude });
+
+      const data = await MapaController.buscarLocaisProximos(latitude, longitude);
       setLocais(data);
       setCarregando(false);
     };
-
     fetchLocais();
   }, []);
+
+    const abrirNoGPS = (local: ILocation) => {
+      Alert.alert(
+        'Abrir no mapa',
+        local.nome,
+        [
+          {
+            text: 'Google Maps',
+            onPress: () => Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${local.latitude},${local.longitude}`),
+          },
+          {
+            text: 'Waze',
+            onPress: () => Linking.openURL(`https://waze.com/ul?ll=${local.latitude},${local.longitude}&navigate=yes`),
+          },
+          {
+            text: 'Apple Maps',
+            onPress: () => Linking.openURL(`maps://?q=${local.nome}&ll=${local.latitude},${local.longitude}`),
+          },
+          { text: 'Cancelar', style: 'cancel' },
+        ]
+      );
+    };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -98,7 +133,7 @@ export default function Mapa() {
 
       {/* O MAPA COMPLETO NA METADE SUPERIOR */}
       <View style={styles.mapContainer}>
-        <MapWrapper locais={locais} />
+        <MapWrapper locais={locais} userLocation={localizacao} />
       </View>
 
       {/* BOTTOM SHEET ANIMADO (PAINEL INFERIOR) */}
@@ -127,15 +162,21 @@ export default function Mapa() {
             contentContainerStyle={{ paddingBottom: 80 }}
           >
             {locais.map((local) => (
-              <View key={local.id} style={styles.locationCard}>
+              <TouchableOpacity key={local.id} style={styles.locationCard} onPress={() => abrirNoGPS(local)}>
                 <View style={styles.iconWrapper}>
-                  <Feather name="book-open" size={20} color="#500903" />
+                  <Feather name={
+                    local.tipo === 'cafe' ? 'coffee' :
+                    local.tipo === 'books' ? 'book' :
+                    local.tipo === 'library' ? 'bar-chart-2' :
+                    local.tipo === 'park' ? 'wind' :
+                    'map-pin' 
+                  } size={20} color="#500903" />
                 </View>
                 <View style={styles.locationInfo}>
                   <Text style={styles.locationName}>{local.nome}</Text>
                   <Text style={styles.locationAddress}>{local.endereco}</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
 
             {/* CARD PARA ADICIONAR NOVO LOCAL */}
