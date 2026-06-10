@@ -34,19 +34,20 @@ export class LeituraController {
 
   // Atualiza a nota e resenha de uma review existente
   async editarReview(
+    uid: string,
     reviewId: string,
     dados: { nota: number; resenha: string }
   ): Promise<boolean> {
-    try {
-      await api(`/reviews/${reviewId}`, {
-        method: "PUT",
-        body: JSON.stringify(dados),
-      });
-      return true;
-    } catch (error) {
-      console.error("Erro ao editar review:", error);
-      throw new Error("Não foi possível atualizar a avaliação.");
-    }
+      try {
+          await api(`/users/${uid}/reviews/${reviewId}`, {
+              method: "PUT",
+              body: JSON.stringify(dados),
+          });
+          return true;
+      } catch (error) {
+          console.error("Erro ao editar review:", error);
+          throw new Error("Não foi possível atualizar a avaliação.");
+      }
   }
 
   // Remove uma review do usuário pelo ID da review

@@ -1,10 +1,11 @@
-import { Header } from "@/components/Header";
-import { useProtectedRoute } from "@/hook/useProtectedRoute";
-import { useLocalSearchParams, router } from "expo-router";
 import { Button } from "@/components/Button";
+import { Header } from "@/components/Header";
 import { LeituraController } from "@/controllers/leituraController";
-import { useState, useEffect } from "react";
+import { useProtectedRoute } from "@/hook/useProtectedRoute";
+import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -15,7 +16,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function EditarAvaliacao() {
   const { user, loading } = useProtectedRoute();
@@ -40,19 +40,22 @@ export default function EditarAvaliacao() {
     : null;
 
   const salvarEdicao = async () => {
-    try {
-      const sucesso = await controller.editarReview(id as string, {
-        nota: notaEdit,
-        resenha: resenhaEdit,
-      });
+      try {
+          const uid = user?.uid
+          if (!uid) return
 
-      if (sucesso) {
-        Alert.alert("Sucesso", "Avaliação atualizada!");
-        router.push("/(tabs)/lidos_recente");
+          const sucesso = await controller.editarReview(uid, id as string, {
+              nota: notaEdit,
+              resenha: resenhaEdit,
+          });
+
+          if (sucesso) {
+              Alert.alert("Sucesso", "Avaliação atualizada!");
+              router.push("/(tabs)/lidos_recente");
+          }
+      } catch (error: any) {
+          Alert.alert(error.message);
       }
-    } catch (error: any) {
-      Alert.alert(error.message);
-    }
   };
 
   const deletarReview = async () => {
