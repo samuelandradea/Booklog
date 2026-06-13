@@ -10,10 +10,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
           height: 70,
-          borderTopWidth: 0,
-          elevation: 0,
+          elevation: 10,
           shadowOpacity: 0,
-          paddingBottom: 10,
+          paddingBottom: 0,
           paddingTop: 15,
         },
         tabBarActiveTintColor: "#500903",
@@ -24,7 +23,7 @@ export default function TabLayout() {
         name="minhas_listas"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="list" size={36} color={color} />
+            <Ionicons name="list" size={27} color={color} />
           ),
         }}
       />
@@ -32,7 +31,7 @@ export default function TabLayout() {
         name="feed_amigos"
         options={{
           tabBarIcon: ({ color }) => (
-            <Octicons name="people" size={36} color={color} />
+            <Octicons name="people" size={27} color={color} />
           ),
         }}
       />
@@ -40,7 +39,7 @@ export default function TabLayout() {
         name="registro"
         options={{
           tabBarIcon: ({ color }) => (
-            <AntDesign name="plus-circle" size={36} color={color} />
+            <AntDesign name="plus-circle" size={27} color={color} />
           ),
         }}
       />
@@ -48,7 +47,7 @@ export default function TabLayout() {
         name="gameficacao"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="trophy-outline" size={36} color={color} />
+            <Ionicons name="trophy-outline" size={27} color={color} />
           ),
         }}
       />
@@ -56,7 +55,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="person-circle-outline" size={36} color={color} />
+            <Ionicons name="person-circle-outline" size={27} color={color} />
           ),
         }}
       />
