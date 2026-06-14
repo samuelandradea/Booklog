@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "grandeMisterio",
-    "slug": "grandeMisterio",
+    "name": "Booklog",
+    "slug": "Booklog",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "grandemisterio",
+    "scheme": "Booklog",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash-icon.png",
