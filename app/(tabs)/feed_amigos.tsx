@@ -94,7 +94,19 @@ export default function FeedAmigos() {
                                         notaMedia: r.nota || 0,
                                         ratingsCount: 0,
                                         categoria: "",
+                                        resenha: r.resenha || "",
                                     }))}
+                                    aoClicarItem={(livro) => router.push({
+                                        pathname: '/avaliacao',
+                                        params: {
+                                            titulo: livro.titulo,
+                                            autor: livro.autores,
+                                            capa: livro.capa,
+                                            nota: String(livro.notaMedia),
+                                            resenha: livro.resenha || '',
+                                            usuario: item.amigo.name,
+                                        },
+                                    })}
                                 />
                                 
                                 <Divider style={styles.dividerItem} />

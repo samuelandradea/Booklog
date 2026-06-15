@@ -72,6 +72,7 @@ export default function TabLayout() {
       <Tabs.Screen name="perfilAmizade" options={{ href: null }} />
       <Tabs.Screen name="autor" options={{ href: null }} />
       <Tabs.Screen name="mapa" options={{ href: null }} />
+      <Tabs.Screen name="leituras_amigo" options={{ href: null }} />
       {/* Adicione aqui as demais telas que devem ter a barra sem aparecer nela */}
     </Tabs>
   );

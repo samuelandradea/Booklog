@@ -24,6 +24,9 @@ type CarrosselProps = {
 
   /** Se verdadeiro, esconde o título e as informações textuais do Card, deixando apenas a capa. */
   ocultarTextos?: boolean;
+
+  /** Callback opcional chamado ao clicar num item. Se não for passado, navega para /infolivro (comportamento padrão). */
+  aoClicarItem?: (item: any) => void;
 };
 
 /**
@@ -37,6 +40,7 @@ export function CarrosselLivros({
   variante = "padrao",
   mostrarBolinhas = true,
   ocultarTextos = false,
+  aoClicarItem,
 }: CarrosselProps) {
   const router = useRouter();
 
@@ -104,7 +108,7 @@ export function CarrosselLivros({
               thumbnail={imagemSegura}
               ocultarTextos={ocultarTextos}
               // Redireciona para a tela de informações do livro passando o ISBN (ou ID) como parâmetro
-              onPress={() => router.push(`/infolivro?isbn=${item.isbn13}`)}
+              onPress={() => aoClicarItem ? aoClicarItem(item) : router.push(`/infolivro?isbn=${item.isbn13}`)}
             />
           );
         }}

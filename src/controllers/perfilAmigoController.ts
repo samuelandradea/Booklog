@@ -67,4 +67,25 @@ export class PerfilAmizadeController {
       return seguindoAtual;
     }
   }
+
+  // carrega todas as reviews do amigo (com capas) para a tela de Leituras Recentes
+  public async carregarTodasReviews(targetUid: string): Promise<any[]> {
+    try {
+      const reviewsRaw = await api(`/users/${targetUid}/reviews`);
+      const reviews = await Promise.all(
+        reviewsRaw.map(async (review: any) => {
+          try {
+            const livro = await api(`/books/${review.bookIsbn}`);
+            return { ...review, img: livro.img };
+          } catch {
+            return review;
+          }
+        })
+      );
+      return reviews;
+    } catch (err) {
+      console.error("Erro ao carregar reviews do amigo:", err);
+      return [];
+    }
+  }
 }
