@@ -25,6 +25,8 @@ export default function LivroInfo() {
   // busca os dados do livro na API pelo isbn recebido via parâmetro de rota
   useEffect(() => {
     if (isbn) {
+      setCarregando(true);
+      setLivro(null);
       api(`/books/${isbn}`)
         .then(data => setLivro(data))
         .catch(err => console.error(err))

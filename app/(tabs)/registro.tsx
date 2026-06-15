@@ -8,10 +8,12 @@ import { RegistroController } from '@/controllers/registroController';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -30,7 +32,7 @@ export default function RegistroLeitura() {
   const [resenha, setResenha] = useState('');
   const [livroSelecionado, setLivroSelecionado] = useState<Livro | null>(null);
   const [modalVisivel, setModalVisivel] = useState(false);
-
+  const scrollViewRef = useRef<ScrollView>(null);
   if (loading) return null
   
   // Valida os dados e salva a avaliação via RegistroController
@@ -73,9 +75,16 @@ export default function RegistroLeitura() {
     : null;
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({ ios: "padding", android: "height" })}
+    >    
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView ref={scrollViewRef} style={styles.container} keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.content, { paddingBottom: 10 }]}
+      >
         <Header />
+        {/* BOTÃO VOLTAR */}
 
         <View style={styles.capaContainer}>
           <TouchableOpacity style={styles.capa} onPress={() => setModalVisivel(true)}>
@@ -116,9 +125,17 @@ export default function RegistroLeitura() {
             style={styles.resenhaInput}
             multiline
             value={resenha}
-            onChangeText={setResenha}
+            onChangeText={(texto) => {
+              setResenha(texto);
+              scrollViewRef.current?.scrollToEnd({ animated: true });
+            }}
             placeholder="Escreva sua resenha..."
             placeholderTextColor="#FFFFFF"
+            onFocus={() => {
+              setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+              }, 100);
+            }}
           />
         </View>
 
@@ -138,6 +155,7 @@ export default function RegistroLeitura() {
         }}
       />
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

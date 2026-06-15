@@ -22,6 +22,7 @@ export function MetaAnual({ livrosLidos }: MetaAnualProps) {
             if (user?.uid) {
                 controller.carregarProgresso(user.uid)
                     .then((dados) => {
+                        console.log("Dados carregados:", dados);
                         setMeta(String(dados.metaAnual || 0));
                     })
                     .catch((err) => console.error("Erro ao buscar a meta:", err));
