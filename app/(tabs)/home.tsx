@@ -6,8 +6,8 @@ import { FeedController } from "@/controllers/feedController";
 import { HomeController } from "@/controllers/homeController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { ILivro } from "@/models/LivroModel";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useState, useCallback } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -38,7 +38,7 @@ export default function Home() {
   // Armazena a lista oficial de livros. Graças ao TypeScript e à nossa POO,
   // o React sabe que aqui dentro só existem objetos seguros do tipo 'ILivro'.
   const [livrosBanco, setLivrosBanco] = useState<ILivro[]>([]);
-  
+
   // Armazena a lista de livros avaliados pelos amigos
   const [feedBanco, setFeedBanco] = useState<any[]>([]);
 
@@ -53,46 +53,49 @@ export default function Home() {
    * Gatilho inicial: É disparado assim que a tela carrega e a verificação
    * de login (loading) é concluída.
    */
-  useEffect(() => {
-    const buscarLivros = async () => {
-      try {
-        // A TELA "BURRA": A Home não sabe qual a URL da API ou como limpar os dados.
-        // Ela simplesmente pede à Controller e aguarda a lista de livros perfeitos.
-        const data = await HomeController.buscarLivrosEmAlta();
-        setLivrosBanco(data);
+  useFocusEffect(
+    useCallback(() => {
+      setTextoHome("");
+      const buscarLivros = async () => {
+        try {
+          // A TELA "BURRA": A Home não sabe qual a URL da API ou como limpar os dados.
+          // Ela simplesmente pede à Controller e aguarda a lista de livros perfeitos.
+          const data = await HomeController.buscarLivrosEmAlta();
+          setLivrosBanco(data);
 
-        // Busca o feed dos amigos se o usuário estiver logado
-        if (user && user.uid) {
-          const feedController = new FeedController();
-          const rawFeed = await feedController.carregarFeed(user.uid);
-          
-          // Mapeia (flatten) o feed agrupado por amigo em uma lista de livros para o carrossel
-          const feedFormatado = rawFeed.flatMap((feedItem: any) => {
-            return feedItem.reviews.map((review: any) => ({
-              id: review.id,
-              titulo: review.nomeLivro,
-              notaMedia: review.nota,
-              capa: review.thumbnail || "",
-              isbn13: review.bookIsbn,
-              amigoNome: feedItem.amigo.name,
-            }));
-          });
-          
-          setFeedBanco(feedFormatado);
+          // Busca o feed dos amigos se o usuário estiver logado
+          if (user && user.uid) {
+            const feedController = new FeedController();
+            const rawFeed = await feedController.carregarFeed(user.uid);
+
+            // Mapeia (flatten) o feed agrupado por amigo em uma lista de livros para o carrossel
+            const feedFormatado = rawFeed.flatMap((feedItem: any) => {
+              return feedItem.reviews.map((review: any) => ({
+                id: review.id,
+                titulo: review.nomeLivro,
+                notaMedia: review.nota,
+                capa: review.thumbnail || "",
+                isbn13: review.bookIsbn,
+                amigoNome: feedItem.amigo.name,
+              }));
+            });
+
+            setFeedBanco(feedFormatado);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar livros para a Home:", error);
+        } finally {
+          // Independente de dar certo ou errado, desliga o ícone de carregamento
+          setCarregando(false);
         }
-      } catch (error) {
-        console.error("Erro ao buscar livros para a Home:", error);
-      } finally {
-        // Independente de dar certo ou errado, desliga o ícone de carregamento
-        setCarregando(false);
-      }
-    };
+      };
 
-    // Só busca os livros na API depois que o Firebase confirmar que o usuário está logado
-    if (!loading) {
-      buscarLivros();
-    }
-  }, [loading, user]);
+      // Só busca os livros na API depois que o Firebase confirmar que o usuário está logado
+      if (!loading) {
+        buscarLivros();
+      }
+    }, [loading, user])
+  );
 
   // Se a autenticação ainda estiver sendo validada, retorna nulo para não piscar a tela
   if (loading) return null;

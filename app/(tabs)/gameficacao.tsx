@@ -7,7 +7,7 @@ import { LeituraController } from "@/controllers/leituraController"
 import { useProtectedRoute } from "@/hook/useProtectedRoute"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableWithoutFeedback, Keyboard } from "react-native"
 
 
 export default function Gameficacao(){
@@ -35,6 +35,7 @@ export default function Gameficacao(){
     if (loading) return null;
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.select({ ios: "padding", android: "height"})}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
                 <Header />
 
@@ -45,6 +46,7 @@ export default function Gameficacao(){
                 </View>
 
             </View>
+            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     )
 }

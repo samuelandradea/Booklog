@@ -2,9 +2,10 @@ import { BackButton } from "@/components/BackButton";
 import { MapaController } from "@/controllers/mapaController";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Alert,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -23,7 +24,7 @@ export default function SugerirLocal() {
   const [endereco, setEndereco] = useState("");
   const [motivo, setMotivo] = useState("");
   const [enviando, setEnviando] = useState(false);
-
+  const scrollViewRef = useRef<ScrollView>(null);
   const categorias = ["Livraria", "Biblioteca", "Café", "Parque", "Outro"];
 
   const handleSubmit = async () => {
@@ -83,10 +84,16 @@ export default function SugerirLocal() {
   };
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({ ios: "padding", android: "height" })}
+    >
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 25 }]}
       >
         {/* BOTÃO VOLTAR */}
         <View style={styles.headerContainer}>
@@ -163,6 +170,11 @@ export default function SugerirLocal() {
             value={motivo}
             onChangeText={setMotivo}
             textAlignVertical="top"
+            onFocus={() => {
+              setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true})
+              }, 100);
+            }}
           />
 
           {/* BOTÃO ENVIAR */}
@@ -181,6 +193,7 @@ export default function SugerirLocal() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

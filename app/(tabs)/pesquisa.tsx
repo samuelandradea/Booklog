@@ -69,6 +69,7 @@ export default function TelaPesquisa() {
    */
   useEffect(() => {
     if (queryInicial) {
+      setTextoBusca(queryInicial);
       buscarDados(queryInicial);
     }
   }, [queryInicial]);
