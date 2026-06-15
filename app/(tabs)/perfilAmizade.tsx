@@ -6,7 +6,7 @@ import { MenuOpcao } from "@/components/MenuOpcao";
 import { PerfilAmizadeController } from "@/controllers/perfilAmigoController";
 import { useProtectedRoute } from "@/hook/useProtectedRoute";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, router } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -102,7 +102,7 @@ export default function PerfilAmizade() {
           </View>
         </View>
  
-        <MenuOpcao label="Leituras recentes" onPress={() => {}} />
+        <MenuOpcao label="Leituras recentes" onPress={() => router.push({ pathname: '/leituras_amigo', params: { uid: targetUid, nome } })} />
  
         <Divider style={styles.dividerCompacto} />
  
@@ -122,8 +122,20 @@ export default function PerfilAmizade() {
               notaMedia: r.nota || 0,
               ratingsCount: 0,
               categoria: "",
+              resenha: r.resenha || "",
             }))}
             mostrarBolinhas={false}
+            aoClicarItem={(livro) => router.push({
+              pathname: '/avaliacao',
+              params: {
+                titulo: livro.titulo,
+                autor: livro.autores,
+                capa: livro.capa,
+                nota: String(livro.notaMedia),
+                resenha: livro.resenha,
+                usuario: nome,
+              },
+            })}
           />
         )}
       </ScrollView>
